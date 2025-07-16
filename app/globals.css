@@ -1,0 +1,383 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --font-poppins: "Poppins", sans-serif;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border transition-colors duration-300;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-poppins);
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-poppins);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  p {
+    font-family: var(--font-poppins);
+    line-height: 1.6;
+  }
+
+  button {
+    font-family: var(--font-poppins);
+    font-weight: 500;
+  }
+
+  a {
+    font-family: var(--font-poppins);
+  }
+}
+
+/* Enhanced smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+/* Smooth scrolling for all elements */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced smooth scrolling with CSS scroll-timeline support */
+@supports (scroll-timeline: works) {
+  html {
+    scroll-timeline: --page-scroll block;
+    timeline-scope: --page-scroll;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Poppins-specific optimizations */
+.hero-text {
+  font-family: var(--font-poppins);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+
+.section-heading {
+  font-family: var(--font-poppins);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.card-title {
+  font-family: var(--font-poppins);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.body-text {
+  font-family: var(--font-poppins);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+
+.small-text {
+  font-family: var(--font-poppins);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
+/* Smooth section transitions */
+section {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced scroll snap for better section navigation */
+.scroll-container {
+  scroll-snap-type: y proximity;
+}
+
+.scroll-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+/* Dark mode specific styles */
+.dark {
+  color-scheme: dark;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* OLED optimized pure black backgrounds */
+.dark body {
+  background-color: #000000;
+}
+
+.dark .bg-white {
+  background-color: #000000;
+}
+
+.dark .bg-gray-50 {
+  background-color: #0a0a0a;
+}
+
+.dark .bg-gray-100 {
+  background-color: #1a1a1a;
+}
+
+.dark .text-black {
+  color: #ffffff;
+}
+
+.dark .text-gray-900 {
+  color: #ffffff;
+}
+
+.dark .text-gray-800 {
+  color: #e5e5e5;
+}
+
+.dark .text-gray-700 {
+  color: #d1d1d1;
+}
+
+.dark .text-gray-600 {
+  color: #a3a3a3;
+}
+
+.dark .text-gray-500 {
+  color: #737373;
+}
+
+/* Dark mode card and component backgrounds */
+.dark .bg-white\/80 {
+  background-color: rgba(26, 26, 26, 0.8);
+}
+
+.dark .bg-white\/90 {
+  background-color: rgba(26, 26, 26, 0.9);
+}
+
+.dark .bg-white\/95 {
+  background-color: rgba(26, 26, 26, 0.95);
+}
+
+/* Dark mode borders */
+.dark .border-gray-200 {
+  border-color: #404040;
+}
+
+.dark .border-gray-300 {
+  border-color: #525252;
+}
+
+/* Dark mode shadows */
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05);
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(255, 255, 255, 0.1), 0 10px 10px -5px rgba(255, 255, 255, 0.04);
+}
+
+.dark .shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.25);
+}
+
+/* Dark mode hover states */
+.dark .hover\:bg-gray-50:hover {
+  background-color: #1a1a1a;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: #262626;
+}
+
+.dark .hover\:bg-gray-200:hover {
+  background-color: #404040;
+}
+
+/* Dark mode gradient backgrounds */
+.dark .bg-gradient-to-r.from-blue-600.to-cyan-600 {
+  background: linear-gradient(to right, #1d4ed8, #0891b2);
+}
+
+.dark .bg-gradient-to-r.from-cyan-500.to-blue-500 {
+  background: linear-gradient(to right, #06b6d4, #3b82f6);
+}
+
+/* Dark mode accent colors for better contrast */
+.dark .text-blue-600 {
+  color: #60a5fa;
+}
+
+.dark .text-blue-500 {
+  color: #3b82f6;
+}
+
+.dark .text-cyan-600 {
+  color: #22d3ee;
+}
+
+.dark .bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+.dark .bg-blue-600 {
+  background-color: #2563eb;
+}
+
+.dark .hover\:bg-blue-600:hover {
+  background-color: #2563eb;
+}
+
+.dark .hover\:bg-blue-50:hover {
+  background-color: #1e3a8a;
+}
+
+/* Dark mode timeline colors - enhanced for better visibility */
+.dark .bg-purple-500 {
+  background-color: #a855f7;
+}
+
+.dark .bg-red-500 {
+  background-color: #ef4444;
+}
+
+.dark .bg-green-500 {
+  background-color: #22c55e;
+}
+
+.dark .bg-orange-500 {
+  background-color: #f97316;
+}
+
+.dark .bg-yellow-500 {
+  background-color: #eab308;
+}
+
+.dark .bg-teal-500 {
+  background-color: #14b8a6;
+}
+
+.dark .bg-indigo-500 {
+  background-color: #6366f1;
+}
+
+.dark .bg-pink-500 {
+  background-color: #ec4899;
+}
