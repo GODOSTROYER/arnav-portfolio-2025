@@ -24,7 +24,7 @@ export default function ResumeSection() {
             </div>
           </div>
 
-          <div className="border-2 border-cyan-200 rounded-3xl p-8 md:p-12 bg-white/50 backdrop-blur-sm">
+          <div className="border-2 border-blue-700 rounded-3xl p-8 md:p-12 bg-gray-900 backdrop-blur-sm">
             <div className="text-center">
               <h2 className="section-heading text-3xl md:text-4xl text-gray-900 mb-6">Ready for New Opportunities</h2>
               <p className="body-text text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -51,7 +51,7 @@ export default function ResumeSection() {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center px-8 py-4 border-2 border-cyan-500 text-cyan-600 font-semibold rounded-full hover:bg-cyan-50 transition-all duration-300"
+                  className="inline-flex items-center px-8 py-4 border-2 border-cyan-500 text-cyan-600 font-semibold rounded-full hover:bg-gray-700 transition-all duration-300"
                   style={{ fontWeight: 600, letterSpacing: "0.01em" }}
                 >
                   <ExternalLink className="w-5 h-5 mr-2" />

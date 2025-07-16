@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { MapPin, Mail, Phone, Github } from "lucide-react"
+import { MapPin, Mail, Phone, Github, Briefcase, Code } from "lucide-react"
 
 export default function MainContentSection() {
   const experiences = [
@@ -317,20 +317,13 @@ export default function MainContentSection() {
                     >
                       {/* Timeline node with Briefcase icon */}
                       <motion.div
-                        className={`absolute left-4 w-9 h-9 ${timelineColors[index % timelineColors.length]} rounded-full flex items-center justify-center shadow-lg z-10`}
+                        className={`absolute left-[11px] w-9 h-9 ${timelineColors[index % timelineColors.length]} rounded-full flex items-center justify-center shadow-lg z-10`}
                         whileHover={{
                           scale: 1.2,
                           transition: { duration: 0.3, ease: "easeOut" },
                         }}
                       >
-                        <svg className="w-3.25 h-3.25 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 01-2 2H10a2 2 0 01-2-2V6m8 0H8"
-                          />
-                        </svg>
+                        <Briefcase className="w-5 h-5 text-white" />
                       </motion.div>
 
                       {/* Content */}
@@ -406,20 +399,13 @@ export default function MainContentSection() {
                     >
                       {/* Timeline node with Code icon */}
                       <motion.div
-                        className={`absolute left-4 w-9 h-9 ${timelineColors[index % timelineColors.length]} rounded-full flex items-center justify-center shadow-lg z-10`}
+                        className={`absolute left-[11px] w-9 h-9 ${timelineColors[index % timelineColors.length]} rounded-full flex items-center justify-center shadow-lg z-10`}
                         whileHover={{
                           scale: 1.2,
                           transition: { duration: 0.3, ease: "easeOut" },
                         }}
                       >
-                        <svg className="w-3.25 h-3.25 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                          />
-                        </svg>
+                        <Code className="w-5 h-5 text-white" />
                       </motion.div>
 
                       {/* Content */}

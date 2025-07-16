@@ -47,27 +47,35 @@ export default function TechnologiesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
-          {techStack.map((tech, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.1, y: -10 }}
-              className="flex flex-col items-center justify-center p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
-              style={{
-                animation: `float 6s ease-in-out infinite`,
-                animationDelay: `${index * 0.3}s`,
-              }}
-            >
-              <div className={`${tech.color} transition-all duration-300 group-hover:scale-110`}>{tech.icon}</div>
-              <span className="mt-3 small-text text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">
-                {tech.label}
-              </span>
-            </motion.div>
-          ))}
+        <div className="flex justify-center">
+          <div className="flex flex-wrap justify-center gap-8">
+            {techStack.map((tech, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.1, y: -10 }}
+                className="relative flex flex-col items-center justify-center w-40 h-40 transition-all duration-300 group"
+                style={{
+                  animation: `float 6s ease-in-out infinite`,
+                  animationDelay: `${index * 0.3}s`,
+                }}
+              >
+                {/* The actual icon and label */}
+                <div className={`flex items-center justify-center ${tech.color} transition-all duration-300`}>
+                  {tech.icon}
+                </div>
+                <span className="mt-3 small-text text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">
+                  {tech.label}
+                </span>
+
+                {/* The bounding box with lightning effect */}
+                <div className="absolute inset-0 rounded-2xl lightning-border-effect"></div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -76,6 +84,57 @@ export default function TechnologiesSection() {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-8px); }
           100% { transform: translateY(0px); }
+        }
+
+        .lightning-border-effect {
+          position: absolute;
+          inset: 0;
+          border-radius: 1rem; /* Matches rounded-2xl */
+          border: 2px solid transparent; /* Initial transparent border */
+          transition: border-color 0.3s ease-in-out;
+          pointer-events: none; /* Allows interaction with content underneath */
+          z-index: 1; /* Ensure it's above the icon but below other elements if any */
+        }
+
+        .group-hover .lightning-border-effect {
+          border-color: #3b82f6; /* Blue-500 on hover */
+        }
+
+        .dark .group-hover .lightning-border-effect {
+          border-color: #60a5fa; /* Blue-400 on hover in dark mode */
+        }
+
+        .lightning-border-effect::before {
+          content: "";
+          position: absolute;
+          inset: -2px; /* Slightly larger to cover the border */
+          border-radius: 1rem; /* Match parent border-radius */
+          background: conic-gradient(
+            from 0deg at 50% 50%,
+            transparent 0%,
+            transparent 30%,
+            rgba(255, 255, 255, 0.8) 50%, /* Bright white for lightning */
+            transparent 70%,
+            transparent 100%
+          );
+          background-size: 200% 200%; /* Make the gradient larger to animate */
+          animation: rotate-lightning 2s linear infinite; /* Animate rotation */
+          opacity: 0; /* Hidden by default */
+          transition: opacity 0.3s ease-in-out;
+          z-index: 2; /* Above the border itself */
+        }
+
+        .group-hover .lightning-border-effect::before {
+          opacity: 1; /* Show on hover */
+        }
+
+        @keyframes rotate-lightning {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
       `}</style>
     </section>
