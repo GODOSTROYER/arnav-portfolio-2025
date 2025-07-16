@@ -4,51 +4,53 @@ import { motion } from "framer-motion"
 
 interface LetterAnimationProps {
   text: string
+  delay?: number
+  duration?: number
+  className?: string
 }
 
-export default function LetterAnimation({ text }: LetterAnimationProps) {
-  const letters = text.split("")
+export default function LetterAnimation({ text, delay = 0, duration = 0.05, className }: LetterAnimationProps) {
+  const letters = Array.from(text)
 
   const container = {
     hidden: { opacity: 0 },
     visible: (i = 1) => ({
       opacity: 1,
-      transition: { staggerChildren: 0.12, delayChildren: 0.04 * i },
+      transition: { staggerChildren: duration, delayChildren: delay * i },
     }),
   }
 
   const child = {
     visible: {
       opacity: 1,
-      x: 0,
       y: 0,
       transition: {
         type: "spring",
         damping: 12,
-        stiffness: 100,
+        stiffness: 200,
       },
     },
     hidden: {
       opacity: 0,
-      x: -20,
-      y: 10,
+      y: 20,
       transition: {
         type: "spring",
         damping: 12,
-        stiffness: 100,
+        stiffness: 200,
       },
     },
   }
 
   return (
     <motion.div
-      style={{ overflow: "hidden", display: "flex", fontSize: "inherit" }}
+      style={{ display: "flex", overflow: "hidden" }}
       variants={container}
       initial="hidden"
       animate="visible"
+      className={className}
     >
       {letters.map((letter, index) => (
-        <motion.span variants={child} key={index}>
+        <motion.span key={index} variants={child}>
           {letter === " " ? "\u00A0" : letter}
         </motion.span>
       ))}

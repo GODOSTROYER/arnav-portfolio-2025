@@ -1,78 +1,77 @@
 "use client"
 
 import { motion } from "framer-motion"
-
-const education = [
-  {
-    course: "B.Tech Computer Science Engineering",
-    school: "MIT Art, Design & Technology University",
-    place: "Pune, India",
-    period: "2022 – 2026",
-    gpa: "CGPA 8.2 (expected May 2026)",
-  },
-  {
-    course: "Grade 12 (HSC)",
-    school: "J.K. College of Arts, Commerce & Science",
-    place: "Pune, India",
-    period: "2020 – 2022",
-    gpa: "",
-  },
-  {
-    course: "Grade 10 (CBSE)",
-    school: "Amanora School",
-    place: "Pune, India",
-    period: "2020",
-    gpa: "88.2%",
-  },
-]
+import { Calendar, MapPin } from "lucide-react"
 
 export default function EducationSection() {
-  return (
-    <section id="education" className="py-20 bg-gray-50">
-      <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-6xl font-bold text-black mb-4">Education</h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">Academic journey and educational background.</p>
-        </motion.div>
+  const education = [
+    {
+      degree: "Master of Technology in Computer Science",
+      institution: "Indian Institute of Technology Bombay",
+      duration: "2021 - 2023",
+      location: "Mumbai, India",
+      details: [
+        "Specialized in Artificial Intelligence and Machine Learning.",
+        "Thesis: 'Deep Reinforcement Learning for Autonomous Navigation'.",
+        "Relevant Courses: Advanced Machine Learning, Deep Learning, Natural Language Processing, Computer Vision.",
+      ],
+    },
+    {
+      degree: "Bachelor of Engineering in Information Technology",
+      institution: "Pune Institute of Computer Technology",
+      duration: "2017 - 2021",
+      location: "Pune, India",
+      details: [
+        "Graduated with First Class Honors.",
+        "Capstone Project: 'Sentiment Analysis of Social Media Data'.",
+        "Relevant Courses: Data Structures & Algorithms, Database Management Systems, Operating Systems.",
+      ],
+    },
+  ]
 
-        <div className="max-w-6xl mx-auto">
-          <div className="space-y-8">
-            {education.map((edu, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className={`flex flex-col lg:flex-row items-center gap-8 ${
-                  index % 2 === 1 ? "lg:flex-row-reverse" : ""
-                }`}
-              >
-                <div className="flex-1">
-                  <div className="bg-white p-6 rounded-lg shadow-lg">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {edu.period}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-black mb-2">{edu.course}</h3>
-                    <p className="text-gray-700 font-medium mb-1">{edu.school}</p>
-                    <p className="text-gray-600 mb-2">{edu.place}</p>
-                    {edu.gpa && <p className="text-blue-600 font-medium">{edu.gpa}</p>}
-                  </div>
+  return (
+    <section id="education" className="py-20 bg-white dark:bg-black transition-colors duration-300">
+      <div className="container mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="section-heading text-3xl md:text-4xl text-gray-900 dark:text-white mb-4 transition-colors duration-300">
+            Education
+          </h2>
+          <p className="body-text text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto transition-colors duration-300">
+            My academic journey and qualifications.
+          </p>
+        </div>
+
+        <div className="relative max-w-3xl mx-auto">
+          {education.map((edu, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.2 }}
+              viewport={{ once: true }}
+              className="mb-12 last:mb-0 flex items-start"
+            >
+              <div className="flex flex-col items-center mr-6">
+                <div className="w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full z-10"></div>
+                {index < education.length - 1 && <div className="w-0.5 h-full bg-gray-300 dark:bg-gray-700 mt-2"></div>}
+              </div>
+              <div className="flex-1 p-6 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md transition-colors duration-300">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{edu.degree}</h3>
+                <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">{edu.institution}</p>
+                <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-3">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span>{edu.duration}</span>
+                  <MapPin className="w-4 h-4 ml-4 mr-2" />
+                  <span>{edu.location}</span>
                 </div>
-                <div className="flex-1 hidden lg:block">
-                  <div className="h-32 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg"></div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                  {edu.details.map((detail, i) => (
+                    <li key={i}>{detail}</li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

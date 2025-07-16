@@ -1,34 +1,30 @@
 "use client"
-import { useEffect } from 'react'
+
+import type React from "react"
+
+import { useEffect } from "react"
+import { gsap } from "gsap"
+import { ScrollSmoother } from "gsap/ScrollSmoother"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+gsap.registerPlugin(ScrollSmoother, ScrollTrigger)
 
 export default function ScrollSmootherWrapper({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js';
-    script.async = true;
-    script.onload = () => {
-      // @ts-ignore
-      if (window.ScrollSmoother) {
-        // @ts-ignore
-        window.ScrollSmoother.create({
-          wrapper: '#smooth-wrapper',
-          content: '#smooth-content',
-          smooth: 1,
-          effects: true,
-          smoothTouch: 0.1,
-        });
-      }
-    };
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+    // Only create ScrollSmoother if it hasn't been created already
+    if (!ScrollSmoother.get()) {
+      ScrollSmoother.create({
+        wrapper: "#smooth-wrapper",
+        content: "#smooth-content",
+        smooth: 1, // how long it takes to "catch up" to the scrollbar's position
+        effects: true, // looks for data-speed and data-lag attributes on elements
+      })
+    }
+  }, [])
+
   return (
     <div id="smooth-wrapper">
-      <div id="smooth-content">
-        {children}
-      </div>
+      <div id="smooth-content">{children}</div>
     </div>
-  );
+  )
 }
