@@ -2,57 +2,68 @@
 
 import { motion } from "framer-motion"
 import { MapPin, Mail, Phone, Github, Briefcase, Code } from "lucide-react"
+import Image from "next/image"
 
 export default function MainContentSection() {
   const experiences = [
     {
-      title: "Web Dev & AI/ML Intern",
-      company: "Cyberlytics Technologies",
-      period: "Jan 2024 – Jun 2024",
+      title: "AI Research and Development Intern",
+      company: "IS360 Technologies",
+      period: "Jul 2024 – Dec 2024",
       bullets: [
-        "Built **ERP Exerciser**, a Brain-Computer-Interface app using Event-Related Potentials for real-time cognitive training.",
-        "Tuned autoregressive models to forecast business metrics, boosting sequential-data accuracy.",
+        "Developed a machine learning pipeline using Linear Discriminant Analysis (LDA) to classify EEG signals from the Auditory Oddball paradigm, detecting event-related potentials like the P300 wave."
       ],
     },
     {
       title: "Vice President",
-      company: "Cloud Computing Club, MIT ADT",
-      period: "Aug 2024 – Present",
-      bullets: ["Led 55 member core team; organised workshops & seminars for 600+ students (90% retention interest)."],
-    },
-    {
-      title: "Campus Ambassador",
-      company: "Viral Fission",
-      period: "Aug 2024 – Present",
-      bullets: [],
-    },
-    {
-      title: "Management Executive",
-      company: "CodeChef MITADT",
+      company: "Cloud Computing Club",
       period: "Jul 2022 – Apr 2024",
-      bullets: [],
+      bullets: [
+        "Led a 55‑member team delivering workshops, seminars, and hands‑on cloud‑training sessions.",
+        "Grew a community of 600+ students, achieving 90% repeat‑engagement intent.",
+        "Managed logistics, marketing, speakers, and budgets for large‑scale events, ensuring flawless execution."
+      ],
+    },
+    {
+      title: "Management Associate",
+      company: "CodeChef Campus Chapter",
+      period: "Jul 2023 – Present",
+      bullets: [
+        "Managed the chapter’s annual calendar and budget, aligning eight coding events per semester with academic schedules.",
+        "Organised & hosted monthly CodeChef challenge mirrors, boosting average participation from 120 → 350 students.",
+        "Led cross‑functional sub‑teams (marketing, problem‑setting, tech) and produced run‑books that cut future planning time by 40%.",
+        "Mentored a 10‑member junior committee through weekly stand‑ups and retrospectives, building a sustainable leadership pipeline."
+      ],
     },
   ]
 
   const projects = [
     {
+      name: "Road Extraction On Satellite Images",
+      period: "Aug 2024 – Present",
+      team: "SIH Project (No. of Group Members – 6)",
+      highlight: [
+        "Developing software for automated road extraction using CNNs on ISRO’s Resourcesat images from the Boonidhi portal.",
+        "Built a GUI for specifying areas of interest and generating geographically referenced shapefiles, with email alerts for road changes based on image comparisons.",
+        "Optimized for efficient processing of large satellite datasets."
+      ],
+    },
+    {
       name: "ERP Exerciser",
-      period: "Jan 2024 – Jun 2024",
-      highlight: "Real-time BCI cognitive-training app leveraging ERP signals.",
-      team: "Industry Project, team of 3",
+      period: "Aug 2024 – Present",
+      team: "Industry Project (No. of Group Members – 3)",
+      highlight: [
+        "Developing ERP Exerciser, a Brain-Computer Interface (BCI) application that leverages Event-Related Potentials (ERPs) to deliver real-time cognitive training, enhancing memory, attention, and executive functions in patients with cognitive impairments."
+      ],
     },
     {
       name: "Prisma",
       period: "Jan 2023 – Apr 2024",
-      highlight:
-        "260 MB CNN model for upscaling & colorising images at 89% accuracy; potential night-vision & archival use-cases.",
-      team: "Mini Project, team of 3",
-    },
-    {
-      name: "Road Extraction on Satellite Images",
-      period: "SIH Project",
-      highlight: "CNN pipeline on ISRO Resourcesat imagery; GUI outputs georeferenced shapefiles plus email alerts.",
-      team: "SIH, team of 6",
+      team: "SY Mini Project (No. of Group Members – 3)",
+      highlight: [
+        "Developed an extremely efficient machine-learning application for upscaling and colorizing images, with a model size of just 260 MB and achieving 89% color accuracy in standardized tests (using CNNs and DinkNet).",
+        "Potential use cases include military applications, night-vision enhancement, and restoring old photographs."
+      ],
     },
   ]
 
@@ -102,7 +113,6 @@ export default function MainContentSection() {
       opacity: 1,
       transition: {
         duration: 0.6,
-        ease: [0.25, 0.1, 0.25, 1], // Custom cubic-bezier for smooth easing
         staggerChildren: 0.1,
       },
     },
@@ -115,7 +125,6 @@ export default function MainContentSection() {
       y: 0,
       transition: {
         duration: 0.8,
-        ease: [0.25, 0.1, 0.25, 1],
       },
     },
   }
@@ -135,13 +144,20 @@ export default function MainContentSection() {
             <motion.div variants={itemVariants} className="sticky top-8">
               {/* Profile Photo */}
               <motion.div
-                className="w-48 h-48 mx-auto mb-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-6xl font-bold shadow-2xl"
+                className="w-48 h-48 mx-auto mb-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center shadow-2xl overflow-hidden"
                 whileHover={{
                   scale: 1.05,
                   transition: { duration: 0.3, ease: "easeOut" },
                 }}
               >
-                <span style={{ fontWeight: 800, letterSpacing: "-0.02em" }}>AB</span>
+                <Image
+                  src="/mypic.jpeg"
+                  alt="Arnav Prashant Bule"
+                  width={192}
+                  height={192}
+                  className="object-cover w-full h-full rounded-full"
+                  priority
+                />
               </motion.div>
 
               {/* Name & Title */}
@@ -427,9 +443,13 @@ export default function MainContentSection() {
                         <p className="small-text text-sm text-gray-600 dark:text-gray-400 mb-3 transition-colors duration-300">
                           {project.team}
                         </p>
-                        <p className="body-text text-gray-700 dark:text-gray-300 transition-colors duration-300">
-                          {project.highlight}
-                        </p>
+                        <div className="body-text text-gray-700 dark:text-gray-300 transition-colors duration-300 space-y-2">
+                          {Array.isArray(project.highlight)
+                            ? project.highlight.map((line, idx) => (
+                                <p key={idx} className="mb-0">{line}</p>
+                              ))
+                            : <p>{project.highlight}</p>}
+                        </div>
                       </motion.div>
                     </motion.div>
                   ))}

@@ -15,8 +15,12 @@ const nextConfig = {
         pathname: "/git-blob/**",
       },
     ],
+    // you already disabled Next‑image optimisation, so a static export is fine
     unoptimized: true,
   },
-}
 
-export default nextConfig
+  /** ▼ this is the only new line ▼ **/
+  output: "export",          // tells Next.js to write the /out folder
+};
+
+export default nextConfig;

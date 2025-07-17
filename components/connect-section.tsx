@@ -1,79 +1,52 @@
-"use client"
+'use client'
 
-import { motion } from "framer-motion"
-import { Mail, Linkedin, Phone, MapPin } from "lucide-react"
+import { Linkedin } from 'react-feather'
 
 export default function ConnectSection() {
   return (
-    <section id="connect" className="py-20 bg-white">
-      <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto"
-        >
-          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-20 -translate-y-20"></div>
-              <div className="absolute bottom-0 right-0 w-60 h-60 bg-white rounded-full translate-x-20 translate-y-20"></div>
-            </div>
+    <section className="mt-16 px-4" id="contact">
+      <article
+        style={{ background: 'linear-gradient(45deg, #0037ff, #0088ff)' }}
+        className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center p-6 md:p-10 rounded-3xl text-white shadow-2xl"
+      >
+        <div className="md:w-2/3">
+          <p className="mb-6 text-3xl md:text-4xl font-bold leading-tight">
+            Let's Connect and Collaborate!
+          </p>
+          <p className="text-base md:text-lg leading-relaxed">
+            As an AI and Machine Learning enthusiast, I'm always excited to explore new ideas, share
+            knowledge, and collaborate on projects that push the boundaries of technology. I’m not
+            looking for a role, but I’d love to connect with others who share the same passion for
+            AI, data science, and the endless possibilities they offer.
+          </p>
+          <p className="mt-3 text-base md:text-lg">Interested or want to get to know me a bit better?</p>
+        </div>
 
-            <div className="relative z-10">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <h2 className="section-heading text-3xl md:text-4xl text-white mb-6">
-                    Let's Connect and Collaborate!
-                  </h2>
-                  <p className="body-text text-lg mb-6 text-blue-100">
-                    I'm always excited to explore new opportunities, share knowledge, and collaborate on projects that
-                    push the boundaries of technology. Whether you're interested in AI/ML, cloud computing, or
-                    innovative tech solutions, I'd love to connect!
-                  </p>
-                  <p className="body-text text-blue-100 font-medium">Ready to build something amazing together?</p>
-                </div>
-
-                <div className="space-y-4">
-                  <motion.a
-                    href="https://www.linkedin.com/in/arnavbule/"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center justify-center w-full px-6 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all duration-300"
-                    style={{ fontWeight: 600, letterSpacing: "0.01em" }}
-                  >
-                    <Linkedin className="w-5 h-5 mr-3" />
-                    Connect on LinkedIn
-                  </motion.a>
-
-                  <motion.a
-                    href="mailto:arnav.bule05@gmail.com"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center justify-center w-full px-6 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all duration-300"
-                    style={{ fontWeight: 600, letterSpacing: "0.01em" }}
-                  >
-                    <Mail className="w-5 h-5 mr-3" />
-                    Send an Email
-                  </motion.a>
-
-                  <div className="pt-4 space-y-3">
-                    <div className="flex items-center text-blue-100">
-                      <Phone className="w-5 h-5 mr-3" />
-                      <span className="body-text">+91 87676 02012</span>
-                    </div>
-                    <div className="flex items-center text-blue-100">
-                      <MapPin className="w-5 h-5 mr-3" />
-                      <span className="body-text">Pune, Maharashtra</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+        <div className="mt-6 md:mt-0 md:ml-8 md:w-1/3 flex flex-col items-start">
+          <a
+            href="https://www.linkedin.com/in/madhurpatil/"
+            className="inline-flex items-center px-5 py-3 mb-4 text-base font-semibold text-black bg-white rounded-lg hover:opacity-90 transform hover:-translate-y-1 transition-all"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <Linkedin size={20} />
+            <span className="ml-2">Get in Touch</span>
+          </a>
+          <p className="text-sm md:text-base">
+            Prefer email?
+            <br />
+            You can reach out to me at{' '}
+            <a
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=arnav.bule05@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-white"
+            >
+              arnav.bule05@gmail.com
+            </a>
+          </p>
+        </div>
+      </article>
     </section>
   )
 }

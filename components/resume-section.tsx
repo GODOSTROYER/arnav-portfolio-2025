@@ -1,67 +1,29 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Download, ExternalLink } from "lucide-react"
+import { Download } from "react-feather";
+import Link from "next/link";
 
 export default function ResumeSection() {
   return (
-    <section id="resume" className="py-20 bg-white">
-      <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto"
-        >
-          <div className="text-center mb-8">
-            <div
-              className="inline-flex items-center px-4 py-2 bg-cyan-100 text-cyan-600 rounded-full font-medium mb-6"
-              style={{ fontWeight: 600, fontSize: "0.875rem", letterSpacing: "0.02em" }}
+    <section id="resume" className="pt-40 pb-20 bg-white dark:bg-black transition-colors duration-300">
+      <div className="container">
+        <div className="max-w-4xl mx-auto px-8 pb-8 border-2 border-blue-500 dark:border-blue-400 rounded-3xl bg-white dark:bg-black transition-colors duration-300 shadow-lg shadow-[0_0_24px_0_rgba(59,130,246,0.35)] dark:shadow-[0_0_24px_0_rgba(59,130,246,0.4)]">
+          <p className="inline-flex items-center px-4 text-lg font-bold -translate-y-4 bg-white dark:bg-black text-blue-600 dark:text-blue-400 transform-gpu transition-colors duration-300">
+            <Download size={24} className="mr-2" />
+            Check Out My Resume
+          </p>
+          <div className="flex flex-col items-center justify-center">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">Get to Know More About Me</h2>
+            <p className="text-center text-gray-600 dark:text-gray-400 mb-6 transition-colors duration-300">Click below to view or download my latest resume in PDF format from Google Drive.</p>
+            <Link
+              href="/resume"
+              className="px-8 py-2 text-sm text-center text-white transition-colors border rounded-full bg-blue-600 dark:bg-black border-blue-500 dark:border-blue-400 shadow-[0_0_12px_0_rgba(59,130,246,0.35)] dark:shadow-[0_0_12px_0_rgba(59,130,246,0.4)] hover:border-blue-700 dark:hover:border-blue-500 hover:bg-blue-700 dark:hover:bg-black font-semibold"
             >
-              <Download className="w-4 h-4 mr-2" />
-              CHECK OUT MY RESUME
-            </div>
+              View Resume
+            </Link>
           </div>
-
-          <div className="border-2 border-blue-700 rounded-3xl p-8 md:p-12 bg-gray-900 backdrop-blur-sm">
-            <div className="text-center">
-              <h2 className="section-heading text-3xl md:text-4xl text-gray-900 mb-6">Ready for New Opportunities</h2>
-              <p className="body-text text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                Download my comprehensive resume to learn more about my technical skills, project experience, and
-                achievements in AI/ML and cloud computing.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.a
-                  href="https://drive.google.com/file/d/1sgoSLu_0F52J1yEhmpamVRQoGKx0e-wP/view?usp=sharing"
-                  download
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300"
-                  style={{ fontWeight: 600, letterSpacing: "0.01em" }}
-                >
-                  <Download className="w-5 h-5 mr-2" />
-                  Download Resume
-                </motion.a>
-
-                <motion.a
-                  href="https://www.linkedin.com/in/arnavbule/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center px-8 py-4 border-2 border-cyan-500 text-cyan-600 font-semibold rounded-full hover:bg-gray-700 transition-all duration-300"
-                  style={{ fontWeight: 600, letterSpacing: "0.01em" }}
-                >
-                  <ExternalLink className="w-5 h-5 mr-2" />
-                  View LinkedIn
-                </motion.a>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        </div>
       </div>
     </section>
-  )
+  );
 }

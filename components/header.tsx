@@ -5,117 +5,76 @@ import { motion } from "framer-motion"
 import { Menu, X, Moon, Sun } from "lucide-react"
 import { useTheme } from "./theme-provider"
 
+const NAME = "Arnav Bule"
+const NAV  = ["Home", "About", "Technologies", "Connect", "Resume"]
+
+/* helper: split a label into spans for fine hover animation (optional) */
+const spanify = (txt: string) =>
+  txt.split("").map((c, i) =>
+    c === " " ? <span key={`sp${i}`}>&nbsp;</span> : <span key={i}>{c}</span>
+  )
+
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { isDarkMode, toggleTheme } = useTheme()
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
+      // Trigger effect after scrolling past the hero section (assume hero is 100vh)
+      setIsScrolled(window.scrollY > window.innerHeight - 80)
     }
     window.addEventListener("scroll", handleScroll)
+    handleScroll()
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const navItems = [
-    { href: "#home", label: "Home" },
-    { href: "#about", label: "About" },
-    { href: "#technologies", label: "Technologies" },
-    { href: "#connect", label: "Connect" },
-    { href: "#resume", label: "Resume" },
-  ]
-
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white/90 dark:bg-black/90 backdrop-blur-md shadow-lg dark:shadow-white/10" : "bg-transparent"
-      }`}
+    <header
+      id="site-header"
+      className={`fixed top-0 left-0 right-0 z-50 h-16 flex transition-all duration-500
+        ${isScrolled
+          ? "backdrop-blur-xl bg-white/40 dark:bg-black/40 border-b border-white/30 dark:border-zinc-800/60 shadow-lg"
+          : "bg-transparent border-b-0 shadow-none"}
+      `}
+      style={{
+        WebkitBackdropFilter: isScrolled ? "blur(24px)" : undefined,
+        backdropFilter: isScrolled ? "blur(24px)" : undefined,
+        transition: "background 0.4s cubic-bezier(.4,0,.2,1), border 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1)",
+      }}
     >
-      <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-16">
-          <motion.a
-            href="#home"
-            whileHover={{ scale: 1.05 }}
-            className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300"
-            style={{ fontWeight: 700, letterSpacing: "-0.02em" }}
+      <div className="container mx-auto px-6 flex items-center justify-between w-full h-full">
+        {/* logo / name */}
+        <motion.a
+          href="#home"
+          whileHover={{ scale: 1.05 }}
+          className="text-2xl font-bold text-gray-900 dark:text-white select-none flex items-center h-full"
+        >
+          {spanify(NAME)}
+        </motion.a>
+
+        {/* desktop nav */}
+        <nav className="hidden md:flex items-center space-x-8 h-full">
+          {NAV.map((label) => (
+            <motion.a
+              key={label}
+              href={`#${label.toLowerCase()}`}
+              whileHover={{ scale: 1.05 }}
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium select-none flex items-center h-full"
+            >
+              {spanify(label)}
+            </motion.a>
+          ))}
+
+          <motion.button
+            onClick={toggleTheme}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center h-10 w-10"
           >
-            Arnav
-          </motion.a>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <motion.a
-                key={item.href}
-                href={item.href}
-                whileHover={{ scale: 1.05 }}
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300"
-                style={{ fontWeight: 500, letterSpacing: "0.01em" }}
-              >
-                {item.label}
-              </motion.a>
-            ))}
-
-            {/* Dark Mode Toggle */}
-            <motion.button
-              onClick={toggleTheme}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </motion.button>
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-4">
-            {/* Mobile Dark Mode Toggle */}
-            <motion.button
-              onClick={toggleTheme}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </motion.button>
-
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
-            >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <motion.nav
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-black/95 backdrop-blur-md"
-          >
-            {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300"
-                style={{ fontWeight: 500, letterSpacing: "0.01em" }}
-              >
-                {item.label}
-              </a>
-            ))}
-          </motion.nav>
-        )}
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </motion.button>
+        </nav>
       </div>
-    </motion.header>
+    </header>
   )
 }

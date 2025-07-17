@@ -1,19 +1,22 @@
 "use client"
 
 import { useScroll } from "framer-motion"
-import HeroSection from "@/components/hero-section"
-import MainContentSection from "@/components/main-content-section"
-import TechnologiesSection from "@/components/technologies-section"
-import ConnectSection from "@/components/connect-section"
-import ResumeSection from "@/components/resume-section"
-import Footer from "@/components/footer"
-import Header from "@/components/header"
+import dynamic from "next/dynamic"
+
+import Header               from "@/components/header"
+import MainContentSection   from "@/components/main-content-section"
+import TechnologiesSection  from "@/components/technologies-section"
+import ConnectSection       from "@/components/connect-section"
+import ResumeSection        from "@/components/resume-section"
+import Footer               from "@/components/footer"
+
+/* ───── client‑only hero (no SSR, fixes hydration mismatch) ───── */
+const HeroSection = dynamic(() => import("@/components/hero-section"), {
+  ssr: false,
+})
 
 export default function Home() {
   const { scrollYProgress } = useScroll({
-    // Enhanced scroll configuration for smoother tracking
-    layoutEffect: false,
-    // Add smooth scroll behavior
     offset: ["start start", "end end"],
   })
 
