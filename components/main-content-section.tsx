@@ -1,11 +1,22 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { MapPin, Mail, Phone, Github, Briefcase, Code } from "lucide-react"
+import { MapPin, Mail, Phone, Github, Briefcase, Code, ExternalLink } from "lucide-react"
 import Image from "next/image"
 
 export default function MainContentSection() {
   const experiences = [
+    {
+      title: "Associate Data Scientist Intern",
+      company: "V4C.ai",
+      period: "Sept 2025 – Feb 2026",
+      bullets: [
+        "Built and maintained end-to-end ETL pipelines using PySpark, Delta Lake, and Auto Loader, implementing Medallion Architecture (Bronze–Silver–Gold) for scalable, production-grade analytics and ML workloads.",
+        "Orchestrated and automated production pipelines using Databricks Jobs and Databricks Asset Bundles (DABs), with parameterization, scheduling, and environment-aware deployments aligned with CI/CD principles.",
+        "Integrated MLflow for experiment tracking, model versioning, and reproducibility, supporting MLOps workflows and lifecycle management in cloud-based environments.",
+        "Optimized data transformations, compute usage, and storage layouts to improve performance, reliability, and cost efficiency, enabling downstream BI reporting and ML-ready datasets.",
+      ],
+    },
     {
       title: "AI Research and Development Intern",
       company: "IS360 Technologies",
@@ -29,7 +40,7 @@ export default function MainContentSection() {
       company: "CodeChef Campus Chapter",
       period: "Jul 2023 – Present",
       bullets: [
-        "Managed the chapter’s annual calendar and budget, aligning eight coding events per semester with academic schedules.",
+        "Managed the chapter's annual calendar and budget, aligning eight coding events per semester with academic schedules.",
         "Organised & hosted monthly CodeChef challenge mirrors, boosting average participation from 120 → 350 students.",
         "Led cross‑functional sub‑teams (marketing, problem‑setting, tech) and produced run‑books that cut future planning time by 40%.",
         "Mentored a 10‑member junior committee through weekly stand‑ups and retrospectives, building a sustainable leadership pipeline."
@@ -39,11 +50,24 @@ export default function MainContentSection() {
 
   const projects = [
     {
+      name: "Mini Task Tracker",
+      period: "2025",
+      team: "Next.js 15 · React 19 · TypeScript · Express · MongoDB · Redis",
+      github: "https://github.com/GODOSTROYER/wldd-task-tracker",
+      live: "https://wldd-task-tracker.arnavbule.me",
+      highlight: [
+        "Built a full-stack task tracker with Next.js 15 (React 19) frontend and Express + TypeScript REST API, including workspace-based task organization and multiple task views (Board/List/Table/Timeline).",
+        "Implemented secure auth: email OTP verification (6-digit), JWT sessions (7-day expiry), bcrypt password hashing, and password reset via email token.",
+        "Added a Redis caching layer for task listing with 5-minute TTL, plus automatic cache invalidation on task mutations and graceful cache-bypass if Redis is down.",
+        "Built a drag-and-drop Kanban experience and persisted ordering using a batch update endpoint backed by MongoDB bulkWrite + a position sort field.",
+      ],
+    },
+    {
       name: "Road Extraction On Satellite Images",
       period: "Aug 2024 – Present",
       team: "SIH Project (No. of Group Members – 6)",
       highlight: [
-        "Developing software for automated road extraction using CNNs on ISRO’s Resourcesat images from the Boonidhi portal.",
+        "Developing software for automated road extraction using CNNs on ISRO's Resourcesat images from the Boonidhi portal.",
         "Built a GUI for specifying areas of interest and generating geographically referenced shapefiles, with email alerts for road changes based on image comparisons.",
         "Optimized for efficient processing of large satellite datasets."
       ],
@@ -82,10 +106,13 @@ export default function MainContentSection() {
   ]
 
   const skills = {
-    "Programming Languages": ["Python", "C++"],
-    "Cloud Computing": ["IAM", "Kubernetes", "VMs", "DBs"],
-    "Data & Databases": ["SQL", "BigQuery"],
-    "Tools & Platforms": ["OpenAI APIs", "DeepSeek", "AWS", "Google Cloud Platform", "GitHub"],
+    "Programming Languages": ["Python", "C++", "JavaScript", "TypeScript"],
+    "Data Engineering": ["PySpark", "Delta Lake", "Databricks", "Auto Loader", "ETL Pipelines", "Medallion Architecture"],
+    "AI/ML & Data Science": ["MLflow", "Scikit-learn", "Pandas", "NumPy", "NLP", "MLOps"],
+    "Web Development": ["React", "Next.js", "Node.js", "Express.js", "REST APIs", "Tailwind CSS"],
+    "Cloud Computing": ["IAM", "Kubernetes", "VMs", "DBs", "Databricks Jobs", "DABs", "CI/CD", "Docker"],
+    "Data & Databases": ["SQL", "BigQuery", "MongoDB", "Redis", "PostgreSQL"],
+    "Tools & Platforms": ["OpenAI APIs", "DeepSeek", "AWS", "Google Cloud Platform", "GitHub", "MLflow", "Jest"],
     "Operating Systems": ["Linux", "Windows"],
     "Soft Skills": [
       "Project Management",
@@ -98,6 +125,9 @@ export default function MainContentSection() {
   }
 
   const certifications = [
+    "Databricks Certified Data Engineer Associate",
+    "Databricks Certified Data Analyst Associate",
+    "Databricks Certified Generative AI Engineer Associate",
     "Machine Learning Specialization — Coursera",
     "Google Project Management Professional Certificate",
     "Google Data Analytics Professional Certificate",
@@ -433,9 +463,33 @@ export default function MainContentSection() {
                         }}
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
-                          <h4 className="card-title text-xl text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                            {project.name}
-                          </h4>
+                          <div className="flex items-center gap-3">
+                            <h4 className="card-title text-xl text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                              {project.name}
+                            </h4>
+                            {"github" in project && (project as any).github && (
+                              <a
+                                href={(project as any).github}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
+                                title="GitHub"
+                              >
+                                <Github className="w-5 h-5" />
+                              </a>
+                            )}
+                            {"live" in project && (project as any).live && (
+                              <a
+                                href={(project as any).live}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
+                                title="Live Demo"
+                              >
+                                <ExternalLink className="w-5 h-5" />
+                              </a>
+                            )}
+                          </div>
                           <span className="small-text text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
                             {project.period}
                           </span>

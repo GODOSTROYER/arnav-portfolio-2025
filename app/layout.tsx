@@ -25,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`scroll-smooth ${poppins.variable}`}>
-      <body className={`${poppins.className} antialiased transition-colors duration-300`}>
+    <html lang="en" className={`scroll-smooth ${poppins.variable}`} suppressHydrationWarning>
+      <body className={`${poppins.className} antialiased transition-colors duration-300`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange={false}>
           {children}
         </ThemeProvider>
