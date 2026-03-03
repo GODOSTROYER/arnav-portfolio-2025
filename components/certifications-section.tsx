@@ -6,6 +6,24 @@ import { CheckCircle } from "lucide-react"
 export default function CertificationsSection() {
   const certifications = [
     {
+      name: "Databricks Certified Data Engineer Associate",
+      issuer: "Databricks",
+      date: "2025",
+      link: "#",
+    },
+    {
+      name: "Databricks Certified Data Analyst Associate",
+      issuer: "Databricks",
+      date: "2025",
+      link: "#",
+    },
+    {
+      name: "Databricks Certified Generative AI Engineer Associate",
+      issuer: "Databricks",
+      date: "2025",
+      link: "#",
+    },
+    {
       name: "AWS Certified Solutions Architect - Associate",
       issuer: "Amazon Web Services",
       date: "March 2023",

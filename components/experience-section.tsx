@@ -1,10 +1,22 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Calendar, MapPin } from "lucide-react"
+import { motion } from "framer-motion";
+import { Calendar, MapPin } from "lucide-react";
 
 export default function ExperienceSection() {
   const experiences = [
+    {
+      title: "Associate Data Scientist Intern",
+      company: "V4C.ai",
+      duration: "Sept 2025 - Feb 2026",
+      location: "Remote",
+      description: [
+        "Built and maintained end-to-end ETL pipelines using PySpark, Delta Lake, and Auto Loader, implementing Medallion Architecture (Bronze–Silver–Gold) for scalable, production-grade analytics and ML workloads.",
+        "Orchestrated and automated production pipelines using Databricks Jobs and Databricks Asset Bundles (DABs), with parameterization, scheduling, and environment-aware deployments aligned with CI/CD principles.",
+        "Integrated MLflow for experiment tracking, model versioning, and reproducibility, supporting MLOps workflows and lifecycle management in cloud-based environments.",
+        "Optimized data transformations, compute usage, and storage layouts to improve performance, reliability, and cost efficiency, enabling downstream BI reporting and ML-ready datasets.",
+      ],
+    },
     {
       title: "AI/ML Engineer",
       company: "Tech Solutions Inc.",
@@ -28,10 +40,13 @@ export default function ExperienceSection() {
         "Participated in code reviews and agile development sprints.",
       ],
     },
-  ]
+  ];
 
   return (
-    <section id="experience" className="py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <section
+      id="experience"
+      className="py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
+    >
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="section-heading text-3xl md:text-4xl text-gray-900 dark:text-white mb-4 transition-colors duration-300">
@@ -59,8 +74,12 @@ export default function ExperienceSection() {
                 )}
               </div>
               <div className="flex-1 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md transition-colors duration-300">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{exp.title}</h3>
-                <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">{exp.company}</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                  {exp.title}
+                </h3>
+                <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {exp.company}
+                </p>
                 <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-3">
                   <Calendar className="w-4 h-4 mr-2" />
                   <span>{exp.duration}</span>
@@ -78,5 +97,5 @@ export default function ExperienceSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

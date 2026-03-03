@@ -1,19 +1,24 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Code, Database, Cloud, Brain, GitBranch, Server } from "lucide-react"
+import { Code, Database, Cloud, Brain, GitBranch, Server, Layers } from "lucide-react"
 
 export default function SkillsSection() {
   const skills = [
     {
       category: "Programming Languages",
       icon: <Code className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
-      items: ["Python", "C++", "JavaScript", "Go", "Java"],
+      items: ["Python", "C++", "JavaScript", "TypeScript", "Go", "Java"],
     },
     {
       category: "AI/ML & Data Science",
       icon: <Brain className="w-6 h-6 text-green-600 dark:text-green-400" />,
-      items: ["TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy", "OpenCV", "NLP"],
+      items: ["TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy", "OpenCV", "NLP", "MLflow"],
+    },
+    {
+      category: "Data Engineering",
+      icon: <Layers className="w-6 h-6 text-orange-600 dark:text-orange-400" />,
+      items: ["PySpark", "Delta Lake", "Databricks", "Auto Loader", "ETL Pipelines", "Medallion Architecture"],
     },
     {
       category: "Cloud & DevOps",

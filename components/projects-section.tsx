@@ -7,6 +7,20 @@ import Image from "next/image"
 export default function ProjectsSection() {
   const projects = [
     {
+      title: "Mini Task Tracker",
+      description: "Full-stack task management app with JWT auth + OTP email verification, Redis-cached drag-and-drop Kanban workspaces.",
+      bullets: [
+        "Built a full-stack task tracker with Next.js 15 (React 19) frontend and Express + TypeScript REST API, including workspace-based task organization and multiple task views (Board/List/Table/Timeline).",
+        "Implemented secure auth: email OTP verification (6-digit), JWT sessions (7-day expiry), bcrypt password hashing, and password reset via email token.",
+        "Added a Redis caching layer for task listing with 5-minute TTL, plus automatic cache invalidation on task mutations and graceful cache-bypass if Redis is down.",
+        "Built a drag-and-drop Kanban experience and persisted ordering using a batch update endpoint backed by MongoDB bulkWrite + a position sort field.",
+      ],
+      image: "/placeholder.svg?height=400&width=600",
+      tags: ["Next.js 15", "React 19", "TypeScript", "Express", "MongoDB", "Redis"],
+      github: "https://github.com/GODOSTROYER/wldd-task-tracker",
+      live: "https://wldd-task-tracker.arnavbule.me",
+    },
+    {
       title: "AI-Powered Chatbot",
       description:
         "Developed a conversational AI chatbot using natural language processing (NLP) and deep learning techniques.",
@@ -74,8 +88,39 @@ export default function ProjectsSection() {
                 />
               </div>
               <div className="p-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{project.title}</h3>
+                <div className="flex items-center gap-3 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{project.title}</h3>
+                  {project.github && project.github !== "#" && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
+                      title="GitHub"
+                    >
+                      <Github className="w-5 h-5" />
+                    </a>
+                  )}
+                  {project.live && project.live !== "#" && (
+                    <a
+                      href={project.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
+                      title="Live Demo"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                    </a>
+                  )}
+                </div>
                 <p className="text-gray-700 dark:text-gray-300 text-base mb-4">{project.description}</p>
+                {"bullets" in project && (project as any).bullets && (
+                  <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300 text-sm mb-4">
+                    {(project as any).bullets.map((bullet: string, i: number) => (
+                      <li key={i}>{bullet}</li>
+                    ))}
+                  </ul>
+                )}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.map((tag, tagIndex) => (
                     <span
@@ -118,3 +163,4 @@ export default function ProjectsSection() {
     </section>
   )
 }
+
