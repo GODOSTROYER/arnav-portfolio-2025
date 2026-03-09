@@ -9,12 +9,23 @@ export default function MainContentSection() {
     {
       title: "Associate Data Scientist Intern",
       company: "V4C.ai",
-      period: "Sept 2025 – Feb 2026",
+      period: "Sept 2025 – Present",
       bullets: [
         "Built and maintained end-to-end ETL pipelines using PySpark, Delta Lake, and Auto Loader, implementing Medallion Architecture (Bronze–Silver–Gold) for scalable, production-grade analytics and ML workloads.",
         "Orchestrated and automated production pipelines using Databricks Jobs and Databricks Asset Bundles (DABs), with parameterization, scheduling, and environment-aware deployments aligned with CI/CD principles.",
         "Integrated MLflow for experiment tracking, model versioning, and reproducibility, supporting MLOps workflows and lifecycle management in cloud-based environments.",
         "Optimized data transformations, compute usage, and storage layouts to improve performance, reliability, and cost efficiency, enabling downstream BI reporting and ML-ready datasets.",
+      ],
+    },
+    {
+      title: "Gen AI Intern — CTO Office",
+      company: "Persistent Systems",
+      period: "Sept 2025 – Mar 2026",
+      bullets: [
+        "Designed and developed a full-stack AI email assistant (Email Digital Twin) using a custom Chrome Extension and Node.js/Express backend to automate hyper-personalized email drafting.",
+        "Integrated Google Gemini (gemini-2.5-flash) to analyze users' sent emails, dynamically extracting communication patterns to build distinct, context-specific writing personas.",
+        "Implemented Retrieval-Augmented Generation (RAG) with LanceDB vector database, enabling semantic search over past email threads for context-aware draft generation.",
+        "Engineered a high-performance batch processing system using parallel fetching (10 concurrent requests), accelerating email analysis and persona generation by 5–7×.",
       ],
     },
     {
@@ -63,6 +74,17 @@ export default function MainContentSection() {
       ],
     },
     {
+      name: "Email Digital Twin",
+      period: "2025",
+      team: "Chrome Extension · Node.js · Express · Google Gemini · LanceDB · Gmail API · OAuth 2.0",
+      highlight: [
+        "Built an AI-powered Chrome Extension and Node.js backend that learns a user's unique writing style to generate hyper-personalized, context-aware email drafts using Google Gemini and LanceDB.",
+        "Integrated Google Gemini's LLM via the API to analyze sent emails, dynamically extracting communication patterns and building distinct writing personas (professional, casual, etc.).",
+        "Implemented RAG using LanceDB vector database for semantic search over past email threads, enabling the AI to understand ongoing conversation context for accurate draft generation.",
+        "Integrated Gmail API with secure OAuth 2.0 flows within a privacy-first architecture where data processing stays local, and built an injected Gmail UI layer with keyboard shortcuts and a multi-persona editor.",
+      ],
+    },
+    {
       name: "Road Extraction On Satellite Images",
       period: "Aug 2024 – Present",
       team: "SIH Project (No. of Group Members – 6)",
@@ -108,11 +130,11 @@ export default function MainContentSection() {
   const skills = {
     "Programming Languages": ["Python", "C++", "JavaScript", "TypeScript"],
     "Data Engineering": ["PySpark", "Delta Lake", "Databricks", "Auto Loader", "ETL Pipelines", "Medallion Architecture"],
-    "AI/ML & Data Science": ["MLflow", "Scikit-learn", "Pandas", "NumPy", "NLP", "MLOps"],
-    "Web Development": ["React", "Next.js", "Node.js", "Express.js", "REST APIs", "Tailwind CSS"],
+    "AI/ML & Data Science": ["MLflow", "Scikit-learn", "Pandas", "NumPy", "NLP", "MLOps", "RAG", "Prompt Engineering"],
+    "Web Development": ["React", "Next.js", "Node.js", "Express.js", "REST APIs", "Tailwind CSS", "Chrome Extensions"],
     "Cloud Computing": ["IAM", "Kubernetes", "VMs", "DBs", "Databricks Jobs", "DABs", "CI/CD", "Docker"],
-    "Data & Databases": ["SQL", "BigQuery", "MongoDB", "Redis", "PostgreSQL"],
-    "Tools & Platforms": ["OpenAI APIs", "DeepSeek", "AWS", "Google Cloud Platform", "GitHub", "MLflow", "Jest"],
+    "Data & Databases": ["SQL", "BigQuery", "MongoDB", "Redis", "PostgreSQL", "LanceDB"],
+    "Tools & Platforms": ["Google Gemini API", "OpenAI APIs", "DeepSeek", "AWS", "Google Cloud Platform", "GitHub", "MLflow", "Jest", "OAuth 2.0"],
     "Operating Systems": ["Linux", "Windows"],
     "Soft Skills": [
       "Project Management",

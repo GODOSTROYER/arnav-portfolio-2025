@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useTransform, useVelocity, useSpring, type MotionValue, cubicBezier } from "framer-motion"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 
 interface HeroSectionProps {
   scrollYProgress: MotionValue<number>
@@ -12,6 +12,16 @@ const HEADER_HEIGHT = 112 // px, adjust if your header is taller/shorter
 export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
   const [mounted, setMounted] = useState(false)
   const [showFlyingLetters, setShowFlyingLetters] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile viewport (below Tailwind md breakpoint)
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)')
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile(e.matches)
+    handleChange(mql) // set initial value
+    mql.addEventListener('change', handleChange as (e: MediaQueryListEvent) => void)
+    return () => mql.removeEventListener('change', handleChange as (e: MediaQueryListEvent) => void)
+  }, [])
   const scrollVelocity = useVelocity(scrollYProgress)
 
   // Enhanced smooth scrolling with better easing
@@ -86,7 +96,7 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
     randomDelay: Math.random() * 0.15, // Reduced delay range for smoother staggering
     speed: 0.8 + Math.random() * 1.2, // More controlled speed range
     x: 10 + Math.random() * 80, // Better distribution
-    tiltAngle: (Math.random() - 0.5) * 25, // Reduced tilt
+    tiltAngle: (Math.random() - 0.5) * 32.5, // Increased tilt (+30%)
   }))
 
   // Helper for building scroll-linked transforms with optional easing
@@ -97,19 +107,19 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       y: useTransform(
         smoothScrollY,
         [0, 0.2, 0.5, 0.8], // Extended range for smoother progression
-        [0, -50 * letterInfo.baseSpeed, -200 * letterInfo.baseSpeed, -350 * letterInfo.baseSpeed],
+        [0, -65 * letterInfo.baseSpeed, -260 * letterInfo.baseSpeed, -455 * letterInfo.baseSpeed],
         { ease: easeCubic, clamp: false },
       ),
       x: useTransform(
         smoothScrollY,
         [0, 0.2, 0.5, 0.8],
-        [0, (Math.random() - 0.5) * 30, (Math.random() - 0.5) * 60, (Math.random() - 0.5) * 80],
+        [0, (Math.random() - 0.5) * 39, (Math.random() - 0.5) * 78, (Math.random() - 0.5) * 104],
         { ease: easeCubic, clamp: false },
       ),
       rotate: useTransform(
         smoothScrollY,
         [0, 0.1, 0.3, 0.6, 0.8], // More control points for smoother rotation
-        [0, letterInfo.tiltAngle * 0.2, letterInfo.tiltAngle * 0.6, letterInfo.tiltAngle, letterInfo.tiltAngle * 0.1],
+        [0, letterInfo.tiltAngle * 0.26, letterInfo.tiltAngle * 0.78, letterInfo.tiltAngle * 1.3, letterInfo.tiltAngle * 0.13],
         { ease: easeCubic, clamp: false },
       ),
       scale: useTransform(smoothScrollY, [0, 0.8], [1, 1], { ease: easeCubic, clamp: false }),
@@ -128,13 +138,13 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       y: useTransform(
         smoothScrollY,
         [data.randomDelay, data.randomDelay + 0.1],
-        [120, -400 * data.speed], // Start from below viewport, move far up
+        [120, -520 * data.speed], // Start from below viewport, move far up (+30%)
         { ease: easeCubic, clamp: false },
       ),
       x: useTransform(
         smoothScrollY,
         [data.randomDelay, data.randomDelay + 0.4],
-        [0, (Math.random() - 0.5) * 150], // Horizontal movement
+        [0, (Math.random() - 0.5) * 195], // Horizontal movement (+30%)
         { ease: easeCubic, clamp: false },
       ),
       rotate: useTransform(
@@ -192,45 +202,74 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
   const renderAnimatedText = () => {
     let letterIndex = 0
 
-    return textLines.map((line, rowIndex) => (
-      <div key={rowIndex} className="flex justify-start items-start flex-wrap text-left">
-        {line.split("").map((char, charIndex) => {
-          if (char === " ") {
-            return <span key={`space-${rowIndex}-${charIndex}`} className="inline-block w-4 md:w-6 lg:w-8" />
-          }
+    // Helper to render a single character span with its scroll-linked animation
+    const renderChar = (char: string, fontClass: string) => {
+      const currentLetterData = allLetters[letterIndex]
+      const transforms = letterTransforms[letterIndex]
+      letterIndex++
 
-          const currentLetterData = allLetters[letterIndex]
-          const transforms = letterTransforms[letterIndex]
-          letterIndex++
+      return (
+        <motion.span
+          key={currentLetterData.id}
+          style={{
+            y: transforms.y,
+            x: transforms.x,
+            rotate: transforms.rotate,
+            scale: transforms.scale,
+            opacity: transforms.opacity,
+            zIndex: 10 + letterIndex,
+            willChange: "transform, opacity",
+          }}
+          className={`inline-block hero-text ${fontClass} leading-none text-black dark:text-white`}
+          transition={{
+            type: "spring",
+            damping: 25,
+            stiffness: 120,
+            mass: 0.8,
+          }}
+        >
+          {char}
+        </motion.span>
+      )
+    }
 
-          return (
-            <motion.span
-              key={currentLetterData.id}
-              style={{
-                y: transforms.y,
-                x: transforms.x,
-                rotate: transforms.rotate,
-                scale: transforms.scale,
-                opacity: transforms.opacity,
-                zIndex: 10 + letterIndex,
-                // Add will-change for better performance
-                willChange: "transform, opacity",
-              }}
-              className="inline-block hero-text text-[4.5rem] md:text-[7.2rem] lg:text-[9.6rem] leading-none text-black dark:text-white" // Ensure dark mode class is present
-              // Add transition for smoother property changes
-              transition={{
-                type: "spring",
-                damping: 25,
-                stiffness: 120,
-                mass: 0.8,
-              }}
-            >
-              {char}
-            </motion.span>
-          )
-        })}
-      </div>
-    ))
+    // ── Desktop: current line-per-row layout (unchanged) ──
+    if (!isMobile) {
+      return textLines.map((line, rowIndex) => (
+        <div key={rowIndex} className="flex justify-start items-start flex-wrap text-left">
+          {line.split("").map((char, charIndex) => {
+            if (char === " ") {
+              return <span key={`space-${rowIndex}-${charIndex}`} className="inline-block w-4 md:w-6 lg:w-8" />
+            }
+            return renderChar(char, "text-[4.5rem] md:text-[7.2rem] lg:text-[9.6rem]")
+          })}
+        </div>
+      ))
+    }
+
+    // ── Mobile: one word per row ──
+    const allWords = textLines.flatMap(line => line.split(" "))
+    // We need to track through all characters in order including spaces
+    // to keep letterIndex in sync with allLetters/letterTransforms
+    let charCursor = 0 // cursor across the full joined text
+    const fullText = textLines.join(" ")
+
+    return allWords.map((word, wordIndex) => {
+      const wordChars = word.split("").map((char) => {
+        const el = renderChar(char, "hero-text-mobile md:text-[7.2rem] lg:text-[9.6rem]")
+        charCursor++
+        return el
+      })
+      // Skip the space after this word (if any) to advance charCursor
+      if (charCursor < fullText.length && fullText[charCursor] === " ") {
+        charCursor++ // skip the space — no span needed on mobile
+      }
+      return (
+        <div key={`word-${wordIndex}`} className="flex justify-start items-start text-left">
+          {wordChars}
+        </div>
+      )
+    })
   }
 
   // Scroll lazy load trigger
@@ -256,12 +295,23 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       <section className="min-h-screen flex items-end justify-start pb-32 pt-20 scroll-section bg-white dark:bg-black transition-colors duration-300">
         <div className="container mx-auto px-6">
           <div className="text-left space-y-4">
-            <h1 className="hero-text text-[4.5rem] md:text-[7.2rem] lg:text-[9.6rem] text-black dark:text-white leading-none transition-colors duration-300">
-              Welcome to
-            </h1>
-            <h1 className="hero-text text-[4.5rem] md:text-[7.2rem] lg:text-[9.6rem] text-black dark:text-white leading-none transition-colors duration-300">
-              Arnav's Portfolio.
-            </h1>
+            {/* SSR fallback — hidden on mobile via md:block, mobile gets word-per-line below */}
+            <div className="hidden md:block">
+              <h1 className="hero-text md:text-[7.2rem] lg:text-[9.6rem] text-black dark:text-white leading-none transition-colors duration-300">
+                Welcome to
+              </h1>
+              <h1 className="hero-text md:text-[7.2rem] lg:text-[9.6rem] text-black dark:text-white leading-none transition-colors duration-300">
+                Arnav{"'"}{"s"} Portfolio.
+              </h1>
+            </div>
+            {/* Mobile fallback — one word per line */}
+            <div className="block md:hidden">
+              {["Welcome", "to", "Arnav's", "Portfolio."].map((word) => (
+                <h1 key={word} className="hero-text hero-text-mobile text-black dark:text-white leading-none transition-colors duration-300">
+                  {word}
+                </h1>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -277,12 +327,24 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
         <div className="space-y-4 relative text-left">
           {!showFlyingLetters ? (
             <>
-              <h1 className="hero-text text-[4.5rem] md:text-[7.2rem] lg:text-[9.6rem] leading-none text-black dark:text-white transition-colors duration-300">
-                <span ref={line1Ref}>Welcome to</span>
-              </h1>
-              <h1 className="hero-text text-[4.5rem] md:text-[7.2rem] lg:text-[9.6rem] leading-none text-black dark:text-white transition-colors duration-300">
-                <span ref={line2Ref}>Arnav's Portfolio.</span>
-              </h1>
+              {/* Desktop: two-line layout */}
+              <div className="hidden md:block">
+                <h1 className="hero-text md:text-[7.2rem] lg:text-[9.6rem] leading-none text-black dark:text-white transition-colors duration-300">
+                  <span ref={isMobile ? undefined : line1Ref}>Welcome to</span>
+                </h1>
+                <h1 className="hero-text md:text-[7.2rem] lg:text-[9.6rem] leading-none text-black dark:text-white transition-colors duration-300">
+                  <span ref={isMobile ? undefined : line2Ref}>Arnav{"'"}s Portfolio.</span>
+                </h1>
+              </div>
+              {/* Mobile: one word per line */}
+              <div className="block md:hidden">
+                <h1 className="hero-text hero-text-mobile hero-text-mobile-wrap leading-none text-black dark:text-white transition-colors duration-300">
+                  <span ref={!isMobile ? undefined : line1Ref}>Welcome to</span>
+                </h1>
+                <h1 className="hero-text hero-text-mobile hero-text-mobile-wrap leading-none text-black dark:text-white transition-colors duration-300">
+                  <span ref={!isMobile ? undefined : line2Ref}>Arnav{"'"}s Portfolio.</span>
+                </h1>
+              </div>
             </>
           ) : (
             renderAnimatedText()
@@ -306,7 +368,7 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
                 zIndex: 5 + index,
                 willChange: "transform, opacity",
               }}
-              className="absolute bottom-0 hero-text text-[4.5rem] md:text-[7.2rem] lg:text-[9.6rem] text-black dark:text-white leading-none transition-colors duration-300"
+              className="absolute bottom-0 hero-text hero-text-mobile md:text-[7.2rem] lg:text-[9.6rem] text-black dark:text-white leading-none transition-colors duration-300"
               // Enhanced transition for smoother motion
               transition={{
                 type: "spring",

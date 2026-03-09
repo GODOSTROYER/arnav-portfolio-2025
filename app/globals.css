@@ -67,7 +67,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-poppins);
-    font-feature-settings: "kern" 1, "liga" 1;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -169,6 +171,18 @@ html {
   line-height: 0.9;
 }
 
+/* Mobile hero: one word per line, filling ~90% viewport width */
+@media (max-width: 767px) {
+  .hero-text-mobile {
+    font-size: 13vw;
+  }
+
+  /* Forces each word onto its own line within a single element */
+  .hero-text-mobile-wrap {
+    word-spacing: 100vw;
+  }
+}
+
 .section-heading {
   font-family: var(--font-poppins);
   font-weight: 700;
@@ -219,7 +233,10 @@ section {
 
 /* Smooth transitions for theme changes */
 * {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 /* OLED optimized pure black backgrounds */
@@ -287,11 +304,15 @@ section {
 
 /* Dark mode shadows */
 .dark .shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 10px 15px -3px rgba(255, 255, 255, 0.1),
+    0 4px 6px -2px rgba(255, 255, 255, 0.05);
 }
 
 .dark .shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(255, 255, 255, 0.1), 0 10px 10px -5px rgba(255, 255, 255, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(255, 255, 255, 0.1),
+    0 10px 10px -5px rgba(255, 255, 255, 0.04);
 }
 
 .dark .shadow-2xl {
