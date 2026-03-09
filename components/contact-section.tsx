@@ -17,7 +17,7 @@ export default function ContactSection() {
     {
       label: "GitHub",
       value: "arnavbule",
-      href: "https://github.com/arnavbule",
+      href: "https://github.com/GODOSTROYER/",
       icon: Github,
     },
     {

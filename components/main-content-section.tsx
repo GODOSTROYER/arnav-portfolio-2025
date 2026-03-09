@@ -264,7 +264,7 @@ export default function MainContentSection() {
               <motion.div className="space-y-4 mb-8" variants={itemVariants}>
                 {[
                   { icon: Mail, href: "mailto:arnav.bule05@gmail.com", text: "arnav.bule05@gmail.com" },
-                  { icon: Github, href: "https://github.com/arnavbule", text: "arnavbule" },
+                  { icon: Github, href: "https://github.com/GODOSTROYER/", text: "GODOSTROYER" },
                   { icon: Phone, href: "tel:+918767602012", text: "+91 87676 02012" },
                   { icon: MapPin, href: "#", text: "Pune, Maharashtra, India" },
                 ].map((contact, index) => (

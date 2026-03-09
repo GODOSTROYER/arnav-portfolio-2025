@@ -24,7 +24,7 @@ export default function ConnectSection() {
 
         <div className="mt-6 md:mt-0 md:ml-8 md:w-1/3 flex flex-col items-start">
           <a
-            href="https://www.linkedin.com/in/madhurpatil/"
+            href="https://www.linkedin.com/in/arnavbule/"
             className="inline-flex items-center px-5 py-3 mb-4 text-base font-semibold text-black bg-white rounded-lg hover:opacity-90 transform hover:-translate-y-1 transition-all"
             target="_blank"
             rel="noreferrer noopener"

@@ -19,7 +19,7 @@ export default function Footer() {
           {new Date().getFullYear()} —{" "}
           <a
             className="ml-1 text-gray-600 transition-colors hover:text-blue-500"
-            href="https://linkedin.com/in/arnavbule/"
+            href="https://www.linkedin.com/in/arnavbule/"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -29,7 +29,7 @@ export default function Footer() {
 
         <span className="inline-flex justify-center mt-4 sm:ml-auto sm:mt-0 sm:justify-start gap-x-5">
           <motion.a
-            href="https://github.com/arnavbule"
+            href="https://github.com/GODOSTROYER/"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.1 }}
@@ -51,7 +51,7 @@ export default function Footer() {
           </motion.a>
 
           <motion.a
-            href="https://linkedin.com/in/arnavbule/"
+            href="https://www.linkedin.com/in/arnavbule/"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.1 }}
