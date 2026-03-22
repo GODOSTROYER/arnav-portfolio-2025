@@ -329,6 +329,7 @@ export default function MainContentSection() {
                           whileHover={{
                             scale: 1.05,
                             backgroundColor: "#dbeafe",
+                            color: "#0f172a",
                             transition: { duration: 0.2 },
                           }}
                         >
