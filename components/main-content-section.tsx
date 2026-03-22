@@ -85,6 +85,19 @@ export default function MainContentSection() {
       ],
     },
     {
+      name: "Sicklesense",
+      period: "2025",
+      team: "Python · TensorFlow · Keras · OpenCV · Streamlit · Docker · Hugging Face",
+      github: "https://github.com/ArnavBule/Sickle-cell",
+      live: "https://huggingface.co/spaces/GODOSTROYER/Sicklesense",
+      highlight: [
+        "Built a low-cost, AI-powered digital telepathology solution that detects sickle cells from blood smear images using a fine-tuned ResNet50 deep learning model, achieving >92% accuracy.",
+        "Reduced early screening costs to approximately ₹75 per test — a 95% cost reduction compared to traditional laboratory methods.",
+        "Developed an intuitive Streamlit web application providing actionable health guidelines, precautions, and emergency helpline contacts based on AI-generated results.",
+        "Enabled telepathology and telemedicine support for frontline health workers in rural areas on low-power edge devices. Secured 3rd place ($1,000) at University of Miami Horizon AI Hackathon 2025 and recognized among Top 100 Startups at IIT Delhi Youth Ideathon.",
+      ],
+    },
+    {
       name: "Road Extraction On Satellite Images",
       period: "Aug 2024 – Present",
       team: "SIH Project (No. of Group Members – 6)",
