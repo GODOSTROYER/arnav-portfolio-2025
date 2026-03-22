@@ -21,6 +21,21 @@ export default function ProjectsSection() {
       live: "https://wldd-task-tracker.arnavbule.me",
     },
     {
+      title: "Sicklesense",
+      description:
+        "AI-driven healthcare screening solution for early sickle-cell detection in underserved areas. 3rd Place at University of Miami Horizon AI Hackathon 2025 & Top 100 Startup at IIT Delhi Youth Ideathon.",
+      bullets: [
+        "Built a low-cost, AI-powered digital telepathology solution that detects sickle cells from blood smear images using a fine-tuned ResNet50 deep learning model, achieving >92% accuracy.",
+        "Reduced early screening costs to approximately ₹75 per test — a 95% cost reduction compared to traditional laboratory methods.",
+        "Developed an intuitive Streamlit web application providing actionable health guidelines, precautions, and emergency helpline contacts based on AI-generated results.",
+        "Enabled telepathology and telemedicine support, allowing frontline health workers in rural areas to administer tests and receive immediate automated medical guidance on low-power edge devices.",
+      ],
+      image: "/placeholder.svg?height=400&width=600",
+      tags: ["Python", "TensorFlow", "Keras", "OpenCV", "Streamlit", "Docker", "Hugging Face"],
+      github: "https://github.com/ArnavBule/Sickle-cell",
+      live: "https://huggingface.co/spaces/GODOSTROYER/Sicklesense",
+    },
+    {
       title: "AI-Powered Chatbot",
       description:
         "Developed a conversational AI chatbot using natural language processing (NLP) and deep learning techniques.",
