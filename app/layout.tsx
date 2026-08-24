@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`scroll-smooth ${poppins.variable}`} suppressHydrationWarning>
       <body className={`${poppins.className} antialiased transition-colors duration-300`} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange={false}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange={false}>
           {children}
         </ThemeProvider>
         <SpeedInsights />

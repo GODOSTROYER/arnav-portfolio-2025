@@ -13,11 +13,11 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null)
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps & { children: ReactNode }) {
-  const [theme, setTheme] = useState<"light" | "dark">("light")
+  const [theme, setTheme] = useState<"light" | "dark">("dark")
 
   // Read persisted choice on mount
   useEffect(() => {
-    const saved = (localStorage.getItem("theme") as "light" | "dark") || "light"
+    const saved = (localStorage.getItem("theme") as "light" | "dark") || "dark"
     setTheme(saved)
     document.documentElement.classList.toggle("dark", saved === "dark")
   }, [])
