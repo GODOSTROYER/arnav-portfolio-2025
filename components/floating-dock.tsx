@@ -14,7 +14,17 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion"
-import { Cpu, FileText, Home, Menu, Moon, Sun, User, AtSign, X } from "lucide-react"
+import {
+  PiCircuitryDuotone,
+  PiDotsNineDuotone,
+  PiHouseDuotone,
+  PiMoonStarsDuotone,
+  PiPaperPlaneTiltDuotone,
+  PiReadCvLogoDuotone,
+  PiSunDuotone,
+  PiUserCircleDuotone,
+  PiXDuotone,
+} from "react-icons/pi"
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react"
 import { useTheme } from "./theme-provider"
 
@@ -29,11 +39,11 @@ type DockItem = {
 const DOCK_GRADIENT = "linear-gradient(135deg, #eab308, #ef4444, #3b82f6, #06b6d4, #8b5cf6)"
 
 const NAV_ITEMS: DockItem[] = [
-  { title: "Home", icon: <Home className="h-full w-full" />, href: "#home" },
-  { title: "About", icon: <User className="h-full w-full" />, href: "#about" },
-  { title: "Technologies", icon: <Cpu className="h-full w-full" />, href: "#technologies" },
-  { title: "Connect", icon: <AtSign className="h-full w-full" />, href: "#contact" },
-  { title: "Resume", icon: <FileText className="h-full w-full" />, href: "#resume" },
+  { title: "Home", icon: <PiHouseDuotone className="h-full w-full" />, href: "#home" },
+  { title: "About", icon: <PiUserCircleDuotone className="h-full w-full" />, href: "#about" },
+  { title: "Technologies", icon: <PiCircuitryDuotone className="h-full w-full" />, href: "#technologies" },
+  { title: "Connect", icon: <PiPaperPlaneTiltDuotone className="h-full w-full" />, href: "#contact" },
+  { title: "Resume", icon: <PiReadCvLogoDuotone className="h-full w-full" />, href: "#resume" },
 ]
 
 /* Same threshold as the header's isScrolled — the moment the hero has closed up */
@@ -54,7 +64,7 @@ export default function SiteDock() {
 
   const themeItem: DockItem = {
     title: isDarkMode ? "Light mode" : "Dark mode",
-    icon: isDarkMode ? <Sun className="h-full w-full" /> : <Moon className="h-full w-full" />,
+    icon: isDarkMode ? <PiSunDuotone className="h-full w-full" /> : <PiMoonStarsDuotone className="h-full w-full" />,
     onClick: toggleTheme,
   }
 
@@ -130,9 +140,9 @@ function FloatingDockMobile({ items }: { items: DockItem[] }) {
           style={{ background: DOCK_GRADIENT }}
         />
         {open ? (
-          <X className="relative z-10 h-5 w-5 text-neutral-500 transition-colors duration-150 group-active:text-white dark:text-neutral-400" />
+          <PiXDuotone className="relative z-10 h-5 w-5 text-neutral-500 transition-colors duration-150 group-active:text-white dark:text-neutral-400" />
         ) : (
-          <Menu className="relative z-10 h-5 w-5 text-neutral-500 transition-colors duration-150 group-active:text-white dark:text-neutral-400" />
+          <PiDotsNineDuotone className="relative z-10 h-6 w-6 text-neutral-500 transition-colors duration-150 group-active:text-white dark:text-neutral-400" />
         )}
       </button>
     </div>
