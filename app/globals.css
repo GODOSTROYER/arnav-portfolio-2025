@@ -8,6 +8,14 @@
   animation: none;
   mix-blend-mode: normal;
 }
+
+/* During the reveal, colors must land instantly — CSS transitions inside the live
+   snapshot smear the circle's edge */
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: none !important;
+}
 ::view-transition-old(root) {
   z-index: 1;
 }
