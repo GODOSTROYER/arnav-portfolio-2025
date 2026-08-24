@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 import Link from "next/link";
-import { useTheme } from "@/components/theme-provider";
 import Footer from "@/components/footer";
 
 const PdfResumeViewer = dynamic(
@@ -11,15 +10,8 @@ const PdfResumeViewer = dynamic(
 );
 
 export default function ResumePage() {
-  const { theme } = useTheme();
-
   return (
-    <div
-      className={`min-h-screen flex flex-col justify-between items-center transition-colors duration-300 bg-white dark:bg-black`}
-      style={{
-        position: "relative",
-      }}
-    >
+    <div className="relative min-h-screen flex flex-col justify-between items-center transition-colors duration-300 bg-white dark:bg-black">
       {/* Header */}
       <header className="w-full flex flex-col items-center py-8 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black z-10">
         <h1 className="text-2xl font-bold mb-4 text-black dark:text-white">My Resume</h1>

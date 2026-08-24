@@ -70,9 +70,6 @@ export default function TechnologiesSection() {
                 <span className="mt-3 small-text text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">
                   {tech.label}
                 </span>
-
-                {/* The bounding box with lightning effect */}
-                <div className="absolute inset-0 rounded-2xl lightning-border-effect"></div>
               </motion.div>
             ))}
           </div>
@@ -84,57 +81,6 @@ export default function TechnologiesSection() {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-8px); }
           100% { transform: translateY(0px); }
-        }
-
-        .lightning-border-effect {
-          position: absolute;
-          inset: 0;
-          border-radius: 1rem; /* Matches rounded-2xl */
-          border: 2px solid transparent; /* Initial transparent border */
-          transition: border-color 0.3s ease-in-out;
-          pointer-events: none; /* Allows interaction with content underneath */
-          z-index: 1; /* Ensure it's above the icon but below other elements if any */
-        }
-
-        .group-hover .lightning-border-effect {
-          border-color: #3b82f6; /* Blue-500 on hover */
-        }
-
-        .dark .group-hover .lightning-border-effect {
-          border-color: #60a5fa; /* Blue-400 on hover in dark mode */
-        }
-
-        .lightning-border-effect::before {
-          content: "";
-          position: absolute;
-          inset: -2px; /* Slightly larger to cover the border */
-          border-radius: 1rem; /* Match parent border-radius */
-          background: conic-gradient(
-            from 0deg at 50% 50%,
-            transparent 0%,
-            transparent 30%,
-            rgba(255, 255, 255, 0.8) 50%, /* Bright white for lightning */
-            transparent 70%,
-            transparent 100%
-          );
-          background-size: 200% 200%; /* Make the gradient larger to animate */
-          animation: rotate-lightning 2s linear infinite; /* Animate rotation */
-          opacity: 0; /* Hidden by default */
-          transition: opacity 0.3s ease-in-out;
-          z-index: 2; /* Above the border itself */
-        }
-
-        .group-hover .lightning-border-effect::before {
-          opacity: 1; /* Show on hover */
-        }
-
-        @keyframes rotate-lightning {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
         }
       `}</style>
     </section>

@@ -1,6 +1,6 @@
 "use client"
 
-import { Download } from "react-feather";
+import { Download } from "lucide-react";
 import Link from "next/link";
 
 export default function ResumeSection() {

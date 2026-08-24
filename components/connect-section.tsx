@@ -1,6 +1,6 @@
 'use client'
 
-import { Linkedin } from 'react-feather'
+import { Linkedin } from 'lucide-react'
 
 export default function ConnectSection() {
   return (

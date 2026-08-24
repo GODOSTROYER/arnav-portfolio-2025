@@ -59,7 +59,14 @@ export default function MainContentSection() {
     },
   ]
 
-  const projects = [
+  const projects: {
+    name: string
+    period: string
+    team: string
+    github?: string
+    live?: string
+    highlight: string[]
+  }[] = [
     {
       name: "Mini Task Tracker",
       period: "2025",
@@ -430,24 +437,17 @@ export default function MainContentSection() {
                         >
                           {exp.company}
                         </p>
-                        {exp.bullets.length > 0 && (
-                          <ul className="space-y-2">
-                            {exp.bullets.map((bullet, bulletIndex) => (
-                              <li
-                                key={bulletIndex}
-                                className="flex items-start text-gray-700 dark:text-gray-300 transition-colors duration-300"
-                              >
-                                <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 mr-3 flex-shrink-0 transition-colors duration-300"></span>
-                                <span
-                                  className="body-text"
-                                  dangerouslySetInnerHTML={{
-                                    __html: bullet.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-                                  }}
-                                />
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                        <ul className="space-y-2">
+                          {exp.bullets.map((bullet, bulletIndex) => (
+                            <li
+                              key={bulletIndex}
+                              className="flex items-start text-gray-700 dark:text-gray-300 transition-colors duration-300"
+                            >
+                              <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full mt-2 mr-3 flex-shrink-0 transition-colors duration-300"></span>
+                              <span className="body-text">{bullet}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </motion.div>
                     </motion.div>
                   ))}
@@ -503,9 +503,9 @@ export default function MainContentSection() {
                             <h4 className="card-title text-xl text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                               {project.name}
                             </h4>
-                            {"github" in project && (project as any).github && (
+                            {project.github && (
                               <a
-                                href={(project as any).github}
+                                href={project.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
@@ -514,9 +514,9 @@ export default function MainContentSection() {
                                 <Github className="w-5 h-5" />
                               </a>
                             )}
-                            {"live" in project && (project as any).live && (
+                            {project.live && (
                               <a
-                                href={(project as any).live}
+                                href={project.live}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
@@ -534,11 +534,9 @@ export default function MainContentSection() {
                           {project.team}
                         </p>
                         <div className="body-text text-gray-700 dark:text-gray-300 transition-colors duration-300 space-y-2">
-                          {Array.isArray(project.highlight)
-                            ? project.highlight.map((line, idx) => (
-                                <p key={idx} className="mb-0">{line}</p>
-                              ))
-                            : <p>{project.highlight}</p>}
+                          {project.highlight.map((line, idx) => (
+                            <p key={idx} className="mb-0">{line}</p>
+                          ))}
                         </div>
                       </motion.div>
                     </motion.div>

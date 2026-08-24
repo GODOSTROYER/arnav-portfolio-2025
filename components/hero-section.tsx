@@ -1,13 +1,23 @@
 "use client"
 
-import { motion, useTransform, useVelocity, useSpring, type MotionValue, cubicBezier } from "framer-motion"
-import { useEffect, useState, useRef, useCallback } from "react"
+import { motion, useTransform, useSpring, type MotionValue, cubicBezier } from "framer-motion"
+import { useEffect, useState, useRef, useMemo } from "react"
 
 interface HeroSectionProps {
   scrollYProgress: MotionValue<number>
 }
 
-const HEADER_HEIGHT = 112 // px, adjust if your header is taller/shorter
+const textLines = ["Welcome to", "Arnav's Portfolio."]
+
+function shuffleArray(array: string[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[array[i], array[j]] = [array[j], array[i]]
+  }
+  return array
+}
+
+const easeCubic = cubicBezier(0.25, 0.1, 0.25, 1)
 
 export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
   const [mounted, setMounted] = useState(false)
@@ -22,7 +32,6 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
     mql.addEventListener('change', handleChange as (e: MediaQueryListEvent) => void)
     return () => mql.removeEventListener('change', handleChange as (e: MediaQueryListEvent) => void)
   }, [])
-  const scrollVelocity = useVelocity(scrollYProgress)
 
   // Enhanced smooth scrolling with better easing
   const smoothScrollY = useSpring(scrollYProgress, {
@@ -36,71 +45,56 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
   const line1Ref = useRef<HTMLSpanElement>(null)
   const line2Ref = useRef<HTMLSpanElement>(null)
 
-  // Pre-calculate all letter data at the top level
-  const textLines = ["Welcome to", "Arnav's Portfolio."]
-  const allLetters: Array<{
-    letter: string
-    id: string
-    row: number
-    position: number
-    baseSpeed: number
-    tiltAngle: number
-    originalX: number
-    originalY: number
-  }> = []
-
-  let globalIndex = 0
-  textLines.forEach((line, rowIndex) => {
-    const lineLetters = line.split("")
-    lineLetters.forEach((letter, letterIndex) => {
-      if (letter !== " ") {
-        const baseSpeed =
-          rowIndex === 0
-            ? 1.2 + Math.random() * 2.8 // Reduced speed variation for smoother animation
-            : 2.0 + Math.random() * 3.0 // More controlled speed range
-
-        allLetters.push({
-          letter,
-          id: `${rowIndex}-${letterIndex}-${globalIndex}`,
-          row: rowIndex,
-          position: letterIndex,
-          baseSpeed,
-          tiltAngle: (Math.random() - 0.5) * 30, // Reduced tilt for smoother motion
-          originalX: 0,
-          originalY: 0,
-        })
-      }
-      globalIndex++
+  // All per-letter random values are generated ONCE — regenerating them every render
+  // re-randomized the drift/tilt mid-animation on each state flip
+  const allLetters = useMemo(() => {
+    const letters: Array<{
+      letter: string
+      id: string
+      baseSpeed: number
+      tiltAngle: number
+      xDrift: [number, number, number]
+    }> = []
+    let globalIndex = 0
+    textLines.forEach((line, rowIndex) => {
+      line.split("").forEach((letter, letterIndex) => {
+        if (letter !== " ") {
+          letters.push({
+            letter,
+            id: `${rowIndex}-${letterIndex}-${globalIndex}`,
+            baseSpeed:
+              rowIndex === 0
+                ? 1.2 + Math.random() * 2.8 // Reduced speed variation for smoother animation
+                : 2.0 + Math.random() * 3.0, // More controlled speed range
+            tiltAngle: (Math.random() - 0.5) * 30, // Reduced tilt for smoother motion
+            xDrift: [(Math.random() - 0.5) * 39, (Math.random() - 0.5) * 78, (Math.random() - 0.5) * 104],
+          })
+        }
+        globalIndex++
+      })
     })
-  })
+    return letters
+  }, [])
 
   // Enhanced flying letters with smoother distribution
-  function shuffleArray(array: string[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[array[i], array[j]] = [array[j], array[i]]
+  const emergingLettersData = useMemo(() => {
+    const base = "creativityismycraft"
+    const flyingCount = 45 // Reduced count for better performance
+    let lettersArr: string[] = []
+    while (lettersArr.length < flyingCount) {
+      lettersArr = lettersArr.concat(shuffleArray(base.split("")))
     }
-    return array
-  }
-
-  const base = "creativityismycraft"
-  const flyingCount = 45 // Reduced count for better performance
-  let lettersArr: string[] = []
-  while (lettersArr.length < flyingCount) {
-    lettersArr = lettersArr.concat(shuffleArray(base.split("")))
-  }
-  lettersArr = lettersArr.slice(0, flyingCount)
-  const emergingLettersData = lettersArr.map((letter, index) => ({
-    letter,
-    id: `emerging-${index}`,
-    randomDelay: Math.random() * 0.15, // Reduced delay range for smoother staggering
-    speed: 0.8 + Math.random() * 1.2, // More controlled speed range
-    x: 10 + Math.random() * 80, // Better distribution
-    tiltAngle: (Math.random() - 0.5) * 32.5, // Increased tilt (+30%)
-  }))
-
-  // Helper for building scroll-linked transforms with optional easing
-  const easeCubic = cubicBezier(0.25, 0.1, 0.25, 1)
+    lettersArr = lettersArr.slice(0, flyingCount)
+    return lettersArr.map((letter, index) => ({
+      letter,
+      id: `emerging-${index}`,
+      randomDelay: Math.random() * 0.15, // Reduced delay range for smoother staggering
+      speed: 0.8 + Math.random() * 1.2, // More controlled speed range
+      x: 10 + Math.random() * 80, // Better distribution
+      tiltAngle: (Math.random() - 0.5) * 32.5, // Increased tilt (+30%)
+      xDrift: (Math.random() - 0.5) * 195, // Horizontal movement (+30%)
+    }))
+  }, [])
 
   const letterTransforms = allLetters.map((letterInfo) => {
     return {
@@ -113,7 +107,7 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       x: useTransform(
         smoothScrollY,
         [0, 0.2, 0.5, 0.8],
-        [0, (Math.random() - 0.5) * 39, (Math.random() - 0.5) * 78, (Math.random() - 0.5) * 104],
+        [0, letterInfo.xDrift[0], letterInfo.xDrift[1], letterInfo.xDrift[2]],
         { ease: easeCubic, clamp: false },
       ),
       rotate: useTransform(
@@ -122,7 +116,6 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
         [0, letterInfo.tiltAngle * 0.26, letterInfo.tiltAngle * 0.78, letterInfo.tiltAngle * 1.3, letterInfo.tiltAngle * 0.13],
         { ease: easeCubic, clamp: false },
       ),
-      scale: useTransform(smoothScrollY, [0, 0.8], [1, 1], { ease: easeCubic, clamp: false }),
       opacity: useTransform(
         smoothScrollY,
         [0, 0.7, 0.85, 1],
@@ -144,7 +137,7 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       x: useTransform(
         smoothScrollY,
         [data.randomDelay, data.randomDelay + 0.4],
-        [0, (Math.random() - 0.5) * 195], // Horizontal movement (+30%)
+        [0, data.xDrift],
         { ease: easeCubic, clamp: false },
       ),
       rotate: useTransform(
@@ -161,9 +154,6 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       ),
     }
   })
-
-  const [line1Transforms, setLine1Transforms] = useState<any[]>([])
-  const [line2Transforms, setLine2Transforms] = useState<any[]>([])
 
   useEffect(() => {
     setMounted(true)
@@ -215,7 +205,6 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
             y: transforms.y,
             x: transforms.x,
             rotate: transforms.rotate,
-            scale: transforms.scale,
             opacity: transforms.opacity,
             zIndex: 10 + letterIndex,
             willChange: "transform, opacity",
@@ -247,29 +236,15 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       ))
     }
 
-    // ── Mobile: one word per row ──
+    // ── Mobile: one word per row ── (renderChar advances letterIndex itself;
+    // spaces are excluded from allLetters, so words map 1:1 onto the letter data)
     const allWords = textLines.flatMap(line => line.split(" "))
-    // We need to track through all characters in order including spaces
-    // to keep letterIndex in sync with allLetters/letterTransforms
-    let charCursor = 0 // cursor across the full joined text
-    const fullText = textLines.join(" ")
 
-    return allWords.map((word, wordIndex) => {
-      const wordChars = word.split("").map((char) => {
-        const el = renderChar(char, "hero-text-mobile md:text-[7.2rem] lg:text-[9.6rem]")
-        charCursor++
-        return el
-      })
-      // Skip the space after this word (if any) to advance charCursor
-      if (charCursor < fullText.length && fullText[charCursor] === " ") {
-        charCursor++ // skip the space — no span needed on mobile
-      }
-      return (
-        <div key={`word-${wordIndex}`} className="flex justify-start items-start text-left">
-          {wordChars}
-        </div>
-      )
-    })
+    return allWords.map((word, wordIndex) => (
+      <div key={`word-${wordIndex}`} className="flex justify-start items-start text-left">
+        {word.split("").map((char) => renderChar(char, "hero-text-mobile md:text-[7.2rem] lg:text-[9.6rem]"))}
+      </div>
+    ))
   }
 
   // Scroll lazy load trigger
@@ -282,9 +257,10 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
     const handleScroll = () => {
       if (line1Ref.current && isInViewport(line1Ref.current)) {
         setShowFlyingLetters(true)
+        window.removeEventListener("scroll", handleScroll) // one-shot — no rect reads after it fires
       }
     }
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }

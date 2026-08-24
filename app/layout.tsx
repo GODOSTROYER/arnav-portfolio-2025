@@ -8,7 +8,7 @@ import { Analytics } from "@vercel/analytics/next"
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
   variable: "--font-poppins",
 })
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`scroll-smooth ${poppins.variable}`} suppressHydrationWarning>
       <body className={`${poppins.className} antialiased transition-colors duration-300`} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange={false}>
+        <ThemeProvider defaultTheme="dark" enableSystem={false}>
           {children}
         </ThemeProvider>
         <SpeedInsights />

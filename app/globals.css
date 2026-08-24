@@ -98,7 +98,7 @@ html.theme-transitioning *::after {
 
 @layer base {
   * {
-    @apply border-border transition-colors duration-300;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
@@ -140,21 +140,12 @@ html.theme-transitioning *::after {
 
 /* Enhanced smooth scrolling */
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: 80px;
 }
 
 /* Smooth scrolling for all elements */
 * {
   scroll-behavior: smooth;
-}
-
-/* Enhanced smooth scrolling with CSS scroll-timeline support */
-@supports (scroll-timeline: works) {
-  html {
-    scroll-timeline: --page-scroll block;
-    timeline-scope: --page-scroll;
-  }
 }
 
 /* Reduce motion for users who prefer it */
@@ -170,33 +161,6 @@ html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
 }
 
 /* Poppins-specific optimizations */
@@ -276,16 +240,8 @@ section {
 }
 
 /* OLED optimized pure black backgrounds */
-.dark body {
-  background-color: #000000;
-}
-
 .dark .bg-white {
   background-color: #000000;
-}
-
-.dark .bg-gray-50 {
-  background-color: #0a0a0a;
 }
 
 .dark .bg-gray-100 {
@@ -321,21 +277,9 @@ section {
   background-color: rgba(26, 26, 26, 0.8);
 }
 
-.dark .bg-white\/90 {
-  background-color: rgba(26, 26, 26, 0.9);
-}
-
-.dark .bg-white\/95 {
-  background-color: rgba(26, 26, 26, 0.95);
-}
-
 /* Dark mode borders */
 .dark .border-gray-200 {
   border-color: #404040;
-}
-
-.dark .border-gray-300 {
-  border-color: #525252;
 }
 
 /* Dark mode shadows */
@@ -355,86 +299,12 @@ section {
   box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.25);
 }
 
-/* Dark mode hover states */
-.dark .hover\:bg-gray-50:hover {
-  background-color: #1a1a1a;
-}
-
-.dark .hover\:bg-gray-100:hover {
-  background-color: #262626;
-}
-
-.dark .hover\:bg-gray-200:hover {
-  background-color: #404040;
-}
-
-/* Dark mode gradient backgrounds */
-.dark .bg-gradient-to-r.from-blue-600.to-cyan-600 {
-  background: linear-gradient(to right, #1d4ed8, #0891b2);
-}
-
-.dark .bg-gradient-to-r.from-cyan-500.to-blue-500 {
-  background: linear-gradient(to right, #06b6d4, #3b82f6);
-}
-
-/* Dark mode accent colors for better contrast */
+/* Dark mode accent colors for better contrast
+   (these two differ from Tailwind's defaults — they are live overrides) */
 .dark .text-blue-600 {
   color: #60a5fa;
 }
 
-.dark .text-blue-500 {
-  color: #3b82f6;
-}
-
 .dark .text-cyan-600 {
   color: #22d3ee;
-}
-
-.dark .bg-blue-500 {
-  background-color: #3b82f6;
-}
-
-.dark .bg-blue-600 {
-  background-color: #2563eb;
-}
-
-.dark .hover\:bg-blue-600:hover {
-  background-color: #2563eb;
-}
-
-.dark .hover\:bg-blue-50:hover {
-  background-color: #1e3a8a;
-}
-
-/* Dark mode timeline colors - enhanced for better visibility */
-.dark .bg-purple-500 {
-  background-color: #a855f7;
-}
-
-.dark .bg-red-500 {
-  background-color: #ef4444;
-}
-
-.dark .bg-green-500 {
-  background-color: #22c55e;
-}
-
-.dark .bg-orange-500 {
-  background-color: #f97316;
-}
-
-.dark .bg-yellow-500 {
-  background-color: #eab308;
-}
-
-.dark .bg-teal-500 {
-  background-color: #14b8a6;
-}
-
-.dark .bg-indigo-500 {
-  background-color: #6366f1;
-}
-
-.dark .bg-pink-500 {
-  background-color: #ec4899;
 }

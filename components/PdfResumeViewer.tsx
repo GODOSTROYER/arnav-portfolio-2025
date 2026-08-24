@@ -7,16 +7,19 @@ import { useEffect, useState } from "react";
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 export default function PdfResumeViewer() {
-  const [width, setWidth] = useState(1024);
+  // Track only the breakpoint, not raw width — re-rendering <Page> re-rasterizes the
+  // PDF canvas, so it should happen at most when crossing 787px, not per resize pixel
+  const [isWide, setIsWide] = useState(true);
 
   useEffect(() => {
-    setWidth(window.innerWidth);
-    const handleResize = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const mql = window.matchMedia("(min-width: 787px)");
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => setIsWide(e.matches);
+    handleChange(mql);
+    mql.addEventListener("change", handleChange as (e: MediaQueryListEvent) => void);
+    return () => mql.removeEventListener("change", handleChange as (e: MediaQueryListEvent) => void);
   }, []);
 
-  const scale = width > 786 ? 1.7 : 0.6;
+  const scale = isWide ? 1.7 : 0.6;
 
   return (
     <Document file="/Arnav - Resume.pdf" loading={<div className="text-center text-gray-500">Loading PDF...</div>}>

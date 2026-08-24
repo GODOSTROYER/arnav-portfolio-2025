@@ -26,7 +26,7 @@ export default function Header() {
       // Trigger effect after scrolling past the hero section (assume hero is 100vh)
       setIsScrolled(window.scrollY > window.innerHeight - 80)
     }
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     handleScroll()
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
@@ -34,14 +34,12 @@ export default function Header() {
   return (
     <header
       id="site-header"
-      className={`fixed top-0 left-0 right-0 z-50 h-16 flex transition-all duration-500
+      className={`fixed top-0 left-0 right-0 z-50 h-16 flex
         ${isScrolled
           ? "backdrop-blur-xl bg-white/40 dark:bg-black/40 border-b border-white/30 dark:border-zinc-800/60 shadow-lg"
           : "bg-transparent border-b-0 shadow-none"}
       `}
       style={{
-        WebkitBackdropFilter: isScrolled ? "blur(24px)" : undefined,
-        backdropFilter: isScrolled ? "blur(24px)" : undefined,
         transition: "background 0.4s cubic-bezier(.4,0,.2,1), border 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1)",
       }}
     >
