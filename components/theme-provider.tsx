@@ -44,31 +44,27 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps & { chi
     // corner, so require a real box before trusting it; tap coordinates are the fallback.
     const rect = (e?.currentTarget as HTMLElement | undefined)?.getBoundingClientRect?.()
     const hasRect = !!rect && (rect.width > 0 || rect.height > 0)
-    // Viewport numbers can read 0 or stale in webviews/background tabs — screen.* never
-    // does. An oversized radius is harmless; an undersized one truncates the sweep.
-    const w = Math.max(window.innerWidth, document.documentElement.clientWidth || 0, screen.width || 0)
-    const h = Math.max(window.innerHeight, document.documentElement.clientHeight || 0, screen.height || 0)
+    // Exact layout-viewport size: an oversized radius (e.g. from screen.*) makes the
+    // visible sweep finish before the animation does, an undersized one truncates it.
+    const de = document.documentElement
+    const w = de.clientWidth || window.innerWidth || screen.width
+    const h = de.clientHeight || window.innerHeight || screen.height
     const x = hasRect ? rect.left + rect.width / 2 : (e?.clientX || w - 40)
     const y = hasRect ? rect.top + rect.height / 2 : (e?.clientY || 40)
     const radius = Math.hypot(Math.max(x, w - x), Math.max(y, h - y))
 
+    // The sweep runs as a CSS keyframe animation on ::view-transition-new(root) (see
+    // globals.css), parameterized via custom properties. A CSS animation on the pseudo
+    // is first-class to the transition machinery — the snapshot cannot be torn down
+    // early, which happened on mobile with a JS-driven (WAAPI) animation.
+    de.style.setProperty("--reveal-x", `${x}px`)
+    de.style.setProperty("--reveal-y", `${y}px`)
+    de.style.setProperty("--reveal-r", `${radius}px`)
     // Global `transition: background-color …` rules keep repainting inside the live new
     // snapshot and muddy the reveal — suspend them for the duration of the transition.
-    document.documentElement.classList.add("theme-transitioning")
+    de.classList.add("theme-transitioning")
     const transition = startViewTransition(() => flushSync(() => applyTheme(next)))
-    transition.ready
-      .then(() => {
-        // ease-in-out: the circle visibly *births* at the button, sweeps, and lands —
-        // a strong ease-out covers 30% of the screen in the first frames, which reads
-        // as "started from nowhere", then crawls, which reads as "stalled then snapped"
-        const anim = document.documentElement.animate(
-          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
-          { duration: 700, easing: "cubic-bezier(0.65, 0, 0.35, 1)", pseudoElement: "::view-transition-new(root)" },
-        )
-        return anim.finished // keep the view transition alive until the sweep completes
-      })
-      .catch(() => {}) // aborted transition (e.g. hidden tab) — theme is applied either way
-    transition.finished.finally(() => document.documentElement.classList.remove("theme-transitioning"))
+    transition.finished.finally(() => de.classList.remove("theme-transitioning"))
   }
 
   const contextValue: ThemeContextType = {

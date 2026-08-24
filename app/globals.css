@@ -2,7 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Theme toggle: circle reveal via View Transition API — kill the default cross-fade */
+/* Theme toggle: circle reveal via View Transition API — kill the default cross-fade.
+   The sweep is a CSS animation (not JS/WAAPI) so the transition machinery keeps the
+   snapshot alive until it completes; origin/radius arrive via --reveal-* custom
+   properties set on <html> just before the transition starts. */
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0px at var(--reveal-x, 50%) var(--reveal-y, 0%));
+  }
+  to {
+    clip-path: circle(var(--reveal-r, 150%) at var(--reveal-x, 50%) var(--reveal-y, 0%));
+  }
+}
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -21,6 +32,7 @@ html.theme-transitioning *::after {
 }
 ::view-transition-new(root) {
   z-index: 2;
+  animation: theme-reveal 700ms cubic-bezier(0.65, 0, 0.35, 1) both;
 }
 
 @layer base {
