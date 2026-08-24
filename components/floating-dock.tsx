@@ -25,6 +25,9 @@ type DockItem = {
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
+/* Same vibrant palette as the signature section's text-hover gradient */
+const DOCK_GRADIENT = "linear-gradient(135deg, #eab308, #ef4444, #3b82f6, #06b6d4, #8b5cf6)"
+
 const NAV_ITEMS: DockItem[] = [
   { title: "Home", icon: <Home className="h-full w-full" />, href: "#home" },
   { title: "About", icon: <User className="h-full w-full" />, href: "#about" },
@@ -99,9 +102,17 @@ function FloatingDockMobile({ items }: { items: DockItem[] }) {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   aria-label={item.title}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md dark:bg-neutral-900"
+                  className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md dark:bg-neutral-900"
+                  style={{ WebkitTapHighlightColor: "transparent" }}
                 >
-                  <div className="h-4 w-4 text-neutral-600 dark:text-neutral-300">{item.icon}</div>
+                  {/* vibrant flash on tap */}
+                  <span
+                    className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-150 group-active:opacity-100"
+                    style={{ background: DOCK_GRADIENT }}
+                  />
+                  <div className="relative z-10 h-4 w-4 text-neutral-600 transition-colors duration-150 group-active:text-white dark:text-neutral-300">
+                    {item.icon}
+                  </div>
                 </a>
               </motion.div>
             ))}
@@ -111,12 +122,17 @@ function FloatingDockMobile({ items }: { items: DockItem[] }) {
       <button
         onClick={() => setOpen(!open)}
         aria-label={open ? "Close navigation" : "Open navigation"}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 shadow-lg dark:bg-neutral-900"
+        className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 shadow-lg dark:bg-neutral-900"
+        style={{ WebkitTapHighlightColor: "transparent" }}
       >
+        <span
+          className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-150 group-active:opacity-100"
+          style={{ background: DOCK_GRADIENT }}
+        />
         {open ? (
-          <X className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
+          <X className="relative z-10 h-5 w-5 text-neutral-500 transition-colors duration-150 group-active:text-white dark:text-neutral-400" />
         ) : (
-          <Menu className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
+          <Menu className="relative z-10 h-5 w-5 text-neutral-500 transition-colors duration-150 group-active:text-white dark:text-neutral-400" />
         )}
       </button>
     </div>
@@ -165,13 +181,24 @@ function IconContainer({ mouseX, item }: { mouseX: MotionValue<number>; item: Do
       onMouseLeave={() => setHovered(false)}
       className="relative flex aspect-square items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800"
     >
+      {/* vibrant fill + glow blooming under the cursor (same palette as the signature) */}
+      <motion.div
+        className="absolute inset-0 rounded-full"
+        style={{ background: DOCK_GRADIENT }}
+        initial={false}
+        animate={{
+          opacity: hovered ? 1 : 0,
+          boxShadow: hovered ? "0 0 26px rgba(59, 130, 246, 0.55)" : "0 0 0px rgba(59, 130, 246, 0)",
+        }}
+        transition={{ duration: 0.2 }}
+      />
       <AnimatePresence>
         {hovered && (
           <motion.div
             initial={{ opacity: 0, y: 10, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 2, x: "-50%" }}
-            className="absolute -top-8 left-1/2 w-fit whitespace-pre rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
+            className="absolute -top-8 left-1/2 w-fit whitespace-pre rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
           >
             {item.title}
           </motion.div>
@@ -179,7 +206,9 @@ function IconContainer({ mouseX, item }: { mouseX: MotionValue<number>; item: Do
       </AnimatePresence>
       <motion.div
         style={{ width: iconSize, height: iconSize }}
-        className="flex items-center justify-center text-neutral-600 dark:text-neutral-300"
+        className={`relative z-10 flex items-center justify-center transition-colors duration-200 ${
+          hovered ? "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]" : "text-neutral-600 dark:text-neutral-300"
+        }`}
       >
         {item.icon}
       </motion.div>
