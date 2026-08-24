@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, type ReactNode, type MouseEvent } from "react"
+import { createContext, useContext, useState, type ReactNode, type MouseEvent } from "react"
 import { flushSync } from "react-dom"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
@@ -32,14 +32,11 @@ const playToggleSound = () => {
 const ThemeContext = createContext<ThemeContextType | null>(null)
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps & { children: ReactNode }) {
-  const [theme, setTheme] = useState<"light" | "dark">("dark")
-
-  // Read persisted choice on mount
-  useEffect(() => {
-    const saved = (localStorage.getItem("theme") as "light" | "dark") || "dark"
-    setTheme(saved)
-    document.documentElement.classList.toggle("dark", saved === "dark")
-  }, [])
+  // Lazy init from the persisted choice so the first client render matches the applied theme.
+  // (next-themes' pre-paint script has already set the class on <html> from the same key.)
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    typeof window === "undefined" ? "dark" : (localStorage.getItem("theme") as "light" | "dark") || "dark",
+  )
 
   const applyTheme = (next: "light" | "dark") => {
     localStorage.setItem("theme", next)

@@ -17,6 +17,9 @@ const spanify = (txt: string) =>
 export default function Header() {
   const { isDarkMode, toggleTheme } = useTheme()
   const [isScrolled, setIsScrolled] = useState(false)
+  // Icon depends on localStorage, which the server can't see — render it only after mount
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,7 +55,7 @@ export default function Header() {
           {spanify(NAME)}
         </motion.a>
 
-        <div className="flex items-center space-x-8 h-full">
+        <div className="flex items-center gap-8 h-full">
           {/* desktop nav */}
           <nav className="hidden md:flex items-center space-x-8 h-full">
             {NAV.map((label) => (
@@ -75,7 +78,7 @@ export default function Header() {
             aria-label="Toggle theme"
             className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white flex items-center justify-center h-10 w-10"
           >
-            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {mounted && (isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />)}
           </motion.button>
         </div>
       </div>
