@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Menu, X, Moon, Sun } from "lucide-react"
+import { Moon, Sun } from "lucide-react"
 import { useTheme } from "./theme-provider"
 
 const NAME = "Arnav Bule"
@@ -52,28 +52,32 @@ export default function Header() {
           {spanify(NAME)}
         </motion.a>
 
-        {/* desktop nav */}
-        <nav className="hidden md:flex items-center space-x-8 h-full">
-          {NAV.map((label) => (
-            <motion.a
-              key={label}
-              href={`#${label.toLowerCase()}`}
-              whileHover={{ scale: 1.05 }}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium select-none flex items-center h-full"
-            >
-              {spanify(label)}
-            </motion.a>
-          ))}
+        <div className="flex items-center space-x-8 h-full">
+          {/* desktop nav */}
+          <nav className="hidden md:flex items-center space-x-8 h-full">
+            {NAV.map((label) => (
+              <motion.a
+                key={label}
+                href={`#${label.toLowerCase()}`}
+                whileHover={{ scale: 1.05 }}
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium select-none flex items-center h-full"
+              >
+                {spanify(label)}
+              </motion.a>
+            ))}
+          </nav>
 
+          {/* theme toggle — visible on all screen sizes */}
           <motion.button
             onClick={toggleTheme}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center h-10 w-10"
+            aria-label="Toggle theme"
+            className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white flex items-center justify-center h-10 w-10"
           >
             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </motion.button>
-        </nav>
+        </div>
       </div>
     </header>
   )
