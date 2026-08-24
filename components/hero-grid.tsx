@@ -11,8 +11,8 @@
 import { useEffect, useRef } from "react"
 
 const COLORS = ["#eab308", "#ef4444", "#3b82f6", "#06b6d4", "#8b5cf6"]
-const CELL = 48 // grid pitch, px
-const RADIUS = 260 // influence radius, px — deliberately wide
+const CELL = 28 // grid pitch, px — fine mesh
+const RADIUS = 156 // influence radius, px
 const MAGNIFY = 0.22 // how far the fabric bulges toward the viewer
 
 export default function HeroGrid() {
@@ -87,8 +87,9 @@ export default function HeroGrid() {
         const seg = (x1: number, y1: number, x2: number, y2: number) => {
           const infl = influence((x1 + x2) / 2, (y1 + y2) / 2)
           if (infl < 0.02) return
-          ctx.globalAlpha = Math.min(infl * 1.25, 1)
-          ctx.lineWidth = 1 + 1.4 * infl
+          // steepened curve: saturated core, crisp edge
+          ctx.globalAlpha = Math.min(Math.pow(infl, 1.4) * 2.2, 1)
+          ctx.lineWidth = 1 + 1.6 * infl
           ctx.beginPath()
           ctx.moveTo(x1, y1)
           ctx.lineTo(x2, y2)
