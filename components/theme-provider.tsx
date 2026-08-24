@@ -49,17 +49,26 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps & { chi
     const de = document.documentElement
     const w = de.clientWidth || window.innerWidth || screen.width
     const h = de.clientHeight || window.innerHeight || screen.height
+    if (!w || !h) {
+      // unmeasurable viewport (background tab, collapsed webview) — nothing to animate
+      applyTheme(next)
+      return
+    }
     const x = hasRect ? rect.left + rect.width / 2 : (e?.clientX || w - 40)
     const y = hasRect ? rect.top + rect.height / 2 : (e?.clientY || 40)
     const radius = Math.hypot(Math.max(x, w - x), Math.max(y, h - y))
 
     // The sweep runs as a CSS keyframe animation on ::view-transition-new(root) (see
-    // globals.css), parameterized via custom properties. A CSS animation on the pseudo
-    // is first-class to the transition machinery — the snapshot cannot be torn down
-    // early, which happened on mobile with a JS-driven (WAAPI) animation.
-    de.style.setProperty("--reveal-x", `${x}px`)
-    de.style.setProperty("--reveal-y", `${y}px`)
-    de.style.setProperty("--reveal-r", `${radius}px`)
+    // globals.css), parameterized via custom properties. Everything is expressed in
+    // PERCENTAGES of the snapshot box, never px: the snapshot layer can be scaled
+    // relative to the viewport (display scaling on desktop, devicePixelRatio on
+    // mobile), and px coordinates then cover only 1/scale of the screen — the sweep
+    // stops partway and the rest snaps. Percentages resolve against the snapshot's
+    // own box, so any scale factor cancels out. (circle() radius percentages resolve
+    // against diagonal/√2 per spec, hence that divisor.)
+    de.style.setProperty("--reveal-x", `${((x / w) * 100).toFixed(2)}%`)
+    de.style.setProperty("--reveal-y", `${((y / h) * 100).toFixed(2)}%`)
+    de.style.setProperty("--reveal-r", `${((radius / (Math.hypot(w, h) / Math.SQRT2)) * 100).toFixed(2)}%`)
     // Global `transition: background-color …` rules keep repainting inside the live new
     // snapshot and muddy the reveal — suspend them for the duration of the transition.
     de.classList.add("theme-transitioning")

@@ -26,6 +26,9 @@ html.theme-transitioning *,
 html.theme-transitioning *::before,
 html.theme-transitioning *::after {
   transition: none !important;
+  /* frozen page content = static snapshot = no per-frame re-raster during the sweep
+     (matches elements only, never the ::view-transition pseudos driving the reveal) */
+  animation-play-state: paused !important;
 }
 ::view-transition-old(root) {
   z-index: 1;
