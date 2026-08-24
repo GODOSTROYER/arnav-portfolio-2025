@@ -3,6 +3,7 @@
 import { useScroll } from "framer-motion"
 import dynamic from "next/dynamic"
 import Header               from "@/components/header"
+import SiteDock             from "@/components/floating-dock"
 import MainContentSection   from "@/components/main-content-section"
 import TechnologiesSection  from "@/components/technologies-section"
 import ConnectSection       from "@/components/connect-section"
@@ -28,6 +29,7 @@ export default function Home() {
       <ConnectSection />
       <ResumeSection />
       <Footer />
+      <SiteDock />
     </main>
   )
 }

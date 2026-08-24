@@ -6,7 +6,14 @@ import { Moon, Sun } from "lucide-react"
 import { useTheme } from "./theme-provider"
 
 const NAME = "Arnav Bule"
-const NAV  = ["Home", "About", "Technologies", "Connect", "Resume"]
+/* "Connect" section's actual id is #contact */
+const NAV: Array<{ label: string; href: string }> = [
+  { label: "Home", href: "#home" },
+  { label: "About", href: "#about" },
+  { label: "Technologies", href: "#technologies" },
+  { label: "Connect", href: "#contact" },
+  { label: "Resume", href: "#resume" },
+]
 
 /* helper: split a label into spans for fine hover animation (optional) */
 const spanify = (txt: string) =>
@@ -36,11 +43,13 @@ export default function Header() {
       id="site-header"
       className={`fixed top-0 left-0 right-0 z-50 h-16 flex
         ${isScrolled
-          ? "backdrop-blur-xl bg-white/40 dark:bg-black/40 border-b border-white/30 dark:border-zinc-800/60 shadow-lg"
+          ? "backdrop-blur-xl bg-white/40 dark:bg-black/40 border-b border-white/30 dark:border-zinc-800/60 shadow-lg md:opacity-0 md:-translate-y-full md:pointer-events-none"
           : "bg-transparent border-b-0 shadow-none"}
       `}
       style={{
-        transition: "background 0.4s cubic-bezier(.4,0,.2,1), border 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1)",
+        /* on md+ the bar slides away past the hero and the floating dock takes over */
+        transition:
+          "background 0.4s cubic-bezier(.4,0,.2,1), border 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s cubic-bezier(.4,0,.2,1), transform 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s cubic-bezier(.4,0,.2,1)",
       }}
     >
       <div className="container mx-auto px-6 flex items-center justify-between w-full h-full">
@@ -56,10 +65,10 @@ export default function Header() {
         <div className="flex items-center gap-8 h-full">
           {/* desktop nav */}
           <nav className="hidden md:flex items-center space-x-8 h-full">
-            {NAV.map((label) => (
+            {NAV.map(({ label, href }) => (
               <motion.a
                 key={label}
-                href={`#${label.toLowerCase()}`}
+                href={href}
                 whileHover={{ scale: 1.05 }}
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium select-none flex items-center h-full"
               >
