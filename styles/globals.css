@@ -114,7 +114,7 @@ html {
 }
 
 .dark .text-blue-100 {
-  color: #bfdbfe; /* Light blue for text in dark mode */
+  color: #000000; /* Dark text for hover readability */
 }
 
 .dark .bg-gradient-to-r.from-blue-600.to-cyan-600 {
