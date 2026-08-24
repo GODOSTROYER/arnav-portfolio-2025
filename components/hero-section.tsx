@@ -2,6 +2,7 @@
 
 import { motion, useTransform, useSpring, type MotionValue, cubicBezier } from "framer-motion"
 import { useEffect, useState, useRef, useMemo } from "react"
+import HeroGrid from "./hero-grid"
 
 interface HeroSectionProps {
   scrollYProgress: MotionValue<number>
@@ -299,6 +300,7 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       id="home"
       className="min-h-screen flex items-end justify-start pb-32 pt-28 relative overflow-hidden scroll-section bg-white dark:bg-black transition-colors duration-300"
     >
+      <HeroGrid />
       <div className="container mx-auto px-6">
         <div className="space-y-4 relative text-left">
           {!showFlyingLetters ? (
