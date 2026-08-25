@@ -33,6 +33,9 @@ type DockItem = {
   icon: ReactNode
   href?: string
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
+  /* stable identity for items whose title changes (e.g. the theme toggle) —
+     without it React remounts the item mid-hover and its magnification resets */
+  key?: string
 }
 
 /* Same vibrant palette as the signature section's text-hover gradient */
@@ -84,6 +87,7 @@ export default function SiteDock() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const themeItem: DockItem = {
+    key: "theme-toggle",
     title: isDarkMode ? "Light mode" : "Dark mode",
     icon: isDarkMode ? <PiSunDuotone className="h-full w-full" /> : <PiMoonStarsDuotone className="h-full w-full" />,
     onClick: toggleTheme,
@@ -127,6 +131,82 @@ function FloatingDockMobile({
   open: boolean
   setOpen: (v: boolean) => void
 }) {
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const [activeIdx, setActiveIdx] = useState(-1)
+
+  /* Gesture, on raw touch events (no click synthesis involved):
+     - press the button → dock opens under your thumb
+     - slide the finger up → items highlight as you pass over them
+     - release on an item → it's selected, dock closes
+     - plain tap (no slide) → dock stays open for classic tap-to-select;
+       tap again to close */
+  useEffect(() => {
+    const btn = btnRef.current
+    if (!btn) return
+    let moved = false
+    let wasOpen = false
+    let start = { x: 0, y: 0 }
+    let lastTouch = -1e9
+
+    const hitTest = (t: Touch) => {
+      const el = document.elementFromPoint(t.clientX, t.clientY)
+      const hit = el?.closest?.("[data-dock-idx]") as HTMLElement | null
+      return hit ? Number(hit.dataset.dockIdx) : -1
+    }
+    const onStart = (e: TouchEvent) => {
+      lastTouch = performance.now()
+      const t = e.touches[0]
+      if (!t) return
+      start = { x: t.clientX, y: t.clientY }
+      moved = false
+      wasOpen = open
+      setOpen(true)
+      setActiveIdx(-1)
+    }
+    const onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (!t) return
+      if (!moved && Math.hypot(t.clientX - start.x, t.clientY - start.y) > 12) moved = true
+      if (moved) {
+        e.preventDefault() // the finger is sliding the dock, not scrolling the page
+        setActiveIdx(hitTest(t))
+      }
+    }
+    const onEnd = (e: TouchEvent) => {
+      lastTouch = performance.now()
+      e.preventDefault() // suppress the synthetic click that would double-toggle
+      const t = e.changedTouches[0]
+      if (moved && t) {
+        const idx = hitTest(t)
+        setActiveIdx(-1)
+        setOpen(false)
+        const href = idx >= 0 ? items[idx]?.href : undefined
+        if (href) window.location.hash = href
+      } else {
+        // plain tap: toggle — opens for tap-to-select, closes if it was open
+        setActiveIdx(-1)
+        if (wasOpen) setOpen(false)
+      }
+    }
+    const onClick = () => {
+      // fallback for environments without touch events
+      if (performance.now() - lastTouch > 800) setOpen(!open)
+    }
+
+    btn.addEventListener("touchstart", onStart, { passive: true })
+    btn.addEventListener("touchmove", onTouchMove, { passive: false })
+    btn.addEventListener("touchend", onEnd, { passive: false })
+    btn.addEventListener("touchcancel", onEnd, { passive: false })
+    btn.addEventListener("click", onClick)
+    return () => {
+      btn.removeEventListener("touchstart", onStart)
+      btn.removeEventListener("touchmove", onTouchMove)
+      btn.removeEventListener("touchend", onEnd)
+      btn.removeEventListener("touchcancel", onEnd)
+      btn.removeEventListener("click", onClick)
+    }
+  }, [items, open, setOpen])
+
   return (
     <div className="relative">
       <AnimatePresence>
@@ -134,7 +214,7 @@ function FloatingDockMobile({
           <motion.div className="absolute inset-x-0 bottom-full mb-2 flex flex-col items-center gap-2">
             {items.map((item, idx) => (
               <motion.div
-                key={item.title}
+                key={item.key ?? item.title}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10, transition: { delay: idx * 0.05 } }}
@@ -142,17 +222,26 @@ function FloatingDockMobile({
               >
                 <a
                   href={item.href}
+                  data-dock-idx={idx}
                   onClick={() => setOpen(false)}
                   aria-label={item.title}
-                  className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 dark:bg-neutral-900"
+                  className={`group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 dark:bg-neutral-900 ${
+                    activeIdx === idx ? "scale-125" : ""
+                  }`}
                   style={{ WebkitTapHighlightColor: "transparent" }}
                 >
-                  {/* vibrant flash on tap */}
+                  {/* vibrant fill while slid-over or pressed */}
                   <span
-                    className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-150 group-active:opacity-100"
+                    className={`absolute inset-0 rounded-full transition-opacity duration-150 group-active:opacity-100 ${
+                      activeIdx === idx ? "opacity-100" : "opacity-0"
+                    }`}
                     style={{ background: DOCK_GRADIENT }}
                   />
-                  <div className="relative z-10 h-4 w-4 text-neutral-600 transition-colors duration-150 group-active:text-white dark:text-neutral-300">
+                  <div
+                    className={`relative z-10 h-4 w-4 transition-colors duration-150 group-active:text-white ${
+                      activeIdx === idx ? "text-white" : "text-neutral-600 dark:text-neutral-300"
+                    }`}
+                  >
                     {item.icon}
                   </div>
                 </a>
@@ -162,9 +251,9 @@ function FloatingDockMobile({
         )}
       </AnimatePresence>
       <button
-        onClick={() => setOpen(!open)}
+        ref={btnRef}
         aria-label={open ? "Close navigation" : "Open navigation"}
-        className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 dark:bg-neutral-900"
+        className="group relative flex h-12 w-12 touch-none items-center justify-center rounded-full bg-gray-50 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 dark:bg-neutral-900"
         style={{ WebkitTapHighlightColor: "transparent" }}
       >
         <span
@@ -190,7 +279,7 @@ function FloatingDockDesktop({ items }: { items: DockItem[] }) {
       className="flex h-16 items-end gap-4 rounded-2xl bg-gray-50/90 px-4 pb-3 shadow-lg backdrop-blur-md dark:bg-neutral-900/90"
     >
       {items.map((item) => (
-        <IconContainer key={item.title} mouseX={mouseX} item={item} />
+        <IconContainer key={item.key ?? item.title} mouseX={mouseX} item={item} />
       ))}
     </motion.div>
   )
