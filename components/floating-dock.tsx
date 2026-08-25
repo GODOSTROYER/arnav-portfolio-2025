@@ -286,13 +286,42 @@ function FloatingDockMobile({
   )
 }
 
+/* Chromium re-evaluates hover when the theme's view-transition overlay mounts and
+   unmounts, firing a TRUSTED mouseleave/mouseenter pair on the dock even though the
+   cursor never moves (measured live). A leave that arrives during the sweep is
+   therefore held for 900ms and cancelled by the matching re-enter — the magnified
+   icon sails through the theme change. A genuine departure still shrinks the dock
+   via the delayed fallback. */
+function phantomLeaveGuard(onLeave: () => void, cancelRef: { current: ReturnType<typeof setTimeout> | null }) {
+  if (cancelRef.current) clearTimeout(cancelRef.current)
+  if (document.documentElement.classList.contains("theme-transitioning")) {
+    cancelRef.current = setTimeout(onLeave, 900)
+  } else {
+    onLeave()
+  }
+}
+
 /* memo: with the stable items array, theme changes skip this subtree entirely */
 const FloatingDockDesktop = memo(function FloatingDockDesktop({ items }: { items: DockItem[] }) {
   const mouseX = useMotionValue(Number.POSITIVE_INFINITY)
+  const pendingLeave = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const cancelPending = () => {
+    if (pendingLeave.current) {
+      clearTimeout(pendingLeave.current)
+      pendingLeave.current = null
+    }
+  }
   return (
     <motion.div
-      onMouseMove={(e) => mouseX.set(e.pageX)}
-      onMouseLeave={() => mouseX.set(Number.POSITIVE_INFINITY)}
+      onMouseMove={(e) => {
+        cancelPending()
+        mouseX.set(e.pageX)
+      }}
+      onMouseEnter={(e) => {
+        cancelPending()
+        mouseX.set(e.pageX) // re-magnify on re-entry without waiting for movement
+      }}
+      onMouseLeave={() => phantomLeaveGuard(() => mouseX.set(Number.POSITIVE_INFINITY), pendingLeave)}
       className="flex h-16 items-end gap-4 rounded-2xl bg-gray-50/90 px-4 pb-3 shadow-lg backdrop-blur-md dark:bg-neutral-900/90"
     >
       {items.map((item) => (
@@ -305,6 +334,7 @@ const FloatingDockDesktop = memo(function FloatingDockDesktop({ items }: { items
 function IconContainer({ mouseX, item }: { mouseX: MotionValue<number>; item: DockItem }) {
   const ref = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState(false)
+  const pendingUnhover = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const distance = useTransform(mouseX, (val) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 }
@@ -325,8 +355,11 @@ function IconContainer({ mouseX, item }: { mouseX: MotionValue<number>; item: Do
     <motion.div
       ref={ref}
       style={{ width: size, height: size }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => {
+        if (pendingUnhover.current) clearTimeout(pendingUnhover.current)
+        setHovered(true)
+      }}
+      onMouseLeave={() => phantomLeaveGuard(() => setHovered(false), pendingUnhover)}
       className="relative flex aspect-square items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800"
     >
       {/* vibrant fill + glow blooming under the cursor (same palette as the signature) */}
