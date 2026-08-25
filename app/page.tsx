@@ -1,8 +1,8 @@
 "use client"
 
 import { useScroll } from "framer-motion"
-import dynamic from "next/dynamic"
 import Header               from "@/components/header"
+import HeroSection          from "@/components/hero-section"
 import SiteDock             from "@/components/floating-dock"
 import MainContentSection   from "@/components/main-content-section"
 import TechnologiesSection  from "@/components/technologies-section"
@@ -11,10 +11,9 @@ import ResumeSection        from "@/components/resume-section"
 import SignatureSection     from "@/components/text-hover-effect"
 import Footer               from "@/components/footer"
 
-/* ───── client‑only hero (no SSR, fixes hydration mismatch) ───── */
-const HeroSection = dynamic(() => import("@/components/hero-section"), {
-  ssr: false,
-})
+/* Hero is prerendered: its !mounted branch is deterministic static markup, so the
+   exported HTML paints the headline instantly; the animated version takes over
+   after hydration with identical layout (no random values render server-side). */
 
 export default function Home() {
   const { scrollYProgress } = useScroll({

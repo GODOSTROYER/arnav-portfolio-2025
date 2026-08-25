@@ -11,10 +11,10 @@ export default function ConnectSection() {
       >
         <div className="md:w-2/3">
           <p className="mb-6 text-3xl md:text-4xl font-bold leading-tight">
-            Let's Connect and Collaborate!
+            Let&apos;s Connect and Collaborate!
           </p>
           <p className="text-base md:text-lg leading-relaxed">
-            As an AI and Machine Learning enthusiast, I'm always excited to explore new ideas, share
+            As an AI and Machine Learning enthusiast, I&apos;m always excited to explore new ideas, share
             knowledge, and collaborate on projects that push the boundaries of technology. I’m not
             looking for a role, but I’d love to connect with others who share the same passion for
             AI, data science, and the endless possibilities they offer.

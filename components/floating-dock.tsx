@@ -58,9 +58,30 @@ function useScrolledPastHero() {
   return past
 }
 
+/* hide while scrolling down, reveal on scroll-up (with a small hysteresis so
+   tiny scroll jitters don't flicker it) */
+function useScrollDirectionHidden() {
+  const [hidden, setHidden] = useState(false)
+  useEffect(() => {
+    let lastY = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      const delta = y - lastY
+      if (Math.abs(delta) < 8) return
+      setHidden(delta > 0 && y > 120)
+      lastY = y
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+  return hidden
+}
+
 export default function SiteDock() {
   const { isDarkMode, toggleTheme } = useTheme()
   const pastHero = useScrolledPastHero()
+  const scrollHidden = useScrollDirectionHidden()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const themeItem: DockItem = {
     title: isDarkMode ? "Light mode" : "Dark mode",
@@ -70,9 +91,13 @@ export default function SiteDock() {
 
   return (
     <>
-      {/* Mobile: always available, bottom-right */}
-      <div className="fixed bottom-6 right-6 z-50 md:hidden">
-        <FloatingDockMobile items={NAV_ITEMS} />
+      {/* Mobile: bottom-right; tucks away while scrolling down (never while open) */}
+      <div
+        className={`fixed bottom-6 right-6 z-50 transition-all duration-300 md:hidden ${
+          scrollHidden && !mobileOpen ? "pointer-events-none translate-y-24 opacity-0" : "translate-y-0 opacity-100"
+        }`}
+      >
+        <FloatingDockMobile items={NAV_ITEMS} open={mobileOpen} setOpen={setMobileOpen} />
       </div>
 
       {/* Desktop: takes over from the top navbar once the hero closes up */}
@@ -93,8 +118,15 @@ export default function SiteDock() {
   )
 }
 
-function FloatingDockMobile({ items }: { items: DockItem[] }) {
-  const [open, setOpen] = useState(false)
+function FloatingDockMobile({
+  items,
+  open,
+  setOpen,
+}: {
+  items: DockItem[]
+  open: boolean
+  setOpen: (v: boolean) => void
+}) {
   return (
     <div className="relative">
       <AnimatePresence>
@@ -112,7 +144,7 @@ function FloatingDockMobile({ items }: { items: DockItem[] }) {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   aria-label={item.title}
-                  className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md dark:bg-neutral-900"
+                  className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 dark:bg-neutral-900"
                   style={{ WebkitTapHighlightColor: "transparent" }}
                 >
                   {/* vibrant flash on tap */}
@@ -132,7 +164,7 @@ function FloatingDockMobile({ items }: { items: DockItem[] }) {
       <button
         onClick={() => setOpen(!open)}
         aria-label={open ? "Close navigation" : "Open navigation"}
-        className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 shadow-lg dark:bg-neutral-900"
+        className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 dark:bg-neutral-900"
         style={{ WebkitTapHighlightColor: "transparent" }}
       >
         <span
@@ -225,12 +257,15 @@ function IconContainer({ mouseX, item }: { mouseX: MotionValue<number>; item: Do
     </motion.div>
   )
 
+  const focusRing =
+    "rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-offset-neutral-900"
+
   return item.onClick ? (
-    <button onClick={item.onClick} aria-label={item.title}>
+    <button onClick={item.onClick} aria-label={item.title} className={focusRing}>
       {bubble}
     </button>
   ) : (
-    <a href={item.href} aria-label={item.title}>
+    <a href={item.href} aria-label={item.title} className={focusRing}>
       {bubble}
     </a>
   )

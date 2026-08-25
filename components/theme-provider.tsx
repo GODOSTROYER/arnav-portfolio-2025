@@ -31,7 +31,11 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps & { chi
 
     navigator.vibrate?.(10)
 
-    const startViewTransition = (document as any).startViewTransition?.bind(document)
+    const startViewTransition = (
+      document as Document & {
+        startViewTransition?: (cb: () => void) => { ready: Promise<void>; finished: Promise<void> }
+      }
+    ).startViewTransition?.bind(document)
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     if (!startViewTransition || reducedMotion) {
       applyTheme(next)

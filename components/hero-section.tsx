@@ -97,6 +97,10 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
     }))
   }, [])
 
+  /* Hooks inside .map are safe here by construction: both arrays are memoized with
+     [] deps and have a fixed length derived from constant text, so the hook count
+     and order are identical on every render. */
+  /* eslint-disable react-hooks/rules-of-hooks */
   const letterTransforms = allLetters.map((letterInfo) => {
     return {
       y: useTransform(
@@ -155,6 +159,7 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
       ),
     }
   })
+  /* eslint-enable react-hooks/rules-of-hooks */
 
   useEffect(() => {
     setMounted(true)

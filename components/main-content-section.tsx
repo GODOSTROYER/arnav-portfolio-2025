@@ -1,7 +1,21 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { MapPin, Mail, Phone, Github, Briefcase, Code, ExternalLink } from "lucide-react"
+import {
+  MapPin,
+  Mail,
+  Phone,
+  Github,
+  Briefcase,
+  ExternalLink,
+  ListChecks,
+  MailPlus,
+  Microscope,
+  Satellite,
+  Brain,
+  Palette,
+  type LucideIcon,
+} from "lucide-react"
 import Image from "next/image"
 
 export default function MainContentSection() {
@@ -65,10 +79,12 @@ export default function MainContentSection() {
     team: string
     github?: string
     live?: string
+    icon: LucideIcon
     highlight: string[]
   }[] = [
     {
       name: "Mini Task Tracker",
+      icon: ListChecks,
       period: "2025",
       team: "Next.js 15 · React 19 · TypeScript · Express · MongoDB · Redis",
       github: "https://github.com/GODOSTROYER/wldd-task-tracker",
@@ -82,6 +98,7 @@ export default function MainContentSection() {
     },
     {
       name: "Email Digital Twin",
+      icon: MailPlus,
       period: "2025",
       team: "Chrome Extension · Node.js · Express · Google Gemini · LanceDB · Gmail API · OAuth 2.0",
       highlight: [
@@ -93,6 +110,7 @@ export default function MainContentSection() {
     },
     {
       name: "Sicklesense",
+      icon: Microscope,
       period: "2025",
       team: "Python · TensorFlow · Keras · OpenCV · Streamlit · Docker · Hugging Face",
       github: "https://github.com/ArnavBule/Sickle-cell",
@@ -106,6 +124,7 @@ export default function MainContentSection() {
     },
     {
       name: "Road Extraction On Satellite Images",
+      icon: Satellite,
       period: "Aug 2024 – Present",
       team: "SIH Project (No. of Group Members – 6)",
       highlight: [
@@ -116,6 +135,7 @@ export default function MainContentSection() {
     },
     {
       name: "ERP Exerciser",
+      icon: Brain,
       period: "Aug 2024 – Present",
       team: "Industry Project (No. of Group Members – 3)",
       highlight: [
@@ -124,6 +144,7 @@ export default function MainContentSection() {
     },
     {
       name: "Prisma",
+      icon: Palette,
       period: "Jan 2023 – Apr 2024",
       team: "SY Mini Project (No. of Group Members – 3)",
       highlight: [
@@ -487,7 +508,7 @@ export default function MainContentSection() {
                           transition: { duration: 0.3, ease: "easeOut" },
                         }}
                       >
-                        <Code className="w-5 h-5 text-white" />
+                        <project.icon className="w-5 h-5 text-white" />
                       </motion.div>
 
                       {/* Content */}
