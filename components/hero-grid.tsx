@@ -52,8 +52,8 @@ export default function HeroGrid() {
 
     const buildBasePath = () => {
       basePath = new Path2D()
-      const cols = Math.ceil(layoutW / CELL) + 1
-      const rows = Math.ceil(layoutH / CELL) + 1
+      const cols = Math.ceil(canvas.width / cellBuf) + 1
+      const rows = Math.ceil(canvas.height / cellBuf) + 1
       for (let gx = 0; gx < cols; gx++) {
         basePath.moveTo(S(gx * cellBuf), 0)
         basePath.lineTo(S(gx * cellBuf), canvas.height)
@@ -152,8 +152,13 @@ export default function HeroGrid() {
       dpr = Math.min(Math.max(window.devicePixelRatio || 1, 0.5), 3)
       layoutW = canvas.offsetWidth
       layoutH = canvas.offsetHeight
-      cellBuf = CELL * dpr
-      radiusBuf = RADIUS * dpr
+      // proportional on small screens: desktop keeps 20px cells / 156px radius,
+      // a phone gets a finer mesh and a fingertip-sized highlight instead of
+      // one that swallows the whole hero
+      const cellCss = Math.min(CELL, Math.max(10, layoutW / 32))
+      const radiusCss = Math.min(RADIUS, layoutW * 0.16)
+      cellBuf = cellCss * dpr
+      radiusBuf = radiusCss * dpr
       const bufW = Math.min(Math.max(1, Math.round(layoutW * dpr)), 8192)
       const bufH = Math.min(Math.max(1, Math.round(layoutH * dpr)), 8192)
       if (bufW !== canvas.width) canvas.width = bufW
