@@ -29,10 +29,21 @@ app/
   globals.css         Tailwind directives, theme-reveal keyframes, typography, dark-mode overrides
   resume/page.tsx     /resume — PDF viewer + download link
 components/
-  header.tsx          Fixed header; nav (desktop only) + theme toggle (all sizes)
+  header.tsx          Fixed header; nav + toggle. On md+ it slides away past the hero
+                      (the floating dock takes over); "Connect" links to #contact
+  floating-dock.tsx   Aceternity-style dock (framer-motion + Phosphor duotone icons via
+                      react-icons). Mobile <md: always-on collapsible, bottom-right.
+                      Desktop md+: magnifying dock, bottom-center, shown past the hero;
+                      carries the theme toggle there. Gradient hover/tap effects.
+  hero-grid.tsx       Canvas hairline grid behind the hero; cursor/touch-tracked
+                      spectrum highlight. All math in buffer px, cursor mapped by
+                      visual fraction of the canvas box (immune to zoom/transforms);
+                      device-pixel snapped lines; additive blending in dark mode.
   hero-section.tsx    "Welcome to Arnav's Portfolio" letter animation (scroll-linked)
   main-content-section.tsx  THE CONTENT FILE: about text, experiences[], projects[], education, certs
   technologies-section.tsx  Tech tile grid (react-icons), floating bob animation
+  text-hover-effect.tsx  Signature section: staggered tagline + giant "ARNAV" SVG with
+                      draw-in stroke and cursor-revealed gradient (auto-sweep on touch)
   connect-section.tsx / resume-section.tsx / footer.tsx
   PdfResumeViewer.tsx Client-only react-pdf wrapper (breakpoint-scaled)
   theme-provider.tsx  Theme context + animated theme switching
