@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Poppins } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import SmoothScroll from "@/components/smooth-scroll"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 
@@ -54,9 +55,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`scroll-smooth ${poppins.variable}`} suppressHydrationWarning>
+    <html lang="en" className={poppins.variable} suppressHydrationWarning>
       <body className={`${poppins.className} antialiased transition-colors duration-300`} suppressHydrationWarning>
         <ThemeProvider defaultTheme="dark" enableSystem={false}>
+          <SmoothScroll />
           {children}
         </ThemeProvider>
         <SpeedInsights />

@@ -65,7 +65,8 @@ export default function HeroGrid() {
     const pointer = { x: 0, y: 0, active: false }
     const cur = { x: -99999, y: -99999, amp: 0, vx: 0, vy: 0, vamp: 0 }
     let lastT = 0
-    const t0 = performance.now()
+    let t0 = performance.now()
+    let pauseStart = 0
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     /* snap a buffer coordinate onto a half-pixel boundary → 1-device-px hairlines */
@@ -173,6 +174,16 @@ export default function HeroGrid() {
 
     const tick = (now: number) => {
       try {
+        /* freeze the field's clock while drawing is suspended for the theme sweep —
+           otherwise the first frame after the sweep jumps ~700ms ahead (ripples,
+           hue, and wanderer all lurch: a visible stutter right as the theme lands) */
+        const sweeping = document.documentElement.classList.contains("theme-transitioning")
+        if (sweeping) {
+          if (!pauseStart) pauseStart = now
+        } else if (pauseStart) {
+          t0 += now - pauseStart
+          pauseStart = 0
+        }
         const t = (now - t0) / 1000
         const dt = Math.min(0.05, lastT ? t - lastT : 0.016)
         lastT = t
@@ -204,7 +215,7 @@ export default function HeroGrid() {
         cur.amp += cur.vamp * dt
 
         /* hold still while the theme reveal sweeps, so its edge stays crisp */
-        if (!document.documentElement.classList.contains("theme-transitioning")) {
+        if (!sweeping) {
           draw(t)
         }
       } catch {

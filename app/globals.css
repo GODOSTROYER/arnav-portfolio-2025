@@ -145,14 +145,10 @@ html.theme-transitioning *::after {
   }
 }
 
-/* Enhanced smooth scrolling */
+/* Anchor targets clear the fixed header on native jumps (Lenis handles its own
+   offset; CSS scroll-behavior must stay auto or it fights Lenis' inertia) */
 html {
   scroll-padding-top: 80px;
-}
-
-/* Smooth scrolling for all elements */
-* {
-  scroll-behavior: smooth;
 }
 
 /* Reduce motion for users who prefer it */
