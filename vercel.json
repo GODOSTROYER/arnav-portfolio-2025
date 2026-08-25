@@ -1,6 +1,12 @@
 {
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "arnav-portfolio-2025.vercel.app" }],
+      "destination": "https://www.arnavbule.in/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "arnav-portfolio-2025.vercel.app" }],
       "destination": "https://www.arnavbule.in/:path*",
