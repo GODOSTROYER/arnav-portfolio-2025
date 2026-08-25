@@ -3,16 +3,20 @@
 /* Grid background for the hero (and only the hero).
    A razor-sharp hairline grid, faint and recessed; near the cursor the lines
    light up with the site's vibrant signature gradient (same palette as the
-   text-hover effect), fading with a steep gaussian falloff. Geometry is static —
-   every line sits snapped on device-pixel boundaries at all times, so nothing
-   ever antialiases into blur. Canvas 2D, no dependencies; a single static draw
-   when idle, rAF only while the cursor is inside. Works in both themes. */
+   text-hover effect), fading with a steep gaussian falloff.
+
+   All math runs in BUFFER pixels, and the cursor is mapped in as a fraction of
+   the canvas's own bounding box — this stays exact under display scaling,
+   browser zoom, and even ancestor CSS transforms (extension-injected zoom/scale
+   included), any of which desync visual pixels from layout pixels. The buffer
+   is sized from offsetWidth (layout), never from getBoundingClientRect (visual).
+   Geometry is static and snapped to device pixels — nothing ever blurs. */
 
 import { useEffect, useRef } from "react"
 
 const COLORS = ["#eab308", "#ef4444", "#3b82f6", "#06b6d4", "#8b5cf6"]
-const CELL = 20 // grid pitch, CSS px — fine mesh
-const RADIUS = 156 // influence radius, CSS px
+const CELL = 20 // grid pitch, layout px — fine mesh
+const RADIUS = 156 // influence radius, layout px
 
 export default function HeroGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -23,36 +27,39 @@ export default function HeroGrid() {
     const ctx = canvas?.getContext("2d")
     if (!canvas || !section || !ctx) return
 
-    let w = 0
-    let h = 0
+    let layoutW = 0
+    let layoutH = 0
     let dpr = 1
+    let cellBuf = CELL // grid pitch in buffer px
+    let radiusBuf = RADIUS // influence radius in buffer px
     let raf = 0
     let running = false
     let basePath: Path2D | null = null
-    const target = { x: -9999, y: -9999, amp: 0 }
-    const cur = { x: -9999, y: -9999, amp: 0 }
+    /* cursor state, in buffer pixels */
+    const target = { x: -99999, y: -99999, amp: 0 }
+    const cur = { x: -99999, y: -99999, amp: 0 }
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-    /* snap a CSS coordinate onto a half-pixel device boundary → 1-device-px hairlines */
-    const S = (v: number) => Math.round(v * dpr) + 0.5
+    /* snap a buffer coordinate onto a half-pixel boundary → 1-device-px hairlines */
+    const S = (v: number) => Math.round(v) + 0.5
 
-    const influence = (cssX: number, cssY: number) => {
+    const influence = (bx: number, by: number) => {
       if (cur.amp < 0.005) return 0
-      const d2 = (cssX - cur.x) ** 2 + (cssY - cur.y) ** 2
-      return Math.exp(-d2 / (RADIUS * RADIUS)) * cur.amp
+      const d2 = (bx - cur.x) ** 2 + (by - cur.y) ** 2
+      return Math.exp(-d2 / (radiusBuf * radiusBuf)) * cur.amp
     }
 
     const buildBasePath = () => {
       basePath = new Path2D()
-      const cols = Math.ceil(w / CELL) + 1
-      const rows = Math.ceil(h / CELL) + 1
+      const cols = Math.ceil(layoutW / CELL) + 1
+      const rows = Math.ceil(layoutH / CELL) + 1
       for (let gx = 0; gx < cols; gx++) {
-        basePath.moveTo(S(gx * CELL), 0)
-        basePath.lineTo(S(gx * CELL), h * dpr)
+        basePath.moveTo(S(gx * cellBuf), 0)
+        basePath.lineTo(S(gx * cellBuf), canvas.height)
       }
       for (let gy = 0; gy < rows; gy++) {
-        basePath.moveTo(0, S(gy * CELL))
-        basePath.lineTo(w * dpr, S(gy * CELL))
+        basePath.moveTo(0, S(gy * cellBuf))
+        basePath.lineTo(canvas.width, S(gy * cellBuf))
       }
     }
 
@@ -74,13 +81,13 @@ export default function HeroGrid() {
         COLORS.forEach((c, i) => grad.addColorStop(i / (COLORS.length - 1), c))
         ctx.strokeStyle = grad
         ctx.lineWidth = 1
-        const reach = RADIUS * 2
-        const gx0 = Math.max(0, Math.floor((cur.x - reach) / CELL))
-        const gx1 = Math.min(Math.ceil(w / CELL), Math.ceil((cur.x + reach) / CELL))
-        const gy0 = Math.max(0, Math.floor((cur.y - reach) / CELL))
-        const gy1 = Math.min(Math.ceil(h / CELL), Math.ceil((cur.y + reach) / CELL))
-        const seg = (cssMidX: number, cssMidY: number, x1: number, y1: number, x2: number, y2: number) => {
-          const infl = influence(cssMidX, cssMidY)
+        const reach = radiusBuf * 2
+        const gx0 = Math.max(0, Math.floor((cur.x - reach) / cellBuf))
+        const gx1 = Math.min(Math.ceil(canvas.width / cellBuf), Math.ceil((cur.x + reach) / cellBuf))
+        const gy0 = Math.max(0, Math.floor((cur.y - reach) / cellBuf))
+        const gy1 = Math.min(Math.ceil(canvas.height / cellBuf), Math.ceil((cur.y + reach) / cellBuf))
+        const seg = (midX: number, midY: number, x1: number, y1: number, x2: number, y2: number) => {
+          const infl = influence(midX, midY)
           if (infl < 0.02) return
           // steepened curve: saturated core, crisp edge
           ctx.globalAlpha = Math.min(Math.pow(infl, 1.4) * 2.5, 1)
@@ -91,11 +98,11 @@ export default function HeroGrid() {
         }
         for (let gy = gy0; gy <= gy1; gy++) {
           for (let gx = gx0; gx <= gx1; gx++) {
-            const x = gx * CELL
-            const y = gy * CELL
+            const x = gx * cellBuf
+            const y = gy * cellBuf
             // horizontal edge to the right, vertical edge downward
-            seg(x + CELL / 2, y, S(x), S(y), S(x + CELL), S(y))
-            seg(x, y + CELL / 2, S(x), S(y), S(x), S(y + CELL))
+            seg(x + cellBuf / 2, y, S(x), S(y), S(x + cellBuf), S(y))
+            seg(x, y + cellBuf / 2, S(x), S(y), S(x), S(y + cellBuf))
           }
         }
         ctx.globalAlpha = 1
@@ -126,22 +133,40 @@ export default function HeroGrid() {
       }
     }
 
+    const resize = () => {
+      const prevW = canvas.width
+      const prevH = canvas.height
+      dpr = window.devicePixelRatio || 1
+      layoutW = canvas.offsetWidth
+      layoutH = canvas.offsetHeight
+      cellBuf = CELL * dpr
+      radiusBuf = RADIUS * dpr
+      canvas.width = Math.max(1, Math.round(layoutW * dpr))
+      canvas.height = Math.max(1, Math.round(layoutH * dpr))
+      // cursor state lives in buffer pixels — rescale it or the highlight jumps
+      // to the old buffer's coordinates after any size/zoom change
+      if (prevW > 1 && prevH > 1) {
+        const kx = canvas.width / prevW
+        const ky = canvas.height / prevH
+        cur.x *= kx
+        cur.y *= ky
+        target.x *= kx
+        target.y *= ky
+      }
+      buildBasePath()
+      draw()
+    }
+
     const onMove = (e: MouseEvent) => {
       if (reducedMotion) return
-      const rect = section.getBoundingClientRect()
-      // A stale backing store gets stretched across the CSS box — the highlight
-      // then lands scaled away from the cursor and every line blurs. If the
-      // section's size or the zoom/scaling factor drifted since the last build,
-      // rebuild before drawing anything at this cursor position.
-      if (
-        Math.abs(rect.width - w) > 1 ||
-        Math.abs(rect.height - h) > 1 ||
-        (window.devicePixelRatio || 1) !== dpr
-      ) {
-        resize()
+      if (canvas.offsetWidth !== layoutW || canvas.offsetHeight !== layoutH || (window.devicePixelRatio || 1) !== dpr) {
+        resize() // size or scaling drifted since the last build
       }
-      target.x = e.clientX - rect.left
-      target.y = e.clientY - rect.top
+      /* visual-fraction mapping: exact under zoom, scaling, and ancestor transforms */
+      const rect = canvas.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) return
+      target.x = ((e.clientX - rect.left) / rect.width) * canvas.width
+      target.y = ((e.clientY - rect.top) / rect.height) * canvas.height
       if (cur.amp < 0.01) {
         // fresh entry — appear under the cursor, don't lerp in from a stale corner
         cur.x = target.x
@@ -153,17 +178,6 @@ export default function HeroGrid() {
     const onLeave = () => {
       target.amp = 0
       wake()
-    }
-
-    const resize = () => {
-      const rect = section.getBoundingClientRect()
-      dpr = window.devicePixelRatio || 1
-      w = rect.width
-      h = rect.height
-      canvas.width = Math.max(1, Math.round(w * dpr))
-      canvas.height = Math.max(1, Math.round(h * dpr))
-      buildBasePath()
-      draw()
     }
 
     section.addEventListener("mousemove", onMove, { passive: true })
