@@ -175,6 +175,27 @@ export default function HeroGrid() {
       }
       buildBasePath()
       draw()
+
+      /* temporary field diagnostic: visit /?griddebug=1 to see the measured values */
+      if (window.location.search.includes("griddebug")) {
+        let dbg = document.getElementById("grid-debug") as HTMLDivElement | null
+        if (!dbg) {
+          dbg = document.createElement("div")
+          dbg.id = "grid-debug"
+          dbg.style.cssText =
+            "position:fixed;bottom:90px;left:8px;z-index:99999;background:rgba(0,0,0,.85);color:#0f0;font:12px/1.5 monospace;padding:8px 10px;border-radius:6px;pointer-events:none;white-space:pre"
+          document.body.appendChild(dbg)
+        }
+        dbg.textContent =
+          `layoutW  ${layoutW}\n` +
+          `layoutH  ${layoutH}\n` +
+          `dpr      ${dpr.toFixed(2)} (raw ${window.devicePixelRatio})\n` +
+          `cellCss  ${(cellBuf / dpr).toFixed(1)}\n` +
+          `radiusCss ${(radiusBuf / dpr).toFixed(1)}\n` +
+          `buffer   ${canvas.width}x${canvas.height}\n` +
+          `innerW   ${window.innerWidth}\n` +
+          `rectW    ${Math.round(canvas.getBoundingClientRect().width)}`
+      }
     }
 
     let lastGuardAt = 0
