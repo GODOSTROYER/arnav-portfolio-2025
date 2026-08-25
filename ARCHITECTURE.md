@@ -39,6 +39,10 @@ components/
                       spectrum highlight. All math in buffer px, cursor mapped by
                       visual fraction of the canvas box (immune to zoom/transforms);
                       device-pixel snapped lines; additive blending in dark mode.
+  ambient-glow.tsx    Site-wide cursor aura (fixed blurred blob, spring-driven).
+                      Fades out in the hero (grid owns the light), magnetizes to
+                      [data-timeline-axis] lines (x locks, y chases with lag),
+                      free-follows elsewhere. Mouse-only; skipped on touch/reduced-motion
   hero-section.tsx    "Welcome to Arnav's Portfolio" letter animation (scroll-linked)
   main-content-section.tsx  THE CONTENT FILE: about text, experiences[], projects[], education, certs
   technologies-section.tsx  Tech tile grid (react-icons), floating bob animation

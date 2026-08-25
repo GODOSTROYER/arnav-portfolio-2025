@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import SmoothScroll from "@/components/smooth-scroll"
+import AmbientGlow from "@/components/ambient-glow"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 
@@ -60,6 +61,7 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="dark" enableSystem={false}>
           <SmoothScroll />
           {children}
+          <AmbientGlow />
         </ThemeProvider>
         <SpeedInsights />
         <Analytics />

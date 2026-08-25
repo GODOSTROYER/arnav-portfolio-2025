@@ -409,7 +409,7 @@ export default function MainContentSection() {
 
               <div className="relative">
                 {/* Vertical timeline line for experience */}
-                <div className="absolute left-7 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 transition-colors duration-300"></div>
+                <div data-timeline-axis className="absolute left-7 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 transition-colors duration-300"></div>
 
                 <div className="space-y-8">
                   {experiences.map((exp, index) => (
@@ -484,7 +484,7 @@ export default function MainContentSection() {
 
               <div className="relative">
                 {/* Vertical timeline line for projects */}
-                <div className="absolute left-7 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 transition-colors duration-300"></div>
+                <div data-timeline-axis className="absolute left-7 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 transition-colors duration-300"></div>
 
                 <div className="space-y-8">
                   {projects.map((project, index) => (
