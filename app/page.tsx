@@ -3,10 +3,12 @@
 import { useScroll } from "framer-motion"
 import dynamic from "next/dynamic"
 import Header               from "@/components/header"
+import SiteDock             from "@/components/floating-dock"
 import MainContentSection   from "@/components/main-content-section"
 import TechnologiesSection  from "@/components/technologies-section"
 import ConnectSection       from "@/components/connect-section"
 import ResumeSection        from "@/components/resume-section"
+import SignatureSection     from "@/components/text-hover-effect"
 import Footer               from "@/components/footer"
 
 /* ───── client‑only hero (no SSR, fixes hydration mismatch) ───── */
@@ -27,7 +29,9 @@ export default function Home() {
       <TechnologiesSection />
       <ConnectSection />
       <ResumeSection />
+      <SignatureSection />
       <Footer />
+      <SiteDock />
     </main>
   )
 }
