@@ -120,9 +120,16 @@ export default function HeroGrid() {
         return `hsl(${(h + hueShift) % 360}, ${s}%, ${l}%)`
       }
 
-      /* no atmospheric fill: the background stays pure OLED black — only the
-         grid lines themselves carry light */
+      /* soft atmospheric aura beneath the lines (kept subtle — the black must
+         still read as black) */
+      const aura = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, R * 1.9)
+      aura.addColorStop(0, `hsla(${(COLOR_STOPS[0][0] + hueShift) % 360}, 95%, 60%, ${dark ? 0.07 : 0.04 * cur.amp})`)
+      aura.addColorStop(0.5, `hsla(${(COLOR_STOPS[3][0] + hueShift) % 360}, 85%, 55%, ${dark ? 0.035 : 0.02 * cur.amp})`)
+      aura.addColorStop(1, "transparent")
       if (dark) ctx.globalCompositeOperation = "lighter"
+      ctx.globalAlpha = dark ? cur.amp : 1
+      ctx.fillStyle = aura
+      ctx.fillRect(cur.x - R * 1.9, cur.y - R * 1.9, R * 3.8, R * 3.8)
 
       /* spectrum gradient anchored to the energy center */
       const grad = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, R * 1.8)
@@ -135,8 +142,8 @@ export default function HeroGrid() {
       const gy0 = Math.max(0, Math.floor((cur.y - reach) / cellBuf))
       const gy1 = Math.min(Math.ceil(canvas.height / cellBuf), Math.ceil((cur.y + reach) / cellBuf))
 
-      /* EXPERIMENT: halo pass disabled — crisp core only (restore to [0, 1] for bloom) */
-      const passes: Array<0 | 1> = [1]
+      /* two passes: a wide soft halo bloom, then the crisp core */
+      const passes: Array<0 | 1> = [0, 1]
       for (const pass of passes) {
         ctx.lineWidth = pass === 0 ? 5 * dpr : 1
         const alphaScale = pass === 0 ? (dark ? 0.2 : 0.12) : 1
@@ -178,7 +185,7 @@ export default function HeroGrid() {
         if (pointer.active) {
           tx = pointer.x
           ty = pointer.y
-          tAmp = 1
+          tAmp = 0.8 // hover glow: toned down, still clearly above the ambient wanderer
         } else {
           tx = canvas.width * (0.5 + 0.36 * Math.sin(t * 0.13))
           ty = canvas.height * (0.5 + 0.3 * Math.sin(t * 0.17 + 1.7))
@@ -306,16 +313,28 @@ export default function HeroGrid() {
         // never let the background effect take the page down
       }
     }
-    const onMove = (e: MouseEvent) => pointTo(e.clientX, e.clientY)
+    /* after a tap, mobile browsers fire synthetic compatibility mouse events at
+       the touch point; without this guard they re-capture the glow after the
+       finger lifts and it parks there instead of resuming its ambient wander */
+    let lastTouchAt = -1e9
+    const onMove = (e: MouseEvent) => {
+      if (performance.now() - lastTouchAt < 800) return
+      pointTo(e.clientX, e.clientY)
+    }
     /* touch: swipes track the finger, press-and-hold keeps the glow alight —
        passive listeners, so page scrolling is never blocked */
     const onTouch = (e: TouchEvent) => {
+      lastTouchAt = performance.now()
       const t = e.touches[0]
       if (t) pointTo(t.clientX, t.clientY)
     }
     const onLeave = () => {
       pointer.active = false // the energy drifts back to its ambient wander
       ensureLoop()
+    }
+    const onTouchEnd = () => {
+      lastTouchAt = performance.now()
+      onLeave()
     }
 
     const io = new IntersectionObserver((entries) => {
@@ -333,8 +352,8 @@ export default function HeroGrid() {
     section.addEventListener("mouseleave", onLeave)
     section.addEventListener("touchstart", onTouch, { passive: true })
     section.addEventListener("touchmove", onTouch, { passive: true })
-    section.addEventListener("touchend", onLeave, { passive: true })
-    section.addEventListener("touchcancel", onLeave, { passive: true })
+    section.addEventListener("touchend", onTouchEnd, { passive: true })
+    section.addEventListener("touchcancel", onTouchEnd, { passive: true })
     const ro = new ResizeObserver(resize)
     ro.observe(section)
     resize()
@@ -358,8 +377,8 @@ export default function HeroGrid() {
       section.removeEventListener("mouseleave", onLeave)
       section.removeEventListener("touchstart", onTouch)
       section.removeEventListener("touchmove", onTouch)
-      section.removeEventListener("touchend", onLeave)
-      section.removeEventListener("touchcancel", onLeave)
+      section.removeEventListener("touchend", onTouchEnd)
+      section.removeEventListener("touchcancel", onTouchEnd)
     }
   }, [])
 
