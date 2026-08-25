@@ -150,8 +150,11 @@ export default function HeroGrid() {
       // clamp: a huge zoomed-out layout or extreme dpr must never allocate an
       // unbounded backing store (renderer crash territory)
       dpr = Math.min(Math.max(window.devicePixelRatio || 1, 0.5), 3)
-      layoutW = canvas.offsetWidth
-      layoutH = canvas.offsetHeight
+      // measure the SECTION, never the canvas: a canvas whose positioning fails
+      // falls back to its intrinsic (buffer) size — measuring it feeds that back
+      // into the buffer and inflates it every cycle
+      layoutW = section.offsetWidth
+      layoutH = section.offsetHeight
       // proportional on small screens: desktop keeps 20px cells / 156px radius,
       // a phone gets a finer mesh and a fingertip-sized highlight instead of
       // one that swallows the whole hero
@@ -208,8 +211,8 @@ export default function HeroGrid() {
         if (now - lastGuardAt > 500) {
           lastGuardAt = now
           if (
-            canvas.offsetWidth !== layoutW ||
-            canvas.offsetHeight !== layoutH ||
+            section.offsetWidth !== layoutW ||
+            section.offsetHeight !== layoutH ||
             Math.min(Math.max(window.devicePixelRatio || 1, 0.5), 3) !== dpr
           ) {
             resize() // size or scaling drifted since the last build
@@ -274,5 +277,8 @@ export default function HeroGrid() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} aria-hidden className="pointer-events-none absolute inset-0 z-0" />
+  /* left-0 top-0 h-full w-full instead of inset-0: the `inset` shorthand is
+     unsupported in some mobile browsers, which left the canvas unconstrained
+     and sizing itself from its own buffer (compounding every resize) */
+  return <canvas ref={canvasRef} aria-hidden className="pointer-events-none absolute left-0 top-0 z-0 h-full w-full" />
 }
