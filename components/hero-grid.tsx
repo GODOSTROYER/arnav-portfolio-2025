@@ -120,15 +120,9 @@ export default function HeroGrid() {
         return `hsl(${(h + hueShift) % 360}, ${s}%, ${l}%)`
       }
 
-      /* soft atmospheric aura beneath the lines */
-      const aura = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, R * 1.9)
-      aura.addColorStop(0, `hsla(${(COLOR_STOPS[0][0] + hueShift) % 360}, 95%, 60%, ${dark ? 0.1 : 0.055 * cur.amp})`)
-      aura.addColorStop(0.5, `hsla(${(COLOR_STOPS[3][0] + hueShift) % 360}, 85%, 55%, ${dark ? 0.05 : 0.03 * cur.amp})`)
-      aura.addColorStop(1, "transparent")
+      /* no atmospheric fill: the background stays pure OLED black — only the
+         grid lines themselves carry light */
       if (dark) ctx.globalCompositeOperation = "lighter"
-      ctx.globalAlpha = dark ? cur.amp : 1
-      ctx.fillStyle = aura
-      ctx.fillRect(cur.x - R * 1.9, cur.y - R * 1.9, R * 3.8, R * 3.8)
 
       /* spectrum gradient anchored to the energy center */
       const grad = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, R * 1.8)
