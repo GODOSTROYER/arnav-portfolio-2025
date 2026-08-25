@@ -110,18 +110,23 @@ export default function HeroGrid() {
     }
 
     const tick = () => {
-      /* hold still while the theme reveal sweeps, so its edge stays crisp */
-      if (!document.documentElement.classList.contains("theme-transitioning")) {
-        cur.x += (target.x - cur.x) * 0.3
-        cur.y += (target.y - cur.y) * 0.3
-        cur.amp += (target.amp - cur.amp) * 0.2
-        draw()
-      }
-      if (target.amp === 0 && cur.amp < 0.01) {
-        cur.amp = 0
+      try {
+        /* hold still while the theme reveal sweeps, so its edge stays crisp */
+        if (!document.documentElement.classList.contains("theme-transitioning")) {
+          cur.x += (target.x - cur.x) * 0.3
+          cur.y += (target.y - cur.y) * 0.3
+          cur.amp += (target.amp - cur.amp) * 0.2
+          draw()
+        }
+        if (target.amp === 0 && cur.amp < 0.01) {
+          cur.amp = 0
+          running = false
+          draw() // settle on the clean resting grid
+          return
+        }
+      } catch {
         running = false
-        draw() // settle on the clean resting grid
-        return
+        return // never let the background effect take the page down
       }
       raf = requestAnimationFrame(tick)
     }
@@ -136,16 +141,20 @@ export default function HeroGrid() {
     const resize = () => {
       const prevW = canvas.width
       const prevH = canvas.height
-      dpr = window.devicePixelRatio || 1
+      // clamp: a huge zoomed-out layout or extreme dpr must never allocate an
+      // unbounded backing store (renderer crash territory)
+      dpr = Math.min(Math.max(window.devicePixelRatio || 1, 0.5), 3)
       layoutW = canvas.offsetWidth
       layoutH = canvas.offsetHeight
       cellBuf = CELL * dpr
       radiusBuf = RADIUS * dpr
-      canvas.width = Math.max(1, Math.round(layoutW * dpr))
-      canvas.height = Math.max(1, Math.round(layoutH * dpr))
+      const bufW = Math.min(Math.max(1, Math.round(layoutW * dpr)), 8192)
+      const bufH = Math.min(Math.max(1, Math.round(layoutH * dpr)), 8192)
+      if (bufW !== canvas.width) canvas.width = bufW
+      if (bufH !== canvas.height) canvas.height = bufH
       // cursor state lives in buffer pixels — rescale it or the highlight jumps
       // to the old buffer's coordinates after any size/zoom change
-      if (prevW > 1 && prevH > 1) {
+      if (prevW > 1 && prevH > 1 && (canvas.width !== prevW || canvas.height !== prevH)) {
         const kx = canvas.width / prevW
         const ky = canvas.height / prevH
         cur.x *= kx
@@ -157,23 +166,41 @@ export default function HeroGrid() {
       draw()
     }
 
+    let lastGuardAt = 0
     const onMove = (e: MouseEvent) => {
       if (reducedMotion) return
-      if (canvas.offsetWidth !== layoutW || canvas.offsetHeight !== layoutH || (window.devicePixelRatio || 1) !== dpr) {
-        resize() // size or scaling drifted since the last build
+      try {
+        // drift check at most twice a second — a flapping environment (extension
+        // zoom, oscillating rounding) must not rebuild the buffer per event
+        const now = performance.now()
+        if (now - lastGuardAt > 500) {
+          lastGuardAt = now
+          if (
+            canvas.offsetWidth !== layoutW ||
+            canvas.offsetHeight !== layoutH ||
+            Math.min(Math.max(window.devicePixelRatio || 1, 0.5), 3) !== dpr
+          ) {
+            resize() // size or scaling drifted since the last build
+          }
+        }
+        /* visual-fraction mapping: exact under zoom, scaling, and ancestor transforms */
+        const rect = canvas.getBoundingClientRect()
+        if (!(rect.width > 0) || !(rect.height > 0)) return
+        const tx = ((e.clientX - rect.left) / rect.width) * canvas.width
+        const ty = ((e.clientY - rect.top) / rect.height) * canvas.height
+        if (!Number.isFinite(tx) || !Number.isFinite(ty)) return
+        target.x = tx
+        target.y = ty
+        if (cur.amp < 0.01) {
+          // fresh entry — appear under the cursor, don't lerp in from a stale corner
+          cur.x = target.x
+          cur.y = target.y
+        }
+        target.amp = 1
+        wake()
+      } catch {
+        // never let the background effect take the page down
       }
-      /* visual-fraction mapping: exact under zoom, scaling, and ancestor transforms */
-      const rect = canvas.getBoundingClientRect()
-      if (rect.width === 0 || rect.height === 0) return
-      target.x = ((e.clientX - rect.left) / rect.width) * canvas.width
-      target.y = ((e.clientY - rect.top) / rect.height) * canvas.height
-      if (cur.amp < 0.01) {
-        // fresh entry — appear under the cursor, don't lerp in from a stale corner
-        cur.x = target.x
-        cur.y = target.y
-      }
-      target.amp = 1
-      wake()
     }
     const onLeave = () => {
       target.amp = 0
