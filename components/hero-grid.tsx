@@ -158,7 +158,7 @@ export default function HeroGrid() {
       // proportional on small screens: desktop keeps 20px cells / 156px radius,
       // a phone gets a finer mesh and a fingertip-sized highlight instead of
       // one that swallows the whole hero
-      const cellCss = Math.min(CELL, Math.max(10, layoutW / 32))
+      const cellCss = Math.min(CELL, Math.max(13, (layoutW / 32) * 1.3))
       const radiusCss = Math.min(RADIUS, layoutW * 0.16)
       cellBuf = cellCss * dpr
       radiusBuf = radiusCss * dpr
