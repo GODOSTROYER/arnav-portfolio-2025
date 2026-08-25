@@ -25,7 +25,7 @@ import {
   PiUserCircleDuotone,
   PiXDuotone,
 } from "react-icons/pi"
-import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react"
+import { memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from "react"
 import { useTheme } from "./theme-provider"
 
 type DockItem = {
@@ -61,46 +61,40 @@ function useScrolledPastHero() {
   return past
 }
 
-/* hide while scrolling down, reveal on scroll-up (with a small hysteresis so
-   tiny scroll jitters don't flicker it) */
-function useScrollDirectionHidden() {
-  const [hidden, setHidden] = useState(false)
-  useEffect(() => {
-    let lastY = window.scrollY
-    const onScroll = () => {
-      const y = window.scrollY
-      const delta = y - lastY
-      if (Math.abs(delta) < 8) return
-      setHidden(delta > 0 && y > 120)
-      lastY = y
-    }
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [])
-  return hidden
-}
-
 export default function SiteDock() {
-  const { isDarkMode, toggleTheme } = useTheme()
+  const { toggleTheme } = useTheme()
   const pastHero = useScrolledPastHero()
-  const scrollHidden = useScrollDirectionHidden()
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const themeItem: DockItem = {
-    key: "theme-toggle",
-    title: isDarkMode ? "Light mode" : "Dark mode",
-    icon: isDarkMode ? <PiSunDuotone className="h-full w-full" /> : <PiMoonStarsDuotone className="h-full w-full" />,
-    onClick: toggleTheme,
-  }
+  /* The items array is PERMANENTLY stable: the theme icon flips via CSS dark:
+     classes (no React state), and onClick reads the latest toggle through a ref.
+     Combined with the memoized desktop dock, a theme change never re-renders the
+     dock — its magnification springs are untouched, so the hovered icon stays
+     enlarged through the theme switch and glides back only when the cursor moves. */
+  const toggleRef = useRef(toggleTheme)
+  toggleRef.current = toggleTheme
+  const desktopItems = useMemo<DockItem[]>(
+    () => [
+      ...NAV_ITEMS,
+      {
+        key: "theme-toggle",
+        title: "Theme",
+        icon: (
+          <>
+            <PiSunDuotone className="hidden h-full w-full dark:block" />
+            <PiMoonStarsDuotone className="h-full w-full dark:hidden" />
+          </>
+        ),
+        onClick: (e: MouseEvent<HTMLButtonElement>) => toggleRef.current(e),
+      },
+    ],
+    [],
+  )
 
   return (
     <>
-      {/* Mobile: bottom-right; tucks away while scrolling down (never while open) */}
-      <div
-        className={`fixed bottom-6 right-6 z-50 transition-all duration-300 md:hidden ${
-          scrollHidden && !mobileOpen ? "pointer-events-none translate-y-24 opacity-0" : "translate-y-0 opacity-100"
-        }`}
-      >
+      {/* Mobile: bottom-right, always available */}
+      <div className="fixed bottom-6 right-6 z-50 md:hidden">
         <FloatingDockMobile items={NAV_ITEMS} open={mobileOpen} setOpen={setMobileOpen} />
       </div>
 
@@ -114,7 +108,7 @@ export default function SiteDock() {
             transition={{ type: "spring", damping: 24, stiffness: 260 }}
             className="fixed inset-x-0 bottom-6 z-50 hidden justify-center md:flex"
           >
-            <FloatingDockDesktop items={[...NAV_ITEMS, themeItem]} />
+            <FloatingDockDesktop items={desktopItems} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -176,16 +170,27 @@ function FloatingDockMobile({
       lastTouch = performance.now()
       e.preventDefault() // suppress the synthetic click that would double-toggle
       const t = e.changedTouches[0]
-      if (moved && t) {
-        const idx = hitTest(t)
-        setActiveIdx(-1)
+      setActiveIdx(-1)
+      if (!t) return
+      const idx = hitTest(t)
+      const btnRect = btn.getBoundingClientRect()
+      const onButton =
+        t.clientX >= btnRect.left - 8 &&
+        t.clientX <= btnRect.right + 8 &&
+        t.clientY >= btnRect.top - 8 &&
+        t.clientY <= btnRect.bottom + 8
+      if (idx >= 0) {
+        // released on an item (slid or not) → select it
         setOpen(false)
-        const href = idx >= 0 ? items[idx]?.href : undefined
+        const href = items[idx]?.href
         if (href) window.location.hash = href
-      } else {
-        // plain tap: toggle — opens for tap-to-select, closes if it was open
-        setActiveIdx(-1)
+      } else if (onButton) {
+        // released on the button itself → a tap, however wobbly the finger was:
+        // opens for tap-to-select, closes if it was already open
         if (wasOpen) setOpen(false)
+      } else if (moved) {
+        // slid away and released on nothing → close
+        setOpen(false)
       }
     }
     const onClick = () => {
@@ -211,18 +216,29 @@ function FloatingDockMobile({
     <div className="relative">
       <AnimatePresence>
         {open && (
-          <motion.div className="absolute inset-x-0 bottom-full mb-2 flex flex-col items-center gap-2">
+          <motion.div className="absolute bottom-full right-0 mb-2 flex flex-col items-end gap-2">
             {items.map((item, idx) => (
               <motion.div
                 key={item.key ?? item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10, transition: { delay: idx * 0.05 } }}
+                data-dock-idx={idx}
+                initial={{ opacity: 0, y: 10, x: 12 }}
+                animate={{ opacity: 1, y: 0, x: 0 }}
+                exit={{ opacity: 0, y: 10, x: 12, transition: { delay: idx * 0.04 } }}
                 transition={{ delay: (items.length - 1 - idx) * 0.05 }}
+                className="flex items-center gap-2"
               >
+                {/* text label, slides in beside the icon */}
+                <span
+                  className={`rounded-md px-2 py-0.5 text-xs font-medium shadow-md transition-colors duration-150 ${
+                    activeIdx === idx
+                      ? "bg-neutral-900 text-white dark:bg-gray-50 dark:text-neutral-900"
+                      : "bg-gray-50/95 text-neutral-700 dark:bg-neutral-900/95 dark:text-neutral-200"
+                  }`}
+                >
+                  {item.title}
+                </span>
                 <a
                   href={item.href}
-                  data-dock-idx={idx}
                   onClick={() => setOpen(false)}
                   aria-label={item.title}
                   className={`group relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 dark:bg-neutral-900 ${
@@ -270,7 +286,8 @@ function FloatingDockMobile({
   )
 }
 
-function FloatingDockDesktop({ items }: { items: DockItem[] }) {
+/* memo: with the stable items array, theme changes skip this subtree entirely */
+const FloatingDockDesktop = memo(function FloatingDockDesktop({ items }: { items: DockItem[] }) {
   const mouseX = useMotionValue(Number.POSITIVE_INFINITY)
   return (
     <motion.div
@@ -283,7 +300,7 @@ function FloatingDockDesktop({ items }: { items: DockItem[] }) {
       ))}
     </motion.div>
   )
-}
+})
 
 function IconContainer({ mouseX, item }: { mouseX: MotionValue<number>; item: DockItem }) {
   const ref = useRef<HTMLDivElement>(null)
