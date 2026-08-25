@@ -1,6 +1,12 @@
 {
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "arnav-portfolio-2025.vercel.app" }],
+      "destination": "https://www.arnavbule.in/:path*",
+      "permanent": true
+    },
+    {
       "source": "/task-tracker",
       "destination": "https://task-tracker-godostroyers-projects.vercel.app",
       "permanent": false
