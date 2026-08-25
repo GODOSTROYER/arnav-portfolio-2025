@@ -14,7 +14,8 @@
 
 import { useEffect, useRef } from "react"
 
-const COLORS = ["#eab308", "#ef4444", "#3b82f6", "#06b6d4", "#8b5cf6"]
+/* vivid neon set, warm core → cool rim, ordered for the cursor-centered radial */
+const COLORS = ["#fde047", "#f97316", "#f43f5e", "#d946ef", "#8b5cf6", "#22d3ee"]
 const CELL = 20 // grid pitch, layout px — fine mesh
 const RADIUS = 156 // influence radius, layout px
 
@@ -77,10 +78,14 @@ export default function HeroGrid() {
       /* pass 2 — vibrant gradient hairlines near the cursor, per-segment alpha.
          Only the cells inside the influence box are visited. */
       if (cur.amp >= 0.005) {
-        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
+        /* the gradient is anchored to the cursor, not the canvas — every color of
+           the spectrum is always inside the highlight, wherever it is */
+        const grad = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, radiusBuf * 1.8)
         COLORS.forEach((c, i) => grad.addColorStop(i / (COLORS.length - 1), c))
         ctx.strokeStyle = grad
         ctx.lineWidth = 1
+        /* additive blending on dark = luminous, HDR-like glow where lines cross */
+        if (dark) ctx.globalCompositeOperation = "lighter"
         const reach = radiusBuf * 2
         const gx0 = Math.max(0, Math.floor((cur.x - reach) / cellBuf))
         const gx1 = Math.min(Math.ceil(canvas.width / cellBuf), Math.ceil((cur.x + reach) / cellBuf))
@@ -106,6 +111,7 @@ export default function HeroGrid() {
           }
         }
         ctx.globalAlpha = 1
+        ctx.globalCompositeOperation = "source-over"
       }
     }
 
@@ -167,7 +173,7 @@ export default function HeroGrid() {
     }
 
     let lastGuardAt = 0
-    const onMove = (e: MouseEvent) => {
+    const pointTo = (clientX: number, clientY: number) => {
       if (reducedMotion) return
       try {
         // drift check at most twice a second — a flapping environment (extension
@@ -186,13 +192,13 @@ export default function HeroGrid() {
         /* visual-fraction mapping: exact under zoom, scaling, and ancestor transforms */
         const rect = canvas.getBoundingClientRect()
         if (!(rect.width > 0) || !(rect.height > 0)) return
-        const tx = ((e.clientX - rect.left) / rect.width) * canvas.width
-        const ty = ((e.clientY - rect.top) / rect.height) * canvas.height
+        const tx = ((clientX - rect.left) / rect.width) * canvas.width
+        const ty = ((clientY - rect.top) / rect.height) * canvas.height
         if (!Number.isFinite(tx) || !Number.isFinite(ty)) return
         target.x = tx
         target.y = ty
         if (cur.amp < 0.01) {
-          // fresh entry — appear under the cursor, don't lerp in from a stale corner
+          // fresh entry — appear under the pointer, don't lerp in from a stale corner
           cur.x = target.x
           cur.y = target.y
         }
@@ -202,6 +208,13 @@ export default function HeroGrid() {
         // never let the background effect take the page down
       }
     }
+    const onMove = (e: MouseEvent) => pointTo(e.clientX, e.clientY)
+    /* touch: swipes track the finger, press-and-hold keeps the glow alight —
+       passive listeners, so page scrolling is never blocked */
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (t) pointTo(t.clientX, t.clientY)
+    }
     const onLeave = () => {
       target.amp = 0
       wake()
@@ -209,6 +222,10 @@ export default function HeroGrid() {
 
     section.addEventListener("mousemove", onMove, { passive: true })
     section.addEventListener("mouseleave", onLeave)
+    section.addEventListener("touchstart", onTouch, { passive: true })
+    section.addEventListener("touchmove", onTouch, { passive: true })
+    section.addEventListener("touchend", onLeave, { passive: true })
+    section.addEventListener("touchcancel", onLeave, { passive: true })
     const ro = new ResizeObserver(resize)
     ro.observe(section)
     resize()
@@ -224,6 +241,10 @@ export default function HeroGrid() {
       mo.disconnect()
       section.removeEventListener("mousemove", onMove)
       section.removeEventListener("mouseleave", onLeave)
+      section.removeEventListener("touchstart", onTouch)
+      section.removeEventListener("touchmove", onTouch)
+      section.removeEventListener("touchend", onLeave)
+      section.removeEventListener("touchcancel", onLeave)
     }
   }, [])
 
