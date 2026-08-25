@@ -129,6 +129,17 @@ export default function HeroGrid() {
     const onMove = (e: MouseEvent) => {
       if (reducedMotion) return
       const rect = section.getBoundingClientRect()
+      // A stale backing store gets stretched across the CSS box — the highlight
+      // then lands scaled away from the cursor and every line blurs. If the
+      // section's size or the zoom/scaling factor drifted since the last build,
+      // rebuild before drawing anything at this cursor position.
+      if (
+        Math.abs(rect.width - w) > 1 ||
+        Math.abs(rect.height - h) > 1 ||
+        (window.devicePixelRatio || 1) !== dpr
+      ) {
+        resize()
+      }
       target.x = e.clientX - rect.left
       target.y = e.clientY - rect.top
       if (cur.amp < 0.01) {
