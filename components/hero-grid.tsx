@@ -141,8 +141,9 @@ export default function HeroGrid() {
       const gy0 = Math.max(0, Math.floor((cur.y - reach) / cellBuf))
       const gy1 = Math.min(Math.ceil(canvas.height / cellBuf), Math.ceil((cur.y + reach) / cellBuf))
 
-      /* two passes: a wide soft halo bloom, then the crisp core */
-      for (const pass of [0, 1] as const) {
+      /* EXPERIMENT: halo pass disabled — crisp core only (restore to [0, 1] for bloom) */
+      const passes: Array<0 | 1> = [1]
+      for (const pass of passes) {
         ctx.lineWidth = pass === 0 ? 5 * dpr : 1
         const alphaScale = pass === 0 ? (dark ? 0.2 : 0.12) : 1
         const seg = (midX: number, midY: number, x1: number, y1: number, x2: number, y2: number) => {
