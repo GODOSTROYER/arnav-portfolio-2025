@@ -133,13 +133,22 @@ function FloatingDockMobile({
      - slide the finger up → items highlight as you pass over them
      - release on an item → it's selected, dock closes
      - plain tap (no slide) → dock stays open for classic tap-to-select;
-       tap again to close */
+       tap again to close
+
+     CRITICAL: the listeners attach exactly ONCE and all mutable state lives in
+     refs. An earlier version re-created the listeners whenever `open` changed —
+     which happens ON PRESS — so the gesture's own state was wiped mid-gesture
+     and there was a re-attach gap for the browser to steal the touch as a
+     scroll. That made quick taps unreliable ("works only if I hold it"). */
+  const openRef = useRef(open)
+  openRef.current = open
+  const itemsRef = useRef(items)
+  itemsRef.current = items
+
   useEffect(() => {
     const btn = btnRef.current
     if (!btn) return
-    let moved = false
-    let wasOpen = false
-    let start = { x: 0, y: 0 }
+    const g = { active: false, moved: false, wasOpen: false, startX: 0, startY: 0 }
     let lastTouch = -1e9
 
     const hitTest = (t: Touch) => {
@@ -151,23 +160,28 @@ function FloatingDockMobile({
       lastTouch = performance.now()
       const t = e.touches[0]
       if (!t) return
-      start = { x: t.clientX, y: t.clientY }
-      moved = false
-      wasOpen = open
+      g.active = true
+      g.moved = false
+      g.wasOpen = openRef.current
+      g.startX = t.clientX
+      g.startY = t.clientY
       setOpen(true)
       setActiveIdx(-1)
     }
     const onTouchMove = (e: TouchEvent) => {
+      if (!g.active) return
       const t = e.touches[0]
       if (!t) return
-      if (!moved && Math.hypot(t.clientX - start.x, t.clientY - start.y) > 12) moved = true
-      if (moved) {
+      if (!g.moved && Math.hypot(t.clientX - g.startX, t.clientY - g.startY) > 14) g.moved = true
+      if (g.moved) {
         e.preventDefault() // the finger is sliding the dock, not scrolling the page
         setActiveIdx(hitTest(t))
       }
     }
     const onEnd = (e: TouchEvent) => {
       lastTouch = performance.now()
+      if (!g.active) return
+      g.active = false
       e.preventDefault() // suppress the synthetic click that would double-toggle
       const t = e.changedTouches[0]
       setActiveIdx(-1)
@@ -175,42 +189,47 @@ function FloatingDockMobile({
       const idx = hitTest(t)
       const btnRect = btn.getBoundingClientRect()
       const onButton =
-        t.clientX >= btnRect.left - 8 &&
-        t.clientX <= btnRect.right + 8 &&
-        t.clientY >= btnRect.top - 8 &&
-        t.clientY <= btnRect.bottom + 8
+        t.clientX >= btnRect.left - 10 &&
+        t.clientX <= btnRect.right + 10 &&
+        t.clientY >= btnRect.top - 10 &&
+        t.clientY <= btnRect.bottom + 10
       if (idx >= 0) {
         // released on an item (slid or not) → select it
         setOpen(false)
-        const href = items[idx]?.href
+        const href = itemsRef.current[idx]?.href
         if (href) window.location.hash = href
       } else if (onButton) {
         // released on the button itself → a tap, however wobbly the finger was:
         // opens for tap-to-select, closes if it was already open
-        if (wasOpen) setOpen(false)
-      } else if (moved) {
+        if (g.wasOpen) setOpen(false)
+      } else if (g.moved) {
         // slid away and released on nothing → close
         setOpen(false)
       }
     }
+    const onCancel = () => {
+      // system stole the touch — reset cleanly, leave the dock as it is
+      g.active = false
+      setActiveIdx(-1)
+    }
     const onClick = () => {
       // fallback for environments without touch events
-      if (performance.now() - lastTouch > 800) setOpen(!open)
+      if (performance.now() - lastTouch > 800) setOpen(!openRef.current)
     }
 
     btn.addEventListener("touchstart", onStart, { passive: true })
     btn.addEventListener("touchmove", onTouchMove, { passive: false })
     btn.addEventListener("touchend", onEnd, { passive: false })
-    btn.addEventListener("touchcancel", onEnd, { passive: false })
+    btn.addEventListener("touchcancel", onCancel)
     btn.addEventListener("click", onClick)
     return () => {
       btn.removeEventListener("touchstart", onStart)
       btn.removeEventListener("touchmove", onTouchMove)
       btn.removeEventListener("touchend", onEnd)
-      btn.removeEventListener("touchcancel", onEnd)
+      btn.removeEventListener("touchcancel", onCancel)
       btn.removeEventListener("click", onClick)
     }
-  }, [items, open, setOpen])
+  }, [setOpen])
 
   return (
     <div className="relative">
@@ -270,7 +289,7 @@ function FloatingDockMobile({
         ref={btnRef}
         aria-label={open ? "Close navigation" : "Open navigation"}
         className="group relative flex h-12 w-12 touch-none items-center justify-center rounded-full bg-gray-50 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 dark:bg-neutral-900"
-        style={{ WebkitTapHighlightColor: "transparent" }}
+        style={{ WebkitTapHighlightColor: "transparent", touchAction: "none" }}
       >
         <span
           className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-150 group-active:opacity-100"
