@@ -1,23 +1,46 @@
 "use client"
 
-/* Grid background for the hero (and only the hero).
-   A razor-sharp hairline grid, faint and recessed; near the cursor the lines
-   light up with the site's vibrant signature gradient (same palette as the
-   text-hover effect), fading with a steep gaussian falloff.
+/* Living energy-field background for the hero (and only the hero).
 
-   All math runs in BUFFER pixels, and the cursor is mapped in as a fraction of
-   the canvas's own bounding box — this stays exact under display scaling,
-   browser zoom, and even ancestor CSS transforms (extension-injected zoom/scale
-   included), any of which desync visual pixels from layout pixels. The buffer
-   is sized from offsetWidth (layout), never from getBoundingClientRect (visual).
-   Geometry is static and snapped to device pixels — nothing ever blurs. */
+   A razor-sharp hairline grid, faint and recessed. Through it moves a glowing
+   energy center: when the pointer is inside the hero it follows the pointer on
+   a damped SPRING (real momentum — slight overshoot, elastic settle); when the
+   pointer is still or absent, a slow ambient wanderer keeps a soft glow
+   drifting along a non-repeating lissajous path, so the field never freezes.
+   The spectrum itself rotates hue continuously and two incommensurate ripple
+   waves interfere across the lines, so colors flow even at a standstill. The
+   glow is a two-pass bloom: a wide soft halo (additive in dark mode) beneath a
+   crisp 1-device-px core.
+
+   All math runs in BUFFER pixels, and the pointer is mapped in as a fraction of
+   the canvas's own bounding box — exact under display scaling, browser zoom,
+   and ancestor CSS transforms. The buffer is sized from the SECTION's layout
+   size, never from the canvas or getBoundingClientRect. Base geometry is
+   static and snapped to device pixels — the grid itself never blurs.
+
+   Performance: the animation loop runs only while the hero is on-screen and
+   the tab is visible (IntersectionObserver + visibilitychange); reduced-motion
+   users get the static grid only. */
 
 import { useEffect, useRef } from "react"
 
-/* vivid neon set, warm core → cool rim, ordered for the cursor-centered radial */
-const COLORS = ["#fde047", "#f97316", "#f43f5e", "#d946ef", "#8b5cf6", "#22d3ee"]
+/* vivid neon set as HSL (warm core → cool rim); hue rotates over time */
+const COLOR_STOPS: Array<[number, number, number]> = [
+  [50, 98, 64], // gold
+  [25, 95, 53], // orange
+  [350, 89, 60], // rose
+  [292, 84, 61], // magenta
+  [258, 90, 66], // violet
+  [187, 85, 53], // cyan
+]
 const CELL = 20 // grid pitch, layout px — fine mesh
 const RADIUS = 156 // influence radius, layout px
+const AMBIENT_AMP = 0.34 // glow strength of the idle wanderer
+/* spring constants — underdamped on purpose: the glow leans, overshoots a touch, settles */
+const POS_STIFFNESS = 140
+const POS_DAMPING = 16
+const AMP_STIFFNESS = 60
+const AMP_DAMPING = 11
 
 export default function HeroGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -31,24 +54,22 @@ export default function HeroGrid() {
     let layoutW = 0
     let layoutH = 0
     let dpr = 1
-    let cellBuf = CELL // grid pitch in buffer px
-    let radiusBuf = RADIUS // influence radius in buffer px
+    let cellBuf = CELL
+    let radiusBuf = RADIUS
     let raf = 0
     let running = false
+    let onScreen = true
+    let pageVisible = document.visibilityState === "visible"
     let basePath: Path2D | null = null
-    /* cursor state, in buffer pixels */
-    const target = { x: -99999, y: -99999, amp: 0 }
-    const cur = { x: -99999, y: -99999, amp: 0 }
+    /* energy-center state, in buffer pixels, driven by a damped spring */
+    const pointer = { x: 0, y: 0, active: false }
+    const cur = { x: -99999, y: -99999, amp: 0, vx: 0, vy: 0, vamp: 0 }
+    let lastT = 0
+    const t0 = performance.now()
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     /* snap a buffer coordinate onto a half-pixel boundary → 1-device-px hairlines */
     const S = (v: number) => Math.round(v) + 0.5
-
-    const influence = (bx: number, by: number) => {
-      if (cur.amp < 0.005) return 0
-      const d2 = (bx - cur.x) ** 2 + (by - cur.y) ** 2
-      return Math.exp(-d2 / (radiusBuf * radiusBuf)) * cur.amp
-    }
 
     const buildBasePath = () => {
       basePath = new Path2D()
@@ -64,8 +85,9 @@ export default function HeroGrid() {
       }
     }
 
-    const draw = () => {
+    const draw = (t: number) => {
       ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.globalCompositeOperation = "source-over"
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       const dark = document.documentElement.classList.contains("dark")
 
@@ -75,27 +97,60 @@ export default function HeroGrid() {
       ctx.globalAlpha = 1
       if (basePath) ctx.stroke(basePath)
 
-      /* pass 2 — vibrant gradient hairlines near the cursor, per-segment alpha.
-         Only the cells inside the influence box are visited. */
-      if (cur.amp >= 0.005) {
-        /* the gradient is anchored to the cursor, not the canvas — every color of
-           the spectrum is always inside the highlight, wherever it is */
-        const grad = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, radiusBuf * 1.8)
-        COLORS.forEach((c, i) => grad.addColorStop(i / (COLORS.length - 1), c))
-        ctx.strokeStyle = grad
-        ctx.lineWidth = 1
-        /* additive blending on dark = luminous, HDR-like glow where lines cross */
-        if (dark) ctx.globalCompositeOperation = "lighter"
-        const reach = radiusBuf * 2
-        const gx0 = Math.max(0, Math.floor((cur.x - reach) / cellBuf))
-        const gx1 = Math.min(Math.ceil(canvas.width / cellBuf), Math.ceil((cur.x + reach) / cellBuf))
-        const gy0 = Math.max(0, Math.floor((cur.y - reach) / cellBuf))
-        const gy1 = Math.min(Math.ceil(canvas.height / cellBuf), Math.ceil((cur.y + reach) / cellBuf))
+      if (cur.amp < 0.02) return
+
+      /* the field breathes: radius swells and relaxes on two incommensurate waves */
+      const breath = 1 + 0.06 * Math.sin(t * 0.8) + 0.04 * Math.sin(t * 1.7 + 1.3)
+      const R = radiusBuf * breath
+      const hueShift = t * 14 // slow continuous spectrum rotation
+
+      const influence = (bx: number, by: number) => {
+        const d2 = (bx - cur.x) ** 2 + (by - cur.y) ** 2
+        return Math.exp(-d2 / (R * R)) * cur.amp
+      }
+      /* two traveling waves interfering across the plane — organic shimmer,
+         never a visible loop */
+      const ripple = (bx: number, by: number) =>
+        0.78 +
+        0.22 * Math.sin(bx * 0.011 + t * 2.1) * Math.sin(by * 0.013 - t * 1.6) +
+        0.1 * Math.sin((bx + by) * 0.006 + t * 0.9)
+
+      const stop = (i: number) => {
+        const [h, s, l] = COLOR_STOPS[i]
+        return `hsl(${(h + hueShift) % 360}, ${s}%, ${l}%)`
+      }
+
+      /* soft atmospheric aura beneath the lines */
+      const aura = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, R * 1.9)
+      aura.addColorStop(0, `hsla(${(COLOR_STOPS[0][0] + hueShift) % 360}, 95%, 60%, ${dark ? 0.1 : 0.055 * cur.amp})`)
+      aura.addColorStop(0.5, `hsla(${(COLOR_STOPS[3][0] + hueShift) % 360}, 85%, 55%, ${dark ? 0.05 : 0.03 * cur.amp})`)
+      aura.addColorStop(1, "transparent")
+      if (dark) ctx.globalCompositeOperation = "lighter"
+      ctx.globalAlpha = dark ? cur.amp : 1
+      ctx.fillStyle = aura
+      ctx.fillRect(cur.x - R * 1.9, cur.y - R * 1.9, R * 3.8, R * 3.8)
+
+      /* spectrum gradient anchored to the energy center */
+      const grad = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, R * 1.8)
+      COLOR_STOPS.forEach((_, i) => grad.addColorStop(i / (COLOR_STOPS.length - 1), stop(i)))
+      ctx.strokeStyle = grad
+
+      const reach = R * 2
+      const gx0 = Math.max(0, Math.floor((cur.x - reach) / cellBuf))
+      const gx1 = Math.min(Math.ceil(canvas.width / cellBuf), Math.ceil((cur.x + reach) / cellBuf))
+      const gy0 = Math.max(0, Math.floor((cur.y - reach) / cellBuf))
+      const gy1 = Math.min(Math.ceil(canvas.height / cellBuf), Math.ceil((cur.y + reach) / cellBuf))
+
+      /* two passes: a wide soft halo bloom, then the crisp core */
+      for (const pass of [0, 1] as const) {
+        ctx.lineWidth = pass === 0 ? 5 * dpr : 1
+        const alphaScale = pass === 0 ? (dark ? 0.2 : 0.12) : 1
         const seg = (midX: number, midY: number, x1: number, y1: number, x2: number, y2: number) => {
           const infl = influence(midX, midY)
-          if (infl < 0.02) return
-          // steepened curve: saturated core, crisp edge
-          ctx.globalAlpha = Math.min(Math.pow(infl, 1.4) * 2.5, 1)
+          if (infl < (pass === 0 ? 0.06 : 0.02)) return
+          const a = Math.min(Math.pow(infl, 1.4) * 2.5, 1) * ripple(midX, midY) * alphaScale
+          if (a < 0.01) return
+          ctx.globalAlpha = Math.min(a, 1)
           ctx.beginPath()
           ctx.moveTo(x1, y1)
           ctx.lineTo(x2, y2)
@@ -105,41 +160,66 @@ export default function HeroGrid() {
           for (let gx = gx0; gx <= gx1; gx++) {
             const x = gx * cellBuf
             const y = gy * cellBuf
-            // horizontal edge to the right, vertical edge downward
             seg(x + cellBuf / 2, y, S(x), S(y), S(x + cellBuf), S(y))
             seg(x, y + cellBuf / 2, S(x), S(y), S(x), S(y + cellBuf))
           }
         }
-        ctx.globalAlpha = 1
-        ctx.globalCompositeOperation = "source-over"
       }
+      ctx.globalAlpha = 1
+      ctx.globalCompositeOperation = "source-over"
     }
 
-    const tick = () => {
+    const tick = (now: number) => {
       try {
+        const t = (now - t0) / 1000
+        const dt = Math.min(0.05, lastT ? t - lastT : 0.016)
+        lastT = t
+
+        /* where the energy wants to be: the pointer, or the ambient wanderer
+           drifting a slow lissajous path while nobody is interacting */
+        let tx: number
+        let ty: number
+        let tAmp: number
+        if (pointer.active) {
+          tx = pointer.x
+          ty = pointer.y
+          tAmp = 1
+        } else {
+          tx = canvas.width * (0.5 + 0.36 * Math.sin(t * 0.13))
+          ty = canvas.height * (0.5 + 0.3 * Math.sin(t * 0.17 + 1.7))
+          tAmp = AMBIENT_AMP
+        }
+
+        /* damped springs — momentum, slight overshoot, elastic settle */
+        cur.vx += (tx - cur.x) * POS_STIFFNESS * dt
+        cur.vy += (ty - cur.y) * POS_STIFFNESS * dt
+        cur.vx *= Math.max(0, 1 - POS_DAMPING * dt)
+        cur.vy *= Math.max(0, 1 - POS_DAMPING * dt)
+        cur.x += cur.vx * dt
+        cur.y += cur.vy * dt
+        cur.vamp += (tAmp - cur.amp) * AMP_STIFFNESS * dt
+        cur.vamp *= Math.max(0, 1 - AMP_DAMPING * dt)
+        cur.amp += cur.vamp * dt
+
         /* hold still while the theme reveal sweeps, so its edge stays crisp */
         if (!document.documentElement.classList.contains("theme-transitioning")) {
-          cur.x += (target.x - cur.x) * 0.3
-          cur.y += (target.y - cur.y) * 0.3
-          cur.amp += (target.amp - cur.amp) * 0.2
-          draw()
-        }
-        if (target.amp === 0 && cur.amp < 0.01) {
-          cur.amp = 0
-          running = false
-          draw() // settle on the clean resting grid
-          return
+          draw(t)
         }
       } catch {
         running = false
         return // never let the background effect take the page down
       }
-      raf = requestAnimationFrame(tick)
+      if (onScreen && pageVisible && !reducedMotion) {
+        raf = requestAnimationFrame(tick)
+      } else {
+        running = false
+      }
     }
 
-    const wake = () => {
-      if (!running) {
+    const ensureLoop = () => {
+      if (!running && onScreen && pageVisible && !reducedMotion) {
         running = true
+        lastT = 0
         raf = requestAnimationFrame(tick)
       }
     }
@@ -156,8 +236,7 @@ export default function HeroGrid() {
       layoutW = section.offsetWidth
       layoutH = section.offsetHeight
       // proportional on small screens: desktop keeps 20px cells / 156px radius,
-      // a phone gets a finer mesh and a fingertip-sized highlight instead of
-      // one that swallows the whole hero
+      // a phone gets a finer mesh and a fingertip-sized highlight
       const cellCss = Math.min(CELL, Math.max(13, (layoutW / 32) * 1.3))
       const radiusCss = Math.min(RADIUS, layoutW * 0.16)
       cellBuf = cellCss * dpr
@@ -166,18 +245,18 @@ export default function HeroGrid() {
       const bufH = Math.min(Math.max(1, Math.round(layoutH * dpr)), 8192)
       if (bufW !== canvas.width) canvas.width = bufW
       if (bufH !== canvas.height) canvas.height = bufH
-      // cursor state lives in buffer pixels — rescale it or the highlight jumps
-      // to the old buffer's coordinates after any size/zoom change
+      // energy-center state lives in buffer pixels — rescale it or the glow
+      // jumps to the old buffer's coordinates after any size/zoom change
       if (prevW > 1 && prevH > 1 && (canvas.width !== prevW || canvas.height !== prevH)) {
         const kx = canvas.width / prevW
         const ky = canvas.height / prevH
         cur.x *= kx
         cur.y *= ky
-        target.x *= kx
-        target.y *= ky
+        pointer.x *= kx
+        pointer.y *= ky
       }
       buildBasePath()
-      draw()
+      draw((performance.now() - t0) / 1000)
 
       /* temporary field diagnostic: visit /?griddebug=1 to see the measured values */
       if (window.location.search.includes("griddebug")) {
@@ -224,15 +303,10 @@ export default function HeroGrid() {
         const tx = ((clientX - rect.left) / rect.width) * canvas.width
         const ty = ((clientY - rect.top) / rect.height) * canvas.height
         if (!Number.isFinite(tx) || !Number.isFinite(ty)) return
-        target.x = tx
-        target.y = ty
-        if (cur.amp < 0.01) {
-          // fresh entry — appear under the pointer, don't lerp in from a stale corner
-          cur.x = target.x
-          cur.y = target.y
-        }
-        target.amp = 1
-        wake()
+        pointer.x = tx
+        pointer.y = ty
+        pointer.active = true
+        ensureLoop()
       } catch {
         // never let the background effect take the page down
       }
@@ -245,9 +319,20 @@ export default function HeroGrid() {
       if (t) pointTo(t.clientX, t.clientY)
     }
     const onLeave = () => {
-      target.amp = 0
-      wake()
+      pointer.active = false // the energy drifts back to its ambient wander
+      ensureLoop()
     }
+
+    const io = new IntersectionObserver((entries) => {
+      onScreen = entries[0]?.isIntersecting ?? true
+      ensureLoop()
+    })
+    io.observe(section)
+    const onVisibility = () => {
+      pageVisible = document.visibilityState === "visible"
+      ensureLoop()
+    }
+    document.addEventListener("visibilitychange", onVisibility)
 
     section.addEventListener("mousemove", onMove, { passive: true })
     section.addEventListener("mouseleave", onLeave)
@@ -258,16 +343,22 @@ export default function HeroGrid() {
     const ro = new ResizeObserver(resize)
     ro.observe(section)
     resize()
+    /* the field starts alive at its ambient center */
+    cur.x = canvas.width / 2
+    cur.y = canvas.height / 2
+    ensureLoop()
 
     /* repaint the base grid when the theme class flips (fires before the view
        transition captures the new state, so the reveal shows the right colors) */
-    const mo = new MutationObserver(draw)
+    const mo = new MutationObserver(() => draw((performance.now() - t0) / 1000))
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
 
     return () => {
       cancelAnimationFrame(raf)
       ro.disconnect()
+      io.disconnect()
       mo.disconnect()
+      document.removeEventListener("visibilitychange", onVisibility)
       section.removeEventListener("mousemove", onMove)
       section.removeEventListener("mouseleave", onLeave)
       section.removeEventListener("touchstart", onTouch)
