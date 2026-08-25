@@ -11,22 +11,22 @@
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
-    "framer-motion": "latest",
+    "framer-motion": "^12.23.12",
     "lucide-react": "^0.454.0",
     "next": "15.5.12",
-    "next-themes": "latest",
-    "react": "^19",
-    "react-dom": "^19",
-    "react-icons": "latest",
+    "next-themes": "^0.4.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-icons": "^5.5.0",
     "react-pdf": "^10.0.1"
   },
   "devDependencies": {
-    "@types/node": "^22",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.5",
+    "@types/node": "^22.17.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5.9.2"
   }
 }

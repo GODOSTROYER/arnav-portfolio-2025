@@ -13,10 +13,39 @@ const poppins = Poppins({
   variable: "--font-poppins",
 })
 
+const SITE_URL = "https://www.arnavbule.in"
+const DESCRIPTION =
+  "Portfolio of Arnav Prashant Bule — AI/ML developer and data science intern building production ETL pipelines, full-stack apps, and ML-powered tools."
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Arnav Prashant Bule - Portfolio",
-  description: "Tech Enthusiast & AI/ML Developer",
-  generator: "v0.dev",
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "Arnav Bule",
+    title: "Arnav Prashant Bule — AI/ML Developer",
+    description: DESCRIPTION,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Arnav Bule — AI/ML Developer" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Arnav Prashant Bule — AI/ML Developer",
+    description: DESCRIPTION,
+    images: ["/og.png"],
+  },
+}
+
+/* JSON-LD Person schema for rich search results */
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Arnav Prashant Bule",
+  url: SITE_URL,
+  jobTitle: "AI/ML Developer",
+  sameAs: ["https://github.com/GODOSTROYER/", "https://www.linkedin.com/in/arnavbule/"],
 }
 
 export default function RootLayout({
@@ -32,6 +61,10 @@ export default function RootLayout({
         </ThemeProvider>
         <SpeedInsights />
         <Analytics />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
       </body>
     </html>
   )

@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/task-tracker",
+      "destination": "https://task-tracker-godostroyers-projects.vercel.app",
+      "permanent": false
+    }
+  ]
+}

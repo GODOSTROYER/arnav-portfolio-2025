@@ -72,7 +72,7 @@ export default function MainContentSection() {
       period: "2025",
       team: "Next.js 15 · React 19 · TypeScript · Express · MongoDB · Redis",
       github: "https://github.com/GODOSTROYER/wldd-task-tracker",
-      live: "https://wldd-task-tracker.arnavbule.me",
+      live: "/task-tracker",
       highlight: [
         "Built a full-stack task tracker with Next.js 15 (React 19) frontend and Express + TypeScript REST API, including workspace-based task organization and multiple task views (Board/List/Table/Timeline).",
         "Implemented secure auth: email OTP verification (6-digit), JWT sessions (7-day expiry), bcrypt password hashing, and password reset via email token.",
