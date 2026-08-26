@@ -15,26 +15,27 @@ import {
   SiCplusplus,
 } from "react-icons/si"
 
-export default function TechnologiesSection() {
-  const techStack = [
-    { icon: <FaPython size={50} />, label: "Python", color: "text-yellow-500" },
-    { icon: <SiCplusplus size={50} />, label: "C++", color: "text-blue-600" },
-    { icon: <FaReact size={50} />, label: "React", color: "text-blue-500" },
-    { icon: <FaNodeJs size={50} />, label: "Node.js", color: "text-green-600" },
-    { icon: <SiTailwindcss size={50} />, label: "Tailwind CSS", color: "text-teal-500" },
-    { icon: <SiMongodb size={50} />, label: "MongoDB", color: "text-green-700" },
-    { icon: <SiMysql size={50} />, label: "MySQL", color: "text-blue-700" },
-    { icon: <SiTensorflow size={50} />, label: "TensorFlow", color: "text-orange-500" },
-    { icon: <SiOpencv size={50} />, label: "OpenCV", color: "text-indigo-600" },
-    { icon: <SiNumpy size={50} />, label: "NumPy", color: "text-blue-400" },
-    { icon: <FaAws size={50} />, label: "AWS", color: "text-orange-600" },
-    { icon: <SiGooglecloud size={50} />, label: "Google Cloud", color: "text-blue-500" },
-    { icon: <SiKubernetes size={50} />, label: "Kubernetes", color: "text-blue-600" },
-    { icon: <FaDocker size={50} />, label: "Docker", color: "text-blue-500" },
-    { icon: <FaLinux size={50} />, label: "Linux", color: "text-gray-800 dark:text-gray-200" },
-    { icon: <SiFlutter size={50} />, label: "Flutter", color: "text-cyan-600" },
-  ]
+/* Exported so the /dev mobile marquee renders the same stack at chip size. */
+export const techStack = [
+  { Icon: FaPython, label: "Python", color: "text-yellow-500" },
+  { Icon: SiCplusplus, label: "C++", color: "text-blue-600" },
+  { Icon: FaReact, label: "React", color: "text-blue-500" },
+  { Icon: FaNodeJs, label: "Node.js", color: "text-green-600" },
+  { Icon: SiTailwindcss, label: "Tailwind CSS", color: "text-teal-500" },
+  { Icon: SiMongodb, label: "MongoDB", color: "text-green-700" },
+  { Icon: SiMysql, label: "MySQL", color: "text-blue-700" },
+  { Icon: SiTensorflow, label: "TensorFlow", color: "text-orange-500" },
+  { Icon: SiOpencv, label: "OpenCV", color: "text-indigo-600" },
+  { Icon: SiNumpy, label: "NumPy", color: "text-blue-400" },
+  { Icon: FaAws, label: "AWS", color: "text-orange-600" },
+  { Icon: SiGooglecloud, label: "Google Cloud", color: "text-blue-500" },
+  { Icon: SiKubernetes, label: "Kubernetes", color: "text-blue-600" },
+  { Icon: FaDocker, label: "Docker", color: "text-blue-500" },
+  { Icon: FaLinux, label: "Linux", color: "text-gray-800 dark:text-gray-200" },
+  { Icon: SiFlutter, label: "Flutter", color: "text-cyan-600" },
+]
 
+export default function TechnologiesSection() {
   return (
     <section id="technologies" className="py-20 transition-colors duration-300">
       <div className="container mx-auto px-6">
@@ -65,7 +66,7 @@ export default function TechnologiesSection() {
               >
                 {/* The actual icon and label */}
                 <div className={`flex items-center justify-center ${tech.color} transition-all duration-300`}>
-                  {tech.icon}
+                  <tech.Icon size={50} />
                 </div>
                 <span className="mt-3 small-text text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">
                   {tech.label}

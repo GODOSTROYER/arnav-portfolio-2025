@@ -311,3 +311,36 @@ section {
 .dark .text-cyan-600 {
   color: #22d3ee;
 }
+
+/* ---------- /dev mobile experience ---------- */
+
+/* Story-mode chapters: sections land like slides. Proximity (not mandatory)
+   so short sections and free reading never fight the snap. Mobile only —
+   desktop keeps Lenis untouched. */
+@media (max-width: 767px) {
+  html.dev-snap {
+    scroll-snap-type: y proximity;
+  }
+  html.dev-snap [data-chapter] {
+    scroll-snap-align: start;
+  }
+}
+
+/* Swipe decks hide their scrollbars (native snap scrolling stays) */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Infinite tech marquee: content is duplicated once, so -50% loops seamlessly */
+@keyframes dev-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}

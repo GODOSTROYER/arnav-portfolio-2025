@@ -26,8 +26,14 @@ Package manager: **npm** (`package-lock.json`). Dependencies are intentionally m
 app/
   layout.tsx          Root layout: Poppins font (weights 400–800), ThemeProvider, analytics
   page.tsx            Home — composes the section components
-  globals.css         Tailwind directives, theme-reveal keyframes, typography, dark-mode overrides
+  globals.css         Tailwind directives, theme-reveal keyframes, typography, dark-mode overrides,
+                      /dev mobile utilities (dev-snap chapters, scrollbar-none, dev-marquee)
   resume/page.tsx     /resume — PDF viewer + download link
+  dev/                /dev — mobile-experience preview (noindex). Below md the page swaps to
+                      bento about + tabbed swipe decks + tech marquee + snap chapters via a
+                      client viewport switch (only ONE variant mounted, so section ids stay
+                      unique for dock anchors; first paint is the mobile variant). At md+ it
+                      renders the exact production sections — desktop is untouched.
 components/
   header.tsx          Fixed header; nav + toggle. On md+ it slides away past the hero
                       (the floating dock takes over); "Connect" links to #contact
@@ -56,7 +62,20 @@ components/
                       [data-timeline-node] milestones (whole-node scale + bloom).
                       Exports mutable beamState {amp,x,y} — the one-light contract
                       ambient-glow reads every frame
-  main-content-section.tsx  THE CONTENT FILE: about text, experiences[], projects[], education, certs
+  main-content-section.tsx  THE CONTENT FILE: about text, skills; EXPORTS experiences[],
+                      projects[], certifications[], timelineColors[] (also consumed by the
+                      /dev mobile components — edit once, both layouts update)
+  mobile-decks.tsx    /dev mobile centerpiece: Experience|Projects|Certs animated tabs,
+                      Apple-cards swipe decks (native snap, NOT scroll-jacked), tap-to-expand
+                      full-screen detail sheet (framer layoutId morph), horizontal tracing
+                      beam on a rail under the deck (same palette/physics as timeline-energy,
+                      rotated 90°) with active-card icon bloom, auto-cycling cert card stack
+  mobile-bento.tsx    /dev mobile about: bento grid (photo, focus, stats, socials)
+  mobile-tech-marquee.tsx  /dev mobile technologies: two counter-scrolling chip marquees
+                      (imports techStack exported by technologies-section)
+  mobile-chapters.tsx /dev mobile story-mode: adds html.dev-snap + [data-chapter] tags
+                      (scroll-snap y proximity, mobile-only CSS) and the right-edge
+                      progress-dot rail
   technologies-section.tsx  Tech tile grid (react-icons), floating bob animation
   text-hover-effect.tsx  Signature section: staggered tagline + giant "ARNAV" SVG with
                       draw-in stroke and cursor-revealed gradient (auto-sweep on touch)

@@ -19,8 +19,27 @@ import {
 import Image from "next/image"
 import TimelineEnergy from "./timeline-energy"
 
-export default function MainContentSection() {
-  const experiences = [
+/* Content data lives at module scope and is exported so the /dev mobile
+   experience (decks, bento, cert stack) renders from the same source. */
+
+export type Experience = {
+  title: string
+  company: string
+  period: string
+  bullets: string[]
+}
+
+export type Project = {
+  name: string
+  period: string
+  team: string
+  github?: string
+  live?: string
+  icon: LucideIcon
+  highlight: string[]
+}
+
+export const experiences: Experience[] = [
     {
       title: "Associate Data Scientist Intern",
       company: "V4C.ai",
@@ -74,15 +93,7 @@ export default function MainContentSection() {
     },
   ]
 
-  const projects: {
-    name: string
-    period: string
-    team: string
-    github?: string
-    live?: string
-    icon: LucideIcon
-    highlight: string[]
-  }[] = [
+export const projects: Project[] = [
     {
       name: "Mini Task Tracker",
       icon: ListChecks,
@@ -155,8 +166,8 @@ export default function MainContentSection() {
     },
   ]
 
-  // Color sequence for timeline nodes
-  const timelineColors = [
+// Color sequence for timeline nodes
+export const timelineColors = [
     "bg-purple-500",
     "bg-red-500",
     "bg-blue-500",
@@ -169,6 +180,19 @@ export default function MainContentSection() {
     "bg-gray-500",
   ]
 
+export const certifications = [
+  "Databricks Certified Data Engineer Associate",
+  "Databricks Certified Data Analyst Associate",
+  "Databricks Certified Generative AI Engineer Associate",
+  "Machine Learning Specialization — Coursera",
+  "Google Project Management Professional Certificate",
+  "Google Data Analytics Professional Certificate",
+  "Networking Basics — Cisco Foundations",
+  "DSA to Development — Geeks for Geeks (ongoing)",
+  "Cloud Career Practitioner Certified — AWS & GCP",
+]
+
+export default function MainContentSection() {
   const skills = {
     "Programming Languages": ["Python", "C++", "JavaScript", "TypeScript"],
     "Data Engineering": ["PySpark", "Delta Lake", "Databricks", "Auto Loader", "ETL Pipelines", "Medallion Architecture"],
@@ -187,18 +211,6 @@ export default function MainContentSection() {
       "Problem Solving",
     ],
   }
-
-  const certifications = [
-    "Databricks Certified Data Engineer Associate",
-    "Databricks Certified Data Analyst Associate",
-    "Databricks Certified Generative AI Engineer Associate",
-    "Machine Learning Specialization — Coursera",
-    "Google Project Management Professional Certificate",
-    "Google Data Analytics Professional Certificate",
-    "Networking Basics — Cisco Foundations",
-    "DSA to Development — Geeks for Geeks (ongoing)",
-    "Cloud Career Practitioner Certified — AWS & GCP",
-  ]
 
   // Enhanced animation variants for smoother transitions
   const containerVariants = {
