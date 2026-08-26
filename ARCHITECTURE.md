@@ -65,11 +65,17 @@ components/
   main-content-section.tsx  THE CONTENT FILE: about text, skills; EXPORTS experiences[],
                       projects[], certifications[], timelineColors[] (also consumed by the
                       /dev mobile components — edit once, both layouts update)
-  mobile-decks.tsx    /dev mobile centerpiece: Experience|Projects|Certs animated tabs,
-                      Apple-cards swipe decks (native snap, NOT scroll-jacked), tap-to-expand
-                      full-screen detail sheet (framer layoutId morph), horizontal tracing
-                      beam on a rail under the deck (same palette/physics as timeline-energy,
-                      rotated 90°) with active-card icon bloom, auto-cycling cert card stack
+  mobile-decks.tsx    /dev mobile centerpiece: Experience|Projects Apple-glass tabs
+                      (.dev-glass-pill: frosted fill + beam-gradient rim), Apple-cards swipe
+                      decks (native snap, NOT scroll-jacked) with desktop-density card faces
+                      (3 bullets), tap-to-expand detail sheet (framer layoutId morph, dialog
+                      semantics), horizontal tracing beam on a rail under the deck (same
+                      palette/physics as timeline-energy, rotated 90°) with active-card bloom
+                      and an "n / N" counter (updates via scroll listener, reduced-motion safe)
+  mobile-certs.tsx    /dev mobile certifications: hexagonal honeycomb (clip-path pointy-top
+                      hexes, rows 3-2-3-1 valley-nested via -mt; clip on the BUTTON so taps
+                      hit-test the hexagon; glow via drop-shadow on an unclipped wrapper),
+                      brand icons per issuer, tap lights a beam rim + shows the full title
   mobile-bento.tsx    /dev mobile about: bento grid (photo, focus, stats, socials)
   mobile-tech-marquee.tsx  /dev mobile technologies: two counter-scrolling chip marquees
                       (imports techStack exported by technologies-section)

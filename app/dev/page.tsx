@@ -23,6 +23,7 @@ import Header from "@/components/header"
 import HeroSection from "@/components/hero-section"
 import MainContentSection from "@/components/main-content-section"
 import MobileBento from "@/components/mobile-bento"
+import MobileCerts from "@/components/mobile-certs"
 import MobileChapters from "@/components/mobile-chapters"
 import MobileDecks from "@/components/mobile-decks"
 import { MobileConnect, MobileFooter, MobileResume } from "@/components/mobile-tail"
@@ -58,6 +59,7 @@ export default function DevHome() {
           <MotionConfig reducedMotion="user">
             <MobileBento />
             <MobileDecks />
+            <MobileCerts />
             <MobileTechMarquee />
             <MobileConnect />
             <MobileResume />

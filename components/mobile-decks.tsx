@@ -17,10 +17,10 @@
    layouts. Rendered only on the /dev route at mobile widths. */
 
 import { AnimatePresence, motion } from "framer-motion"
-import { Award, Briefcase, ChevronRight, ExternalLink, Github, X, type LucideIcon } from "lucide-react"
+import { Briefcase, ChevronRight, ExternalLink, Github, X, type LucideIcon } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { certifications, experiences, projects, timelineColors } from "./main-content-section"
+import { experiences, projects, timelineColors } from "./main-content-section"
 
 /* beam physics — 1D siblings of the desktop constants */
 const K = 180
@@ -75,7 +75,6 @@ const projItems: DeckItem[] = projects.map((p, i) => ({
 const TABS = [
   { key: "experience", label: "Experience", subtitle: "Swipe the deck · tap a card for the full story" },
   { key: "projects", label: "Projects", subtitle: "Swipe the deck · tap a card for the full story" },
-  { key: "certs", label: "Certs", subtitle: "Tap the stack to flip through" },
 ] as const
 
 type TabKey = (typeof TABS)[number]["key"]
@@ -112,7 +111,7 @@ export default function MobileDecks() {
     }
   }, [expanded, close])
 
-  const items = tab === "experience" ? expItems : tab === "projects" ? projItems : null
+  const items = tab === "experience" ? expItems : projItems
   const activeTab = TABS.find((t) => t.key === tab)!
 
   return (
@@ -122,11 +121,12 @@ export default function MobileDecks() {
         <p className="small-text mt-1 text-sm text-gray-500 dark:text-gray-400">{activeTab.subtitle}</p>
       </div>
 
-      {/* animated tabs — sliding pill */}
+      {/* Apple-glass segmented control: frosted track, and the active pill is
+          glass with a reflective beam-gradient rim (.dev-glass-pill) */}
       <div
         role="tablist"
         aria-label="Work categories"
-        className="mx-auto mb-6 flex w-fit rounded-full border border-gray-200 bg-white/80 p-1 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/80"
+        className="mx-auto mb-6 flex w-fit rounded-full border border-white/40 bg-white/50 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_24px_rgba(0,0,0,0.4)]"
       >
         {TABS.map((t) => (
           <button
@@ -134,23 +134,33 @@ export default function MobileDecks() {
             role="tab"
             aria-selected={tab === t.key}
             onClick={() => setTab(t.key)}
-            className="relative rounded-full px-4 py-2.5 text-sm font-semibold"
+            className="relative rounded-full px-5 py-2.5 text-sm font-semibold"
           >
             {tab === t.key && (
               <motion.span
                 layoutId="dev-tab-pill"
-                className="absolute left-0 top-0 h-full w-full rounded-full bg-gray-900 dark:bg-white"
-                transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                className="dev-glass-pill absolute left-0 top-0 h-full w-full rounded-full"
+                transition={{ type: "spring", stiffness: 350, damping: 30 }}
               />
             )}
-            <span className={`relative z-10 transition-colors duration-200 ${tab === t.key ? "text-white dark:text-black" : "text-gray-600 dark:text-gray-300"}`}>
+            <span
+              className={`relative z-10 transition-colors duration-300 ${tab === t.key ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}
+            >
               {t.label}
             </span>
           </button>
         ))}
       </div>
 
-      {items ? <Deck key={tab} items={items} onOpen={open} /> : <CertStack />}
+      {/* deck crossfades in on tab change instead of hard-swapping */}
+      <motion.div
+        key={tab}
+        initial={{ opacity: 0, y: 14, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
+        <Deck items={items} onOpen={open} />
+      </motion.div>
 
       {/* full-screen detail sheet */}
       <AnimatePresence>
@@ -184,7 +194,7 @@ export default function MobileDecks() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto px-5 pb-10">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-10">
                 <span className="small-text text-xs text-gray-500 dark:text-gray-400">{expanded.period}</span>
                 <h3 className="card-title mt-1 text-2xl text-gray-900 dark:text-white">{expanded.title}</h3>
                 {expanded.sub && (
@@ -252,7 +262,22 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
     const rail = railRef.current
     const beam = beamRef.current
     if (!deck || !rail || !beam) return
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    /* the "n / N" counter is plain state reporting, not motion — it updates
+       from a passive scroll listener so reduced-motion users still get it */
+    const nItems = items.length
+    const updateCount = () => {
+      if (!countRef.current) return
+      const max = deck.scrollWidth - deck.clientWidth
+      const idx = max > 0 ? Math.round((deck.scrollLeft / max) * (nItems - 1)) : 0
+      const label = `${Math.min(nItems, Math.max(1, idx + 1))} / ${nItems}`
+      if (countRef.current.textContent !== label) countRef.current.textContent = label
+    }
+    deck.addEventListener("scroll", updateCount, { passive: true })
+    updateCount()
+    const removeCount = () => deck.removeEventListener("scroll", updateCount)
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return removeCount
 
     let head = 0
     let headV = 0
@@ -287,10 +312,6 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
         let target = progress * railW
         let merge = 0
         const nearest = Math.round(idxF)
-        if (countRef.current) {
-          const label = `${Math.min(n, Math.max(1, nearest + 1))} / ${n}`
-          if (countRef.current.textContent !== label) countRef.current.textContent = label
-        }
         const d = Math.abs(idxF - nearest)
         if (d < CAPTURE && n > 1) {
           const pull = Math.pow(1 - d / CAPTURE, 1.35)
@@ -319,11 +340,14 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
         /* active-card bloom — the desktop node glow, per icon chip */
         nodes().forEach((el, i) => {
           const g = Math.exp(-((i - idxF) ** 2) / 0.32)
-          const f = Math.min(1, g * (0.55 + merge * 0.6))
+          /* calm at rest, full only while the beam is merged — a wide resting
+             halo bleeds past the deck edge and reads as a muddy smear behind
+             the section heading */
+          const f = Math.min(1, g * (0.42 + merge * 0.65))
           if (f > 0.04) {
             el.style.setProperty("scale", (1 + 0.22 * f).toFixed(3))
             el.style.filter = `brightness(${(1 + 0.45 * f).toFixed(3)}) saturate(${(1 + 0.45 * f).toFixed(3)})`
-            el.style.boxShadow = `0 0 ${Math.round(26 * f)}px ${Math.round(7 * f)}px rgba(253, 224, 71, ${(0.38 * f).toFixed(3)}), 0 0 ${Math.round(52 * f)}px ${Math.round(16 * f)}px rgba(217, 70, 239, ${(0.24 * f).toFixed(3)})`
+            el.style.boxShadow = `0 0 ${Math.round(24 * f)}px ${Math.round(6 * f)}px rgba(253, 224, 71, ${(0.34 * f).toFixed(3)}), 0 0 ${Math.round(40 * f)}px ${Math.round(12 * f)}px rgba(217, 70, 239, ${(0.22 * f).toFixed(3)})`
           } else {
             el.style.removeProperty("scale")
             el.style.filter = ""
@@ -359,6 +383,7 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
       cancelAnimationFrame(raf)
       deck.removeEventListener("scroll", wake)
       window.removeEventListener("resize", wake)
+      removeCount()
       clearBlooms()
     }
   }, [items])
@@ -367,14 +392,13 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
     <div>
       <div
         ref={deckRef}
-        className="scrollbar-none flex snap-x snap-mandatory gap-4 overflow-x-auto px-[11vw] pb-2 pt-2"
+        className="scrollbar-none flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-[11vw] pb-2 pt-2"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
         {items.map((it) => (
           <motion.div
             key={it.key}
             layoutId={`devcard-${it.key}`}
-            data-deck-card
             role="button"
             tabIndex={0}
             aria-label={`${it.title} — open details`}
@@ -385,17 +409,21 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
                 onOpen(it)
               }
             }}
-            className="relative flex h-[54svh] w-[78vw] max-w-[340px] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border border-gray-200/70 bg-white/85 p-5 shadow-lg backdrop-blur-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6344F5] dark:border-gray-800 dark:bg-gray-900/85"
+            className="relative flex h-[58svh] w-[80vw] max-w-[350px] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border border-gray-200/70 bg-white/85 p-5 shadow-lg backdrop-blur-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6344F5] dark:border-gray-800 dark:bg-gray-900/85"
             transition={{ type: "spring", stiffness: 300, damping: 32 }}
           >
-            <div data-deck-node className={`flex h-12 w-12 items-center justify-center rounded-full ${it.color} shadow-lg`}>
-              <it.icon className="h-6 w-6 text-white" />
+            <div className="flex items-center justify-between">
+              <div data-deck-node className={`flex h-12 w-12 items-center justify-center rounded-full ${it.color} shadow-lg`}>
+                <it.icon className="h-6 w-6 text-white" />
+              </div>
+              <span className="small-text rounded-full border border-gray-200/70 px-2.5 py-1 text-[11px] text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                {it.period}
+              </span>
             </div>
-            <span className="small-text mt-4 text-xs text-gray-500 dark:text-gray-400">{it.period}</span>
-            <h3 className="card-title mt-1 text-xl leading-snug text-gray-900 dark:text-white line-clamp-2">{it.title}</h3>
-            {it.sub && <p className="mt-1 text-sm font-semibold text-blue-600 dark:text-blue-400 line-clamp-1">{it.sub}</p>}
+            <h3 className="card-title mt-3 text-xl leading-snug text-gray-900 dark:text-white line-clamp-2">{it.title}</h3>
+            {it.sub && <p className="mt-0.5 text-sm font-semibold text-blue-600 dark:text-blue-400 line-clamp-1">{it.sub}</p>}
             {it.chips.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1.5">
+              <div className="mt-2.5 flex flex-wrap gap-1.5">
                 {it.chips.slice(0, 3).map((chip) => (
                   <span key={chip} className="rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] text-gray-700 dark:bg-gray-800 dark:text-gray-300">
                     {chip}
@@ -403,7 +431,16 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
                 ))}
               </div>
             )}
-            <p className="body-text mt-3 text-sm text-gray-700 dark:text-gray-300 line-clamp-5">{it.bullets[0]}</p>
+            {/* desktop-density: the first three bullets with the same dot
+               markers the desktop timeline cards use */}
+            <ul className="mt-3 space-y-2">
+              {it.bullets.slice(0, 3).map((b, bi) => (
+                <li key={bi} className="flex items-start">
+                  <span className="mr-2.5 mt-[7px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-400 dark:bg-gray-500" />
+                  <span className="body-text text-[13px] leading-snug text-gray-700 dark:text-gray-300 line-clamp-2">{b}</span>
+                </li>
+              ))}
+            </ul>
             <div className="mt-auto flex items-center justify-between pt-3">
               <span className="small-text inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                 Tap for details <ChevronRight className="h-3.5 w-3.5" />
@@ -450,70 +487,6 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
           1 / {items.length}
         </span>
       </div>
-    </div>
-  )
-}
-
-function CertStack() {
-  const [top, setTop] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const n = certifications.length
-
-  /* auto-cycles until the visitor takes control — first tap pauses it for good */
-  useEffect(() => {
-    if (paused) return
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-    const t = setInterval(() => setTop((v) => (v + 1) % n), 3200)
-    return () => clearInterval(t)
-  }, [n, paused])
-
-  const advance = () => {
-    setPaused(true)
-    setTop((v) => (v + 1) % n)
-  }
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={`Certifications, ${top + 1} of ${n}. Activate to show the next one.`}
-      onClick={advance}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault()
-          advance()
-        }
-      }}
-      className="relative mx-auto flex h-[42svh] w-full max-w-[360px] items-center justify-center rounded-3xl px-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6344F5]"
-    >
-      {certifications.map((cert, i) => {
-        const pos = (i - top + n) % n
-        const visible = pos < 3
-        return (
-          <motion.div
-            key={cert}
-            className="absolute flex h-[180px] w-[78vw] max-w-[330px] flex-col justify-between rounded-2xl border border-gray-200/70 bg-white/90 p-5 shadow-lg backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/90"
-            animate={{
-              y: pos * 16,
-              scale: 1 - pos * 0.06,
-              opacity: visible ? 1 - pos * 0.18 : 0,
-              zIndex: n - pos,
-            }}
-            transition={{ type: "spring", stiffness: 260, damping: 28 }}
-            style={{ transformOrigin: "top center" }}
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#18CCFC] to-[#6344F5] shadow-lg">
-                <Award className="h-5 w-5 text-white" />
-              </span>
-              <span className="small-text text-xs text-gray-500 dark:text-gray-400">
-                {i + 1} / {n} · tap to cycle
-              </span>
-            </div>
-            <p className="body-text text-[15px] font-semibold leading-snug text-gray-900 dark:text-white">{cert}</p>
-          </motion.div>
-        )
-      })}
     </div>
   )
 }

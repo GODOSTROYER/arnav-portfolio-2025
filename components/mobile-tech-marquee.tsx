@@ -38,7 +38,7 @@ function Row({ items, reverse }: { items: typeof techStack; reverse?: boolean })
 
 export default function MobileTechMarquee() {
   return (
-    <section id="technologies" className="relative flex min-h-[50svh] flex-col justify-center py-14">
+    <section id="technologies" className="relative flex min-h-[85svh] flex-col justify-center py-14">
       <div className="mb-8 px-6 text-center">
         <h2 className="section-heading text-2xl text-gray-900 dark:text-white transition-colors duration-300">Technologies</h2>
         <p className="small-text mt-1 text-sm text-gray-500 dark:text-gray-400">The toolkit, in motion</p>

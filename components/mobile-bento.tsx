@@ -1,13 +1,15 @@
 "use client"
 
 /* /dev mobile about: the long profile column condensed into a glanceable
-   bento grid — photo, focus, stats pulled from the real work, socials.
-   Numbers wear the beam palette (cyan→violet→purple) to keep the one-light
-   identity threading through the page. */
+   bento grid — photo, location, what's happening now, a line of intent, and
+   socials. The beam palette (cyan→violet→purple) threads through as accents
+   to keep the one-light identity. */
 
 import { motion } from "framer-motion"
-import { Github, Linkedin, Mail, MapPin, Phone } from "lucide-react"
+import { Github, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react"
 import Image from "next/image"
+
+import { experiences } from "./main-content-section"
 
 const tile =
   "rounded-3xl border border-gray-200/70 bg-white/85 p-4 shadow-lg backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/85"
@@ -17,12 +19,6 @@ const tile =
    exact palette where it was born */
 const gradText =
   "bg-gradient-to-r from-cyan-700 via-violet-700 to-purple-700 bg-clip-text text-transparent dark:from-[#18CCFC] dark:via-[#6344F5] dark:to-[#AE48FF]"
-
-const stats = [
-  { value: "600+", label: "community grown" },
-  { value: "5–7×", label: "pipeline speedups" },
-  { value: ">92%", label: "model accuracy" },
-]
 
 const socials = [
   { Icon: Github, href: "https://github.com/GODOSTROYER/", label: "GitHub" },
@@ -65,10 +61,26 @@ export default function MobileBento() {
           <p className="small-text text-xs text-gray-500 dark:text-gray-400">India</p>
         </motion.div>
 
-        {/* headline stat */}
+        {/* now — what's actually happening, straight from the top of experiences[] */}
         <motion.div variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }} className={tile}>
-          <p className={`text-2xl font-extrabold ${gradText}`}>{stats[0].value}</p>
-          <p className="small-text text-xs text-gray-500 dark:text-gray-400">{stats[0].label}</p>
+          <Zap className="mb-2 h-5 w-5 text-[#6344F5] dark:text-[#18CCFC]" />
+          <p className="small-text text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Now</p>
+          <p className="text-sm font-bold leading-snug text-gray-900 dark:text-white">{experiences[0].company}</p>
+          <p className="small-text text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{experiences[0].title}</p>
+        </motion.div>
+
+        {/* the line this site lives by */}
+        <motion.div
+          variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }}
+          className={`${tile} relative col-span-2 overflow-hidden`}
+        >
+          <span aria-hidden className={`absolute -top-4 left-2 text-7xl font-extrabold leading-none opacity-25 ${gradText}`}>
+            &ldquo;
+          </span>
+          <p className="relative pt-4 text-[17px] font-semibold leading-snug text-gray-900 dark:text-white">
+            Make it work, make it right, make it glow.
+          </p>
+          <p className="small-text relative mt-1.5 text-xs text-gray-500 dark:text-gray-400">— the build loop around here</p>
         </motion.div>
 
         {/* focus — wide tile */}
@@ -81,14 +93,6 @@ export default function MobileBento() {
             Python + C++ by day, new AI/ML use-cases by night — building tech with impact and mentoring peers along the way.
           </p>
         </motion.div>
-
-        {/* two more stats */}
-        {stats.slice(1).map((s) => (
-          <motion.div key={s.label} variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }} className={tile}>
-            <p className={`text-2xl font-extrabold ${gradText}`}>{s.value}</p>
-            <p className="small-text text-xs text-gray-500 dark:text-gray-400">{s.label}</p>
-          </motion.div>
-        ))}
 
         {/* socials — wide tile */}
         <motion.div

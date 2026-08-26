@@ -63,7 +63,9 @@ export function MobileConnect() {
 
 export function MobileResume() {
   return (
-    <section id="resume" className="px-4 py-14">
+    /* extra bottom clearance: the tail doesn't snap, so the fixed dock button
+       would otherwise rest on top of the card's actions */
+    <section id="resume" className="px-4 pb-28 pt-14">
       <motion.article {...reveal} className={`${tile} mx-auto flex w-full max-w-[420px] flex-col items-start gap-4 p-6`}>
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#18CCFC] to-[#6344F5] shadow-lg">
@@ -89,7 +91,7 @@ export function MobileResume() {
 
 export function MobileFooter() {
   return (
-    <footer className="border-t border-gray-200 px-6 py-8 dark:border-gray-800">
+    <footer className="border-t border-gray-200 px-6 pb-24 pt-8 dark:border-gray-800">
       <div className="mx-auto flex w-full max-w-[420px] items-center justify-between">
         <div>
           <p className="text-sm font-bold text-gray-900 dark:text-white">Arnav Bule</p>

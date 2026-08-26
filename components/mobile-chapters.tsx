@@ -1,9 +1,13 @@
 "use client"
 
-/* /dev mobile story-mode: tags the page's sections as snap chapters
+/* /dev mobile story-mode: tags the MAJOR sections as snap chapters
    (html.dev-snap + [data-chapter], CSS-gated to mobile widths) and renders a
    right-edge progress rail — one dot per chapter, the active one stretched
-   into a beam-palette pill. Tap a dot to jump. */
+   into a beam-palette pill. Tap a dot to jump.
+
+   Only the tall, viewport-sized chapters snap; the shorter tail sections
+   (connect, resume) scroll freely so the end of the page never feels sticky —
+   they keep rail dots for navigation, just not snap alignment. */
 
 import { useEffect, useState } from "react"
 
@@ -11,11 +15,13 @@ const CHAPTERS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
   { id: "work", label: "Work" },
+  { id: "certs", label: "Certifications" },
   { id: "technologies", label: "Technologies" },
   { id: "contact", label: "Connect" },
   { id: "resume", label: "Resume" },
-  { id: "signature", label: "Signature" },
 ]
+
+const SNAP = new Set(["home", "about", "work", "certs", "technologies"])
 
 export default function MobileChapters() {
   const [active, setActive] = useState("home")
@@ -23,11 +29,15 @@ export default function MobileChapters() {
   useEffect(() => {
     document.documentElement.classList.add("dev-snap")
     const tagged: HTMLElement[] = []
+    const observed: HTMLElement[] = []
     CHAPTERS.forEach(({ id }) => {
       const el = document.getElementById(id)
       if (el) {
-        el.setAttribute("data-chapter", "")
-        tagged.push(el)
+        if (SNAP.has(id)) {
+          el.setAttribute("data-chapter", "")
+          tagged.push(el)
+        }
+        observed.push(el)
       }
     })
 
@@ -40,7 +50,7 @@ export default function MobileChapters() {
       },
       { rootMargin: "-45% 0px -45% 0px" }
     )
-    tagged.forEach((el) => io.observe(el))
+    observed.forEach((el) => io.observe(el))
 
     return () => {
       io.disconnect()
