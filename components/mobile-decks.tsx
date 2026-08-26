@@ -85,6 +85,22 @@ export default function MobileDecks() {
   const openerRef = useRef<HTMLElement | null>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
 
+  /* the glass pill is ONE persistent element driven by measured offsets, so
+     it can only ever travel horizontally between tabs. (The previous
+     layoutId ghost measured viewport boxes while the deck crossfade shifted
+     the page, which sent it diagonally/vertically.) */
+  const tabRefs = useRef<Partial<Record<TabKey, HTMLButtonElement | null>>>({})
+  const [pill, setPill] = useState<{ x: number; w: number } | null>(null)
+  useEffect(() => {
+    const measure = () => {
+      const btn = tabRefs.current[tab]
+      if (btn) setPill({ x: btn.offsetLeft, w: btn.offsetWidth })
+    }
+    measure()
+    window.addEventListener("resize", measure)
+    return () => window.removeEventListener("resize", measure)
+  }, [tab])
+
   const open = useCallback((item: DeckItem) => {
     openerRef.current = document.activeElement as HTMLElement | null
     setExpanded(item)
@@ -126,23 +142,29 @@ export default function MobileDecks() {
       <div
         role="tablist"
         aria-label="Work categories"
-        className="mx-auto mb-6 flex w-fit rounded-full border border-white/40 bg-white/50 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_24px_rgba(0,0,0,0.4)]"
+        className="relative mx-auto mb-6 flex w-fit rounded-full border border-white/40 bg-white/50 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_24px_rgba(0,0,0,0.4)]"
       >
+        {pill && (
+          <motion.span
+            aria-hidden
+            className="dev-glass-pill absolute bottom-1 top-1 rounded-full"
+            style={{ left: 0 }}
+            initial={false}
+            animate={{ x: pill.x, width: pill.w }}
+            transition={{ type: "spring", stiffness: 430, damping: 33 }}
+          />
+        )}
         {TABS.map((t) => (
           <button
             key={t.key}
+            ref={(el) => {
+              tabRefs.current[t.key] = el
+            }}
             role="tab"
             aria-selected={tab === t.key}
             onClick={() => setTab(t.key)}
             className="relative rounded-full px-5 py-2.5 text-sm font-semibold"
           >
-            {tab === t.key && (
-              <motion.span
-                layoutId="dev-tab-pill"
-                className="dev-glass-pill absolute left-0 top-0 h-full w-full rounded-full"
-                transition={{ type: "spring", stiffness: 350, damping: 30 }}
-              />
-            )}
             <span
               className={`relative z-10 transition-colors duration-300 ${tab === t.key ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}
             >

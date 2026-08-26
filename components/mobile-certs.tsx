@@ -15,24 +15,29 @@ import { motion } from "framer-motion"
 import { Award } from "lucide-react"
 import { useState } from "react"
 import { FaAws } from "react-icons/fa"
-import { SiCisco, SiCoursera, SiDatabricks, SiGeeksforgeeks, SiGoogle } from "react-icons/si"
+import { FcGoogle } from "react-icons/fc"
+import { SiCisco, SiCoursera, SiDatabricks, SiGeeksforgeeks } from "react-icons/si"
 import type { IconType } from "react-icons"
 
 import { certifications } from "./main-content-section"
 
-const W = 104
-const H = 120 // pointy-top: height = width * 2/√3
+const W = 96
+const H = 111 // pointy-top: height = width * 2/√3
 
-/* issuer icon + brand color + short label, index-paired with certifications[] */
+/* issuer icon + brand color + short label, index-paired with certifications[].
+   FcGoogle is the multicolor "G" — it paints its own fills, color is unused. */
 const BADGE_META: { Icon: IconType; color: string; short: string }[] = [
-  { Icon: SiDatabricks, color: "#FF3621", short: "Data Engineer" },
+  { Icon: SiDatabricks, color: "#FF3621", short: "Data Eng Pro" },
   { Icon: SiDatabricks, color: "#FF3621", short: "Data Analyst" },
   { Icon: SiDatabricks, color: "#FF3621", short: "Gen AI" },
+  { Icon: SiDatabricks, color: "#FF3621", short: "ML Pro" },
   { Icon: SiCoursera, color: "#0056D2", short: "ML Spec" },
-  { Icon: SiGoogle, color: "#4285F4", short: "Project Mgmt" },
-  { Icon: SiGoogle, color: "#34A853", short: "Data Analytics" },
+  { Icon: FcGoogle, color: "#4285F4", short: "Project Mgmt" },
+  { Icon: FcGoogle, color: "#4285F4", short: "Data Analytics" },
   { Icon: SiCisco, color: "#1BA0D7", short: "Networking" },
   { Icon: SiGeeksforgeeks, color: "#2F8D46", short: "DSA to Dev" },
+  { Icon: FaAws, color: "#FF9900", short: "Solutions Arch" },
+  { Icon: FaAws, color: "#FF9900", short: "ML Associate" },
   { Icon: FaAws, color: "#FF9900", short: "AWS · GCP" },
 ]
 
@@ -41,8 +46,11 @@ const badges = certifications.map((name, i) => ({
   ...(BADGE_META[i] ?? { Icon: Award as unknown as IconType, color: "#6344F5", short: "Certified" }),
 }))
 
-/* honeycomb rows: 3-2-3-1 (centered rows nest into each other) */
-const ROWS: number[][] = [[0, 1, 2], [3, 4], [5, 6, 7], [8]].map((row) => row.filter((i) => i < badges.length))
+/* honeycomb rows: 2-3-2-3-2 — alternating widths nest without any manual
+   offset (each centered 2-row sits in the valleys of its 3-row neighbors) */
+const ROWS: number[][] = [[0, 1], [2, 3, 4], [5, 6], [7, 8, 9], [10, 11]].map((row) =>
+  row.filter((i) => i < badges.length)
+)
 
 export default function MobileCerts() {
   const [sel, setSel] = useState<number | null>(null)
@@ -59,9 +67,7 @@ export default function MobileCerts() {
       {/* scaled down a notch on very narrow phones so a 3-hex row never clips */}
       <div className="flex flex-col items-center max-[359px]:origin-top max-[359px]:scale-[0.82]">
         {ROWS.map((row, r) => (
-          /* a lone final hex sits directly under the middle hex of the row of
-             three — shift it half a pitch so it nests into a valley instead */
-          <div key={r} className={`flex gap-1.5 ${r > 0 ? "-mt-6" : ""} ${row.length === 1 ? "translate-x-[55px]" : ""}`}>
+          <div key={r} className={`flex gap-1.5 ${r > 0 ? "-mt-[22px]" : ""}`}>
             {row.map((i) => {
               const b = badges[i]
               const active = sel === i

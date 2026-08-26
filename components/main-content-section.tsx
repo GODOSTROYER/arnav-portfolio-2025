@@ -181,14 +181,17 @@ export const timelineColors = [
   ]
 
 export const certifications = [
-  "Databricks Certified Data Engineer Associate",
+  "Databricks Certified Data Engineer Professional",
   "Databricks Certified Data Analyst Associate",
   "Databricks Certified Generative AI Engineer Associate",
+  "Databricks Certified Machine Learning Professional",
   "Machine Learning Specialization — Coursera",
   "Google Project Management Professional Certificate",
   "Google Data Analytics Professional Certificate",
   "Networking Basics — Cisco Foundations",
   "DSA to Development — Geeks for Geeks (ongoing)",
+  "AWS Certified Solutions Architect – Associate",
+  "AWS Certified Machine Learning Engineer – Associate",
   "Cloud Career Practitioner Certified — AWS & GCP",
 ]
 
