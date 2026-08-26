@@ -35,6 +35,7 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
 export default function TimelineEnergy() {
   const beamRefs = useRef<Array<HTMLDivElement | null>>([])
+  const trackRefs = useRef<Array<HTMLDivElement | null>>([])
 
   useEffect(() => {
     const wrapper = beamRefs.current[0]?.parentElement
@@ -123,7 +124,20 @@ export default function TimelineEnergy() {
         headY += headV * dt
         amp += (tAmp - amp) * Math.min(1, 8 * dt)
 
-        /* batched writes — the beams, in section-local coordinates */
+        /* batched writes — tracks (the faint line itself lives in this layer,
+           since the beam must paint over it) then beams, section-local coords */
+        for (let i = 0; i < trackRefs.current.length; i++) {
+          const track = trackRefs.current[i]
+          const a = axes[i]
+          if (!track) continue
+          if (!a) {
+            track.style.opacity = "0"
+            continue
+          }
+          track.style.transform = `translate3d(${a.left + a.width / 2 - hostRect.left - 1}px, ${a.top - hostRect.top}px, 0)`
+          track.style.height = `${Math.round(a.height)}px`
+          track.style.opacity = "1"
+        }
         for (let i = 0; i < beamRefs.current.length; i++) {
           const beam = beamRefs.current[i]
           if (!beam) continue
@@ -198,9 +212,20 @@ export default function TimelineEnergy() {
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      {/* the faint tracks (the visible timeline lines) — the beam paints over them */}
       {[0, 1].map((i) => (
         <div
-          key={i}
+          key={`track-${i}`}
+          ref={(el) => {
+            trackRefs.current[i] = el
+          }}
+          className="absolute left-0 top-0 bg-gray-200 dark:bg-gray-700"
+          style={{ width: 2, height: 0, opacity: 0, willChange: "transform, height" }}
+        />
+      ))}
+      {[0, 1].map((i) => (
+        <div
+          key={`beam-${i}`}
           ref={(el) => {
             beamRefs.current[i] = el
           }}
