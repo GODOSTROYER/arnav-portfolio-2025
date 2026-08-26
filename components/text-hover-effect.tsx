@@ -134,7 +134,7 @@ function TextHoverEffect({ text }: { text: string }) {
 
 export default function SignatureSection() {
   return (
-    <section className="bg-white py-16 transition-colors duration-300 dark:bg-black">
+    <section id="signature" className="py-16 transition-colors duration-300">
       <div className="container mx-auto px-6">
         {/* tagline: staggered letter fade-up on scroll into view */}
         <motion.p

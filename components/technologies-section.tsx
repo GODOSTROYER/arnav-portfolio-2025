@@ -36,7 +36,7 @@ export default function TechnologiesSection() {
   ]
 
   return (
-    <section id="technologies" className="py-20 bg-white dark:bg-black transition-colors duration-300">
+    <section id="technologies" className="py-20 transition-colors duration-300">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="section-heading text-3xl md:text-4xl text-gray-900 dark:text-white mb-4 transition-colors duration-300">

@@ -274,7 +274,7 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
 
   if (!mounted) {
     return (
-      <section className="min-h-screen flex items-end justify-start pb-32 pt-20 scroll-section bg-white dark:bg-black transition-colors duration-300">
+      <section className="min-h-screen flex items-end justify-start pb-32 pt-20 scroll-section transition-colors duration-300">
         <div className="container mx-auto px-6">
           <div className="text-left space-y-4">
             {/* SSR fallback — hidden on mobile via md:block, mobile gets word-per-line below */}
@@ -303,7 +303,7 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
   return (
     <section
       id="home"
-      className="min-h-screen flex items-end justify-start pb-32 pt-28 relative overflow-hidden scroll-section bg-white dark:bg-black transition-colors duration-300"
+      className="min-h-screen flex items-end justify-start pb-32 pt-28 relative overflow-hidden scroll-section transition-colors duration-300"
     >
       <HeroGrid />
       <div className="container mx-auto px-6">

@@ -42,13 +42,15 @@ export default function TimelineEnergy() {
   const orbRef = useRef<HTMLDivElement>(null)
   const gradRef = useRef<HTMLDivElement>(null)
   const coreRef = useRef<HTMLDivElement>(null)
+  const haloRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const orb = orbRef.current
     const grad = gradRef.current
     const core = coreRef.current
+    const halo = haloRef.current
     const host = orb?.parentElement?.parentElement // wrapper -> section
-    if (!orb || !grad || !core || !host) return
+    if (!orb || !grad || !core || !halo || !host) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
     const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 }
@@ -176,7 +178,9 @@ export default function TimelineEnergy() {
         /* batched writes — orb coordinates are section-local (behind content) */
         const lx = pos.x - hostRect.left
         const ly = pos.y - hostRect.top
-        const drawScale = scale * (1 - 0.22 * merge) // absorbed: tucks into the node
+        /* Siri-like life: the condensed orb breathes — a soft, slow pulse */
+        const breath = 0.5 + 0.5 * Math.sin(now / 430)
+        const drawScale = scale * (1 - 0.22 * merge) * (1 + 0.06 * breath * condensed)
         orb.style.transform = `translate3d(${lx - ORB / 2}px, ${ly - ORB / 2}px, 0) scale(${drawScale.toFixed(4)})`
         orb.style.opacity = (amp * (1 - 0.45 * merge)).toFixed(3) // hands its light to the node
         /* compression concentrates the light: blur tightens, saturation rises */
@@ -185,6 +189,9 @@ export default function TimelineEnergy() {
         grad.style.filter = `blur(${blurPx}px) saturate(${sat}) hue-rotate(${Math.round((now / 55) % 360)}deg)`
         /* the hot core only exists once the light is truly compressed */
         core.style.opacity = clamp01((condensed - 0.68) / 0.32).toFixed(3)
+        /* luminous halo: glowing while riding the line, breathing with the orb;
+           during absorption it hands its shine to the milestone's own bloom */
+        halo.style.opacity = (clamp01((condensed - 0.5) / 0.5) * (0.55 + 0.35 * breath) * (1 - 0.35 * merge)).toFixed(3)
 
         /* milestone reaction: gaussian pre-glow + hard absorption bloom */
         if (condensed > 0.5 && amp > 0.1) {
@@ -192,7 +199,7 @@ export default function TimelineEnergy() {
           for (const { el, rect } of nodes) {
             const cy = rect.top + rect.height / 2
             const g = Math.exp(-((cy - pos.y) ** 2) / (NODE_RANGE * NODE_RANGE)) * amp
-            const f = Math.min(1, g + merge * g * 1.6)
+            const f = Math.min(1, g + merge * g * 2.1) // absorbed: the whole unit glows
             if (f > 0.03) {
               el.style.filter = `brightness(${(1 + 0.55 * f).toFixed(3)}) saturate(${(1 + 0.5 * f).toFixed(3)})`
               el.style.boxShadow = dark
@@ -249,6 +256,21 @@ export default function TimelineEnergy() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
       <div ref={orbRef} className="absolute left-0 top-0" style={{ width: ORB, height: ORB, opacity: 0, willChange: "transform, opacity" }}>
+        {/* luminous halo around the condensed orb — the Siri-like glow */}
+        <div
+          ref={haloRef}
+          className="absolute rounded-full"
+          style={{
+            top: "-55%",
+            right: "-55%",
+            bottom: "-55%",
+            left: "-55%",
+            opacity: 0,
+            background:
+              "radial-gradient(circle, rgba(255,255,255,0.35) 0%, rgba(253,224,71,0.28) 22%, rgba(217,70,239,0.18) 45%, rgba(34,211,238,0.1) 62%, transparent 75%)",
+            filter: "blur(10px)",
+          }}
+        />
         {/* the hero's palette, compressed along with its blur as the orb shrinks */}
         <div
           ref={gradRef}

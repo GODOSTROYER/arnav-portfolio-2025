@@ -21,7 +21,7 @@ export default function Home() {
   })
 
   return (
-    <main className="min-h-screen scroll-container">
+    <main className="relative z-10 min-h-screen scroll-container">
       <Header />
       <HeroSection scrollYProgress={scrollYProgress} />
       <MainContentSection />

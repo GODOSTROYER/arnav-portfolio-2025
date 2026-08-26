@@ -224,7 +224,7 @@ export default function MainContentSection() {
   }
 
   return (
-    <section id="about" className="relative py-20 bg-white dark:bg-black scroll-section transition-colors duration-300">
+    <section id="about" className="relative py-20 scroll-section transition-colors duration-300">
       {/* the hero's condensed energy travels the timelines back here, behind the cards */}
       <TimelineEnergy />
       <div className="container relative z-10 mx-auto px-6">

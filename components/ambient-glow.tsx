@@ -68,6 +68,14 @@ export default function AmbientGlow() {
             tAmp *= Math.min(1, Math.max(0, emerge))
           }
         }
+        /* at the signature "ARNAV" and below: the aura dissolves into the
+           word's own gradient — its light becomes the text-hover effect */
+        const sig = document.getElementById("signature")
+        if (sig && tAmp > 0) {
+          const sr = sig.getBoundingClientRect()
+          const dissolve = (mouse.y - (sr.top - HERO_FADE_BAND)) / HERO_FADE_BAND
+          tAmp *= 1 - Math.min(1, Math.max(0, dissolve))
+        }
 
         /* springs: position with momentum; amp as a smooth exponential ease */
         pos.vx += (tx - pos.x) * POS_STIFFNESS * dt
@@ -82,11 +90,11 @@ export default function AmbientGlow() {
         const hue = Math.round((now / 55) % 360)
 
         core.style.transform = `translate3d(${pos.x - CORE_SIZE / 2}px, ${pos.y - CORE_SIZE / 2}px, 0)`
-        core.style.opacity = (amp * (dark ? 0.85 : 0.55)).toFixed(3)
+        core.style.opacity = (amp * (dark ? 0.95 : 0.7)).toFixed(3)
         core.style.filter = `blur(38px) hue-rotate(${hue}deg)`
 
         reflect.style.transform = `translate3d(${pos.x - REFLECT_SIZE / 2}px, ${pos.y - REFLECT_SIZE / 2}px, 0)`
-        reflect.style.opacity = (amp * (dark ? 0.45 : 0.4)).toFixed(3)
+        reflect.style.opacity = (amp * (dark ? 0.6 : 0.55)).toFixed(3)
         reflect.style.filter = `blur(60px) hue-rotate(${hue}deg)`
       } catch {
         running = false
@@ -133,11 +141,13 @@ export default function AmbientGlow() {
 
   return (
     <>
-      {/* dense body of the light */}
+      {/* dense body of the light — z-0: physically BEHIND all content (main is
+          z-10 and section backgrounds are transparent over the body's), so
+          opaque cards occlude it and its light only spills out around them */}
       <div
         ref={coreRef}
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-30 rounded-full dark:mix-blend-screen"
+        className="pointer-events-none fixed left-0 top-0 z-0 rounded-full"
         style={{
           width: CORE_SIZE,
           height: CORE_SIZE,
@@ -149,11 +159,11 @@ export default function AmbientGlow() {
             "radial-gradient(circle at 48% 66%, rgba(139, 92, 246, 0.40), transparent 62%)",
         }}
       />
-      {/* cinematic reflection: content beneath catches the color; pure black doesn't */}
+      {/* wider halo, same behind-content layer */}
       <div
         ref={reflectRef}
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-30 rounded-full mix-blend-soft-light dark:mix-blend-color-dodge"
+        className="pointer-events-none fixed left-0 top-0 z-0 rounded-full"
         style={{
           width: REFLECT_SIZE,
           height: REFLECT_SIZE,

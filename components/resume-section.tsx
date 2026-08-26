@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function ResumeSection() {
   return (
-    <section id="resume" className="pt-40 pb-20 bg-white dark:bg-black transition-colors duration-300">
+    <section id="resume" className="pt-40 pb-20 transition-colors duration-300">
       <div className="container">
         <div className="max-w-4xl mx-auto px-8 pb-8 border-2 border-blue-500 dark:border-blue-400 rounded-3xl bg-white dark:bg-black transition-colors duration-300 shadow-lg shadow-[0_0_24px_0_rgba(59,130,246,0.35)] dark:shadow-[0_0_24px_0_rgba(59,130,246,0.4)]">
           <p className="inline-flex items-center px-4 text-lg font-bold -translate-y-4 bg-white dark:bg-black text-blue-600 dark:text-blue-400 transform-gpu transition-colors duration-300">

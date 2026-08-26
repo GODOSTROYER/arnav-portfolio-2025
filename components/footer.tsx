@@ -6,7 +6,7 @@ import Link from "next/link"
 
 export default function Footer() {
   return (
-    <footer className="text-gray-700 bg-white w-full border-t border-gray-200">
+    <footer className="text-gray-700 w-full border-t border-gray-200">
       <div className="container mx-auto px-6 py-8 flex flex-col items-center sm:flex-row">
         <Link
           href="/"
