@@ -51,6 +51,16 @@ export default function TimelineEnergy() {
     let running = false
     let lastNow = 0
     let effectsApplied = false
+    let flagSet = false
+
+    /* while the beam owns the timeline region, the cursor aura yields
+       (ambient-glow reads this flag each frame and fades itself out) */
+    const setFlag = (on: boolean) => {
+      if (on === flagSet) return
+      flagSet = on
+      if (on) document.documentElement.dataset.energy = "timeline"
+      else delete document.documentElement.dataset.energy
+    }
 
     const clearNodeEffects = () => {
       if (!effectsApplied) return
@@ -118,6 +128,8 @@ export default function TimelineEnergy() {
           }
         }
 
+        setFlag(tAmp > 0.2)
+
         /* spring the head */
         headV += (ty - headY) * K * dt
         headV *= Math.max(0, 1 - C * dt)
@@ -181,6 +193,7 @@ export default function TimelineEnergy() {
         active = tAmp > 0 || amp > 0.005 || beamAmps.some((b) => b > 0.01)
       } catch {
         running = false
+        setFlag(false)
         return
       }
       if (active) {
@@ -188,6 +201,7 @@ export default function TimelineEnergy() {
       } else {
         running = false
         clearNodeEffects()
+        setFlag(false)
       }
     }
 
@@ -207,6 +221,7 @@ export default function TimelineEnergy() {
       window.removeEventListener("scroll", wake)
       window.removeEventListener("resize", wake)
       clearNodeEffects()
+      setFlag(false)
     }
   }, [])
 
