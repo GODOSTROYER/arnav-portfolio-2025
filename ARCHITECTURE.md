@@ -25,15 +25,21 @@ Package manager: **npm** (`package-lock.json`). Dependencies are intentionally m
 ```
 app/
   layout.tsx          Root layout: Poppins font (weights 400–800), ThemeProvider, analytics
-  page.tsx            Home — composes the section components
+  page.tsx            Home — ONE composition, two experiences. md+ renders the long-form
+                      sections; below md a client viewport switch mounts the mobile
+                      experience instead (bento, swipe decks, cert honeycomb, marquees,
+                      snap chapters). Only one variant is mounted at a time, so section
+                      ids stay unique for the dock anchors and chapter rail. First paint
+                      is deliberately the DESKTOP tree: the static export ships that HTML
+                      to crawlers/OG scrapes (full prose, not truncated card faces), and
+                      the swap lands below the fold since hero fills the first viewport
+                      either way. Mobile CSS hooks still carry `dev-` prefixes in
+                      globals.css (dev-snap, dev-glass-pill, dev-marquee) — historical
+                      names from when this shipped on /dev only.
   globals.css         Tailwind directives, theme-reveal keyframes, typography, dark-mode overrides,
                       /dev mobile utilities (dev-snap chapters, scrollbar-none, dev-marquee)
   resume/page.tsx     /resume — PDF viewer + download link
-  dev/                /dev — mobile-experience preview (noindex). Below md the page swaps to
-                      bento about + tabbed swipe decks + tech marquee + snap chapters via a
-                      client viewport switch (only ONE variant mounted, so section ids stay
-                      unique for dock anchors; first paint is the mobile variant). At md+ it
-                      renders the exact production sections — desktop is untouched.
+  dev/page.tsx        /dev — noindex preview; re-exports app/page.tsx so the two can't drift
 components/
   header.tsx          Fixed header; nav + toggle. On md+ it slides away past the hero
                       (the floating dock takes over); "Connect" links to #contact
