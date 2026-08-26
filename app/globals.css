@@ -382,7 +382,10 @@ section {
 @media (max-width: 767px) {
   html.dev-snap [data-scroll-cue] {
     animation: dev-cue-fade linear both;
-    animation-timeline: scroll();
+    /* scroll(root block), NOT bare scroll(): the hero is overflow-hidden, which
+       makes it a scroll container, so an unqualified scroll() binds to the hero
+       — an element that never scrolls — and the cue never fades */
+    animation-timeline: scroll(root block);
     animation-range: 0 200px;
   }
 }
