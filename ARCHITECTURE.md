@@ -44,6 +44,12 @@ components/
                       [data-timeline-axis] lines (x locks, y chases with lag),
                       free-follows elsewhere. Mouse-only; skipped on touch/reduced-motion
   hero-section.tsx    "Welcome to Arnav's Portfolio" letter animation (scroll-linked)
+  timeline-energy.tsx The hero's light condensed into a scroll-driven energy point:
+                      converges below the hero, rides [data-timeline-axis] lines
+                      behind the cards (z-0 inside the section), magnetically merges
+                      into [data-timeline-node] milestones (absorption glow), then
+                      dissolves past the last axis. Sets data-energy="timeline" on
+                      <html> so ambient-glow yields while it owns the light
   main-content-section.tsx  THE CONTENT FILE: about text, experiences[], projects[], education, certs
   technologies-section.tsx  Tech tile grid (react-icons), floating bob animation
   text-hover-effect.tsx  Signature section: staggered tagline + giant "ARNAV" SVG with

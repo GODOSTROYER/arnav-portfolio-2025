@@ -1,32 +1,39 @@
 "use client"
 
-/* The hero's energy, condensed into the timeline's cursor.
+/* The hero's energy, condensed into a living gradient point that travels the
+   timelines. One continuous entity, a pure function of scroll (fully
+   reversible), rendered INSIDE the main-content section at z-0 — behind the
+   translucent cards and text (they stay crisp; the light lives in the
+   background layer, never washing over content).
 
-   One fixed orb whose whole lifecycle is a pure function of scroll position
-   (fully reversible):
-   - As the hero scrolls out, the orb appears as a blob of the hero's palette
-     and is pulled toward the top of the first timeline, compressing as it goes
-     (the gradient layer scales down WITH its blur — light squeezed to a point).
-   - In the last quarter of the journey the gradient crossfades into a clean
-     solid dot: white in dark mode, black in light mode.
-   - The dot then rides the timeline axes on a spring (slight inertia), tracking
-     a focus line as you scroll — gliding across the gap between the Experience
-     and Projects timelines.
-   - Milestone nodes ([data-timeline-node]) react by continuous proximity:
-     a gaussian of distance to the cursor drives icon scale, brightness, and a
-     soft glow — strongest at alignment, easing away on both sides. No class
-     toggles; everything is frame-driven and spring-smoothed.
-   Reads are batched before writes each frame. Reduced-motion users get nothing
-   (the timeline stays static and clean). */
+   Lifecycle:
+   - As the hero scrolls out, the hero's palette gathers below it and is pulled
+     toward the first timeline, compressing as it travels — the gradient never
+     becomes a flat dot: it condenses into a small, intense, still-vibrant
+     energy point (hot core ramps in near full compression; core colors are
+     theme-adapted via CSS-switched layers).
+   - The point rides the timeline axes on an underdamped spring, tracking a
+     focus line as you scroll, gliding across the gap between timelines.
+   - MILESTONES ([data-timeline-node]) are magnetic: within capture range the
+     point's target bends toward the node and merges into it — the node
+     pre-reacts on approach, then glows hard and swells while the energy is
+     absorbed. Scroll on and the spring snaps the point out toward the next
+     node. Works identically in both directions.
+   - Past the last axis the point dissolves; while the energy owns the
+     timeline it sets data-energy="timeline" on <html> so the cursor aura
+     (ambient-glow) yields, then resumes when the energy releases.
+   Reads are batched before writes each frame; springs + eases only — no
+   layout thrash. Reduced-motion users get nothing. */
 
 import { useEffect, useRef } from "react"
 
-const ORB = 200 // base orb box; the dot is this scaled way down
-const DOT = 13 // final cursor diameter, px
-const FOCUS = 0.42 // viewport fraction the cursor tracks
-const NODE_RANGE = 75 // px falloff for milestone activation
-const K = 130 // spring stiffness
-const C = 17 // spring damping
+const ORB = 220 // base orb box; the point is this scaled down
+const POINT = 26 // condensed energy-point diameter, px
+const FOCUS = 0.42 // viewport fraction the point tracks
+const CAPTURE = 64 // px: magnetic capture radius around a milestone
+const NODE_RANGE = 90 // px falloff for milestone pre-reaction
+const K = 150 // spring stiffness (underdamped with C below — playful snap)
+const C = 14 // spring damping
 
 const easeInOut = (p: number) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2)
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
@@ -34,13 +41,14 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 export default function TimelineEnergy() {
   const orbRef = useRef<HTMLDivElement>(null)
   const gradRef = useRef<HTMLDivElement>(null)
-  const dotRef = useRef<HTMLDivElement>(null)
+  const coreRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const orb = orbRef.current
     const grad = gradRef.current
-    const dot = dotRef.current
-    if (!orb || !grad || !dot) return
+    const core = coreRef.current
+    const host = orb?.parentElement?.parentElement // wrapper -> section
+    if (!orb || !grad || !core || !host) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
     const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 }
@@ -49,6 +57,14 @@ export default function TimelineEnergy() {
     let running = false
     let lastNow = 0
     let effectsApplied = false
+    let flagSet = false
+
+    const setFlag = (on: boolean) => {
+      if (on === flagSet) return
+      flagSet = on
+      if (on) document.documentElement.dataset.energy = "timeline"
+      else delete document.documentElement.dataset.energy
+    }
 
     const clearNodeEffects = () => {
       if (!effectsApplied) return
@@ -71,6 +87,7 @@ export default function TimelineEnergy() {
         const focusY = vh * FOCUS
         const hero = document.getElementById("home")
         /* batched reads */
+        const hostRect = host.getBoundingClientRect()
         const axes = [...document.querySelectorAll<HTMLElement>("[data-timeline-axis]")]
           .map((a) => a.getBoundingClientRect())
           .filter((r) => r.height > 1)
@@ -85,15 +102,14 @@ export default function TimelineEnergy() {
         let ty = pos.y
         let tAmp = 0
         let scale = 1
-        let dotOpacity = 0
+        let condensed = 0 // 0 = diffuse hero blob, 1 = energy point
+        let merge = 0 // strongest node absorption this frame
 
         if (hero && axes.length) {
           const hr = hero.getBoundingClientRect()
           const a0 = axes[0]
           const aLast = axes[axes.length - 1]
-          /* convergence progress, in document space so it's scroll-pure:
-             0 when the hero's bottom edge is at the viewport bottom,
-             1 when the first axis' top reaches the focus line */
+          /* convergence progress in document space (scroll-pure & reversible) */
           const y = window.scrollY
           const pStart = hr.bottom + y - vh
           const pEnd = a0.top + y - focusY
@@ -101,6 +117,7 @@ export default function TimelineEnergy() {
 
           if (P > 0.001) {
             const e = easeInOut(P)
+            condensed = e
             if (P < 1) {
               /* being pulled together: from beneath the departing hero toward
                  the timeline's origin, compressing all the way */
@@ -110,10 +127,8 @@ export default function TimelineEnergy() {
               tx = startX + (endX - startX) * e
               ty = startY + (focusY - startY) * e
               tAmp = Math.min(1, P * 5)
-              scale = 1 - e * (1 - DOT / ORB)
-              dotOpacity = clamp01((P - 0.75) / 0.25)
             } else {
-              /* the cursor: ride whichever axis owns the focus line */
+              /* condensed: ride whichever axis owns the focus line */
               let chosen = a0
               let best = Number.POSITIVE_INFINITY
               for (const a of axes) {
@@ -125,13 +140,29 @@ export default function TimelineEnergy() {
               }
               tx = chosen.left + chosen.width / 2
               ty = Math.min(Math.max(focusY, chosen.top), chosen.bottom)
-              scale = DOT / ORB
-              dotOpacity = 1
-              /* dissolve once the journey ends past the last timeline */
+              /* magnetic milestones: bend the target into the nearest node
+                 within capture range and hold it there — the spring supplies
+                 the pull-in and the snap-out as scroll carries focus past */
+              let nearest: { cy: number; d: number } | null = null
+              for (const { rect } of nodes) {
+                const cy = rect.top + rect.height / 2
+                const d = Math.abs(cy - ty)
+                if (d < CAPTURE && (!nearest || d < nearest.d)) nearest = { cy, d }
+              }
+              if (nearest) {
+                const pull = Math.pow(1 - nearest.d / CAPTURE, 1.35)
+                ty += (nearest.cy - ty) * pull
+                merge = pull
+              }
               tAmp = focusY > aLast.bottom ? clamp01(1 - (focusY - aLast.bottom) / 220) : 1
             }
+            /* the gradient compresses but never flattens into a plain dot */
+            scale = 1 - e * (1 - POINT / ORB)
           }
         }
+
+        /* while the energy owns the timeline, the cursor aura yields */
+        setFlag(condensed > 0.5 && tAmp > 0.25)
 
         /* springs */
         pos.vx += (tx - pos.x) * K * dt
@@ -142,26 +173,33 @@ export default function TimelineEnergy() {
         pos.y += pos.vy * dt
         amp += (tAmp - amp) * Math.min(1, 8 * dt)
 
-        /* batched writes */
-        orb.style.transform = `translate3d(${pos.x - ORB / 2}px, ${pos.y - ORB / 2}px, 0) scale(${scale.toFixed(4)})`
-        orb.style.opacity = amp.toFixed(3)
-        grad.style.opacity = (1 - dotOpacity).toFixed(3)
-        grad.style.filter = `blur(40px) hue-rotate(${Math.round((now / 55) % 360)}deg)`
-        dot.style.opacity = dotOpacity.toFixed(3)
+        /* batched writes — orb coordinates are section-local (behind content) */
+        const lx = pos.x - hostRect.left
+        const ly = pos.y - hostRect.top
+        const drawScale = scale * (1 - 0.22 * merge) // absorbed: tucks into the node
+        orb.style.transform = `translate3d(${lx - ORB / 2}px, ${ly - ORB / 2}px, 0) scale(${drawScale.toFixed(4)})`
+        orb.style.opacity = (amp * (1 - 0.45 * merge)).toFixed(3) // hands its light to the node
+        /* compression concentrates the light: blur tightens, saturation rises */
+        const blurPx = Math.round(40 - 26 * condensed)
+        const sat = (1 + 0.6 * condensed).toFixed(2)
+        grad.style.filter = `blur(${blurPx}px) saturate(${sat}) hue-rotate(${Math.round((now / 55) % 360)}deg)`
+        /* the hot core only exists once the light is truly compressed */
+        core.style.opacity = clamp01((condensed - 0.68) / 0.32).toFixed(3)
 
-        /* milestone activation by proximity — only while the cursor form exists */
-        if (dotOpacity > 0.5 && amp > 0.1) {
+        /* milestone reaction: gaussian pre-glow + hard absorption bloom */
+        if (condensed > 0.5 && amp > 0.1) {
           effectsApplied = true
           for (const { el, rect } of nodes) {
             const cy = rect.top + rect.height / 2
-            const f = Math.exp(-((cy - pos.y) ** 2) / (NODE_RANGE * NODE_RANGE)) * amp
+            const g = Math.exp(-((cy - pos.y) ** 2) / (NODE_RANGE * NODE_RANGE)) * amp
+            const f = Math.min(1, g + merge * g * 1.6)
             if (f > 0.03) {
-              el.style.filter = `brightness(${(1 + 0.45 * f).toFixed(3)})`
+              el.style.filter = `brightness(${(1 + 0.55 * f).toFixed(3)}) saturate(${(1 + 0.5 * f).toFixed(3)})`
               el.style.boxShadow = dark
-                ? `0 0 ${Math.round(24 * f)}px ${Math.round(5 * f)}px rgba(255,255,255,${(0.4 * f).toFixed(3)})`
-                : `0 0 ${Math.round(20 * f)}px ${Math.round(4 * f)}px rgba(0,0,0,${(0.28 * f).toFixed(3)})`
+                ? `0 0 ${Math.round(30 * f)}px ${Math.round(7 * f)}px rgba(253, 224, 71, ${(0.34 * f).toFixed(3)}), 0 0 ${Math.round(60 * f)}px ${Math.round(18 * f)}px rgba(217, 70, 239, ${(0.2 * f).toFixed(3)})`
+                : `0 0 ${Math.round(26 * f)}px ${Math.round(6 * f)}px rgba(217, 70, 239, ${(0.3 * f).toFixed(3)}), 0 0 ${Math.round(48 * f)}px ${Math.round(14 * f)}px rgba(244, 63, 94, ${(0.18 * f).toFixed(3)})`
               const svg = el.querySelector("svg")
-              if (svg) svg.style.transform = `scale(${(1 + 0.38 * f).toFixed(3)})`
+              if (svg) svg.style.transform = `scale(${(1 + 0.4 * f).toFixed(3)})`
             } else {
               el.style.filter = ""
               el.style.boxShadow = ""
@@ -176,6 +214,7 @@ export default function TimelineEnergy() {
         active = tAmp > 0 || amp > 0.005
       } catch {
         running = false
+        setFlag(false)
         return
       }
       if (active) {
@@ -183,6 +222,7 @@ export default function TimelineEnergy() {
       } else {
         running = false
         clearNodeEffects()
+        setFlag(false)
       }
     }
 
@@ -202,30 +242,43 @@ export default function TimelineEnergy() {
       window.removeEventListener("scroll", wake)
       window.removeEventListener("resize", wake)
       clearNodeEffects()
+      setFlag(false)
     }
   }, [])
 
   return (
-    <div
-      ref={orbRef}
-      aria-hidden
-      className="pointer-events-none fixed left-0 top-0 z-30"
-      style={{ width: ORB, height: ORB, opacity: 0, willChange: "transform, opacity" }}
-    >
-      {/* the hero's palette, compressed along with its blur as the orb shrinks */}
-      <div
-        ref={gradRef}
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at 40% 38%, rgba(253, 224, 71, 0.65), transparent 55%)," +
-            "radial-gradient(circle at 62% 50%, rgba(244, 63, 94, 0.55), transparent 58%)," +
-            "radial-gradient(circle at 46% 68%, rgba(139, 92, 246, 0.5), transparent 60%)",
-          filter: "blur(40px)",
-        }}
-      />
-      {/* the condensed form: a clean solid dot that joins the timeline */}
-      <div ref={dotRef} className="absolute inset-0 rounded-full bg-black shadow-md dark:bg-white" style={{ opacity: 0 }} />
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <div ref={orbRef} className="absolute left-0 top-0" style={{ width: ORB, height: ORB, opacity: 0, willChange: "transform, opacity" }}>
+        {/* the hero's palette, compressed along with its blur as the orb shrinks */}
+        <div
+          ref={gradRef}
+          className="absolute inset-0 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 40% 38%, rgba(253, 224, 71, 0.7), transparent 55%)," +
+              "radial-gradient(circle at 62% 50%, rgba(244, 63, 94, 0.6), transparent 58%)," +
+              "radial-gradient(circle at 46% 68%, rgba(139, 92, 246, 0.55), transparent 60%)",
+            filter: "blur(40px)",
+          }}
+        />
+        {/* hot core of the condensed point — theme-adapted, never a flat dot */}
+        <div ref={coreRef} className="absolute inset-0" style={{ opacity: 0 }}>
+          <div
+            className="absolute inset-0 hidden rounded-full dark:block"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(253,224,71,0.85) 22%, rgba(244,63,94,0.6) 46%, rgba(139,92,246,0.4) 66%, transparent 78%)",
+            }}
+          />
+          <div
+            className="absolute inset-0 rounded-full dark:hidden"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(139,92,246,0.9) 0%, rgba(217,70,239,0.75) 30%, rgba(244,63,94,0.5) 55%, transparent 75%)",
+            }}
+          />
+        </div>
+      </div>
     </div>
   )
 }

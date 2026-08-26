@@ -56,6 +56,9 @@ export default function AmbientGlow() {
         const tx = mouse.x
         const ty = mouse.y
         let tAmp = mouse.seen ? 1 : 0
+        /* while the condensed timeline energy owns the light, the aura yields —
+           it springs back the moment the energy releases past the timelines */
+        if (document.documentElement.dataset.energy === "timeline") tAmp = 0
         const hero = document.getElementById("home")
         if (hero && tAmp > 0) {
           const hr = hero.getBoundingClientRect()

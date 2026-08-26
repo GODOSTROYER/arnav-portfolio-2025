@@ -4,7 +4,6 @@ import { useScroll } from "framer-motion"
 import Header               from "@/components/header"
 import HeroSection          from "@/components/hero-section"
 import SiteDock             from "@/components/floating-dock"
-import TimelineEnergy       from "@/components/timeline-energy"
 import MainContentSection   from "@/components/main-content-section"
 import TechnologiesSection  from "@/components/technologies-section"
 import ConnectSection       from "@/components/connect-section"
@@ -32,7 +31,6 @@ export default function Home() {
       <SignatureSection />
       <Footer />
       <SiteDock />
-      <TimelineEnergy />
     </main>
   )
 }

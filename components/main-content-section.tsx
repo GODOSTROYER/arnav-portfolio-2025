@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import Image from "next/image"
+import TimelineEnergy from "./timeline-energy"
 
 export default function MainContentSection() {
   const experiences = [
@@ -223,8 +224,10 @@ export default function MainContentSection() {
   }
 
   return (
-    <section id="about" className="py-20 bg-white dark:bg-black scroll-section transition-colors duration-300">
-      <div className="container mx-auto px-6">
+    <section id="about" className="relative py-20 bg-white dark:bg-black scroll-section transition-colors duration-300">
+      {/* the hero's condensed energy travels the timelines back here, behind the cards */}
+      <TimelineEnergy />
+      <div className="container relative z-10 mx-auto px-6">
         <motion.div
           className="grid lg:grid-cols-3 gap-12"
           variants={containerVariants}
