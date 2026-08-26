@@ -344,3 +344,12 @@ section {
     transform: translateX(-50%);
   }
 }
+
+/* /dev mobile: the hero scroll cue moves to bottom-center so the corner
+   belongs to the dock button alone */
+@media (max-width: 767px) {
+  html.dev-snap [data-scroll-cue] {
+    right: 50%;
+    transform: translateX(50%);
+  }
+}

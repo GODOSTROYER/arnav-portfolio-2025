@@ -12,7 +12,11 @@ import Image from "next/image"
 const tile =
   "rounded-3xl border border-gray-200/70 bg-white/85 p-4 shadow-lg backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/85"
 
-const gradText = "bg-gradient-to-r from-[#18CCFC] via-[#6344F5] to-[#AE48FF] bg-clip-text text-transparent"
+/* light mode uses deeper stops of the same hues — #18CCFC on white is ~2.2:1,
+   far below even the 3:1 large-text bar; the dark: variant keeps the beam's
+   exact palette where it was born */
+const gradText =
+  "bg-gradient-to-r from-cyan-700 via-violet-700 to-purple-700 bg-clip-text text-transparent dark:from-[#18CCFC] dark:via-[#6344F5] dark:to-[#AE48FF]"
 
 const stats = [
   { value: "600+", label: "community grown" },

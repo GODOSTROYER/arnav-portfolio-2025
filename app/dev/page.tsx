@@ -13,7 +13,7 @@
    phones; desktop sees a brief relayout on hydration, which is fine for a
    preview. */
 
-import { useScroll } from "framer-motion"
+import { MotionConfig, useScroll } from "framer-motion"
 import { useEffect, useState } from "react"
 
 import ConnectSection from "@/components/connect-section"
@@ -25,6 +25,7 @@ import MainContentSection from "@/components/main-content-section"
 import MobileBento from "@/components/mobile-bento"
 import MobileChapters from "@/components/mobile-chapters"
 import MobileDecks from "@/components/mobile-decks"
+import { MobileConnect, MobileFooter, MobileResume } from "@/components/mobile-tail"
 import MobileTechMarquee from "@/components/mobile-tech-marquee"
 import ResumeSection from "@/components/resume-section"
 import TechnologiesSection from "@/components/technologies-section"
@@ -50,20 +51,30 @@ export default function DevHome() {
       <HeroSection scrollYProgress={scrollYProgress} />
       {isMobile ? (
         <>
-          <MobileBento />
-          <MobileDecks />
-          <MobileTechMarquee />
+          {/* reducedMotion="user" makes the mobile components' framer springs
+             honor the OS setting (CSS-only guards can't reach them). Scoped to
+             these five: wrapping the signature's motion.radialGradient keyframes
+             breaks its SVG attributes, and hero keeps production behavior. */}
+          <MotionConfig reducedMotion="user">
+            <MobileBento />
+            <MobileDecks />
+            <MobileTechMarquee />
+            <MobileConnect />
+            <MobileResume />
+          </MotionConfig>
+          <SignatureSection />
+          <MobileFooter />
         </>
       ) : (
         <>
           <MainContentSection />
           <TechnologiesSection />
+          <ConnectSection />
+          <ResumeSection />
+          <SignatureSection />
+          <Footer />
         </>
       )}
-      <ConnectSection />
-      <ResumeSection />
-      <SignatureSection />
-      <Footer />
       <SiteDock />
       {isMobile && <MobileChapters />}
     </main>

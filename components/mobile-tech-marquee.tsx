@@ -16,13 +16,19 @@ function Row({ items, reverse }: { items: typeof techStack; reverse?: boolean })
         className="flex w-max gap-3 pr-3 motion-reduce:[animation-play-state:paused]"
         style={{ animation: `dev-marquee ${reverse ? 34 : 27}s linear infinite ${reverse ? "reverse" : "normal"}` }}
       >
-        {[...items, ...items].map((t, i) => (
-          <span
-            key={`${t.label}-${i}`}
-            className="flex shrink-0 items-center gap-2 rounded-full border border-gray-200/70 bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/80"
-          >
-            <t.Icon size={18} className={t.color} />
-            <span className="small-text text-sm text-gray-700 dark:text-gray-300">{t.label}</span>
+        {/* second copy exists only for the seamless loop — hidden from AT so
+            no technology is announced twice */}
+        {[0, 1].map((copy) => (
+          <span key={copy} aria-hidden={copy === 1 || undefined} className="flex gap-3">
+            {items.map((t) => (
+              <span
+                key={t.label}
+                className="flex shrink-0 items-center gap-2 rounded-full border border-gray-200/70 bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/80"
+              >
+                <t.Icon size={18} className={t.color} />
+                <span className="small-text text-sm text-gray-700 dark:text-gray-300">{t.label}</span>
+              </span>
+            ))}
           </span>
         ))}
       </div>

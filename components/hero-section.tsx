@@ -366,12 +366,14 @@ export default function HeroSection({ scrollYProgress }: HeroSectionProps) {
         })}
       </div>
 
-      {/* Enhanced scroll indicator with smooth fade */}
+      {/* Enhanced scroll indicator with smooth fade — decorative, so it must
+          never intercept taps meant for the dock button beneath it */}
       <motion.div
+        data-scroll-cue
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 0.8, ease: "easeOut" }}
-        className="absolute bottom-8 right-8 text-black dark:text-white small-text transition-colors duration-300"
+        className="pointer-events-none absolute bottom-8 right-8 text-black dark:text-white small-text transition-colors duration-300"
         style={{ zIndex: 60 }}
       >
         <motion.div
