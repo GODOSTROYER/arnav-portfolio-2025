@@ -40,16 +40,22 @@ components/
                       visual fraction of the canvas box (immune to zoom/transforms);
                       device-pixel snapped lines; additive blending in dark mode.
   ambient-glow.tsx    Site-wide cursor aura (fixed blurred blob, spring-driven).
-                      Fades out in the hero (grid owns the light), magnetizes to
-                      [data-timeline-axis] lines (x locks, y chases with lag),
-                      free-follows elsewhere. Mouse-only; skipped on touch/reduced-motion
+                      Fades out in the hero (grid owns the light); over the
+                      timelines it reads beamState (exported by timeline-energy)
+                      and steers into the beam head while dimming in proportion —
+                      merging into the beam, re-emerging from it on release, in
+                      both scroll directions; beam and aura never co-exist.
+                      Free-follows elsewhere. Mouse-only; skipped on touch/reduced-motion
   hero-section.tsx    "Welcome to Arnav's Portfolio" letter animation (scroll-linked)
-  timeline-energy.tsx The hero's light condensed into a scroll-driven energy point:
-                      converges below the hero, rides [data-timeline-axis] lines
-                      behind the cards (z-0 inside the section), magnetically merges
-                      into [data-timeline-node] milestones (absorption glow), then
-                      dissolves past the last axis. Sets data-energy="timeline" on
-                      <html> so ambient-glow yields while it owns the light
+  timeline-energy.tsx Aceternity tracing beam on the [data-timeline-axis] lines,
+                      behind the cards (z-0 inside the section). Reversible: head
+                      springs after a focus line, tail lazily chases, so the beam
+                      flips to lead whichever way you scroll; materializes/collapses
+                      as a point at the end nearest the approach (top ↔ hero grid,
+                      bottom ↔ cursor aura). Magnetically merges into
+                      [data-timeline-node] milestones (whole-node scale + bloom).
+                      Exports mutable beamState {amp,x,y} — the one-light contract
+                      ambient-glow reads every frame
   main-content-section.tsx  THE CONTENT FILE: about text, experiences[], projects[], education, certs
   technologies-section.tsx  Tech tile grid (react-icons), floating bob animation
   text-hover-effect.tsx  Signature section: staggered tagline + giant "ARNAV" SVG with

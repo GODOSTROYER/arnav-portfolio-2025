@@ -13,14 +13,18 @@
    - Hero: emerges/dissolves gradually across a band at the hero's lower edge —
      the hero grid owns the light inside, and crossing feels like one light
      condensing, not a switch.
-   - Timeline sections (elements tagged data-timeline-axis): magnetizes to the
-     axis — x locks on, y loosely chases the cursor, the body stretches along
-     the line.
+   - Timelines: the tracing beam owns the light (beamState from
+     timeline-energy) — as the beam takes over, the aura flies into its head
+     and merges, fading to nothing; when the beam releases, the aura
+     re-emerges from the head's last position and springs back to the cursor.
+     The two never co-exist, in either scroll direction.
    - Everywhere else: free-moving aura at the cursor.
    Hue rotates slowly (living-color language). Touch-only devices and
    reduced-motion users get nothing. */
 
 import { useEffect, useRef } from "react"
+
+import { beamState } from "./timeline-energy"
 
 const CORE_SIZE = 280
 const REFLECT_SIZE = 400
@@ -53,12 +57,19 @@ export default function AmbientGlow() {
         lastNow = now
 
         /* decide the light's allegiance this frame */
-        const tx = mouse.x
-        const ty = mouse.y
+        let tx = mouse.x
+        let ty = mouse.y
         let tAmp = mouse.seen ? 1 : 0
-        /* while the condensed timeline energy owns the light, the aura yields —
-           it springs back the moment the energy releases past the timelines */
-        if (document.documentElement.dataset.energy === "timeline") tAmp = 0
+        /* the beam and the aura are one light: as the beam takes ownership the
+           aura steers into the beam head while dimming to zero — merging into
+           it; on release the position spring carries it back out of the head
+           to the cursor. Works identically in both scroll directions. */
+        const own = Math.min(1, beamState.amp / 0.35)
+        if (own > 0) {
+          tx += (beamState.x - tx) * own
+          ty += (beamState.y - ty) * own
+          tAmp *= 1 - own
+        }
         const hero = document.getElementById("home")
         if (hero && tAmp > 0) {
           const hr = hero.getBoundingClientRect()
