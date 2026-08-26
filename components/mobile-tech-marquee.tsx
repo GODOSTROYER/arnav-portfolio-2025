@@ -2,7 +2,16 @@
 
 /* /dev mobile technologies: the tall tile grid becomes two counter-scrolling
    infinite marquee rows of chips — self-animating, ~1/5 the height. Content
-   comes from the same techStack the desktop grid renders. */
+   comes from the same techStack the desktop grid renders.
+
+   Performance: chips are opaque (no backdrop-filter — nothing moves behind
+   them on mobile, and 32 blurring chips in permanent motion is phone-GPU
+   poison), the animation lives in CSS (.dev-marquee-row, so play-state rules
+   actually win — an inline `animation:` shorthand would override both the
+   reduced-motion pause and ours), and an IntersectionObserver pauses both
+   rows whenever the section is offscreen. */
+
+import { useEffect, useRef } from "react"
 
 import { techStack } from "./technologies-section"
 
@@ -12,10 +21,7 @@ const rowB = techStack.filter((_, i) => i % 2 === 1)
 function Row({ items, reverse }: { items: typeof techStack; reverse?: boolean }) {
   return (
     <div className="w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-      <div
-        className="flex w-max gap-3 pr-3 motion-reduce:[animation-play-state:paused]"
-        style={{ animation: `dev-marquee ${reverse ? 34 : 27}s linear infinite ${reverse ? "reverse" : "normal"}` }}
-      >
+      <div className="dev-marquee-row flex w-max gap-3 pr-3" data-reverse={reverse ? "" : undefined}>
         {/* second copy exists only for the seamless loop — hidden from AT so
             no technology is announced twice */}
         {[0, 1].map((copy) => (
@@ -23,7 +29,7 @@ function Row({ items, reverse }: { items: typeof techStack; reverse?: boolean })
             {items.map((t) => (
               <span
                 key={t.label}
-                className="flex shrink-0 items-center gap-2 rounded-full border border-gray-200/70 bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/80"
+                className="flex shrink-0 items-center gap-2 rounded-full border border-gray-200/70 bg-white/90 px-4 py-2 shadow-sm dark:border-gray-800 dark:bg-gray-900/90"
               >
                 <t.Icon size={18} className={t.color} />
                 <span className="small-text text-sm text-gray-700 dark:text-gray-300">{t.label}</span>
@@ -37,8 +43,22 @@ function Row({ items, reverse }: { items: typeof techStack; reverse?: boolean })
 }
 
 export default function MobileTechMarquee() {
+  const ref = useRef<HTMLElement>(null)
+
+  /* the rows only spend GPU while the section is actually on screen */
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) el.removeAttribute("data-marquee-paused")
+      else el.setAttribute("data-marquee-paused", "")
+    })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   return (
-    <section id="technologies" className="relative flex min-h-[85svh] flex-col justify-center py-14">
+    <section ref={ref} id="technologies" className="relative flex min-h-[85svh] flex-col justify-center py-14">
       <div className="mb-8 px-6 text-center">
         <h2 className="section-heading text-2xl text-gray-900 dark:text-white transition-colors duration-300">Technologies</h2>
         <p className="small-text mt-1 text-sm text-gray-500 dark:text-gray-400">The toolkit, in motion</p>

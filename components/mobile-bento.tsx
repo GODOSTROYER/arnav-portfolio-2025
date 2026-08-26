@@ -11,8 +11,10 @@ import Image from "next/image"
 
 import { experiences } from "./main-content-section"
 
+/* no backdrop-blur: nothing moves behind these tiles on mobile (the cursor
+   aura is desktop-only), so the blur was pure GPU cost during scroll */
 const tile =
-  "rounded-3xl border border-gray-200/70 bg-white/85 p-4 shadow-lg backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/85"
+  "rounded-3xl border border-gray-200/70 bg-white/95 p-4 shadow-lg dark:border-gray-800 dark:bg-gray-900/95"
 
 /* light mode uses deeper stops of the same hues — #18CCFC on white is ~2.2:1,
    far below even the 3:1 large-text bar; the dark: variant keeps the beam's

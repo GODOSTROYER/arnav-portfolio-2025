@@ -340,14 +340,14 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
         /* active-card bloom — the desktop node glow, per icon chip */
         nodes().forEach((el, i) => {
           const g = Math.exp(-((i - idxF) ** 2) / 0.32)
-          /* calm at rest, full only while the beam is merged — a wide resting
-             halo bleeds past the deck edge and reads as a muddy smear behind
-             the section heading */
-          const f = Math.min(1, g * (0.42 + merge * 0.65))
+          /* a quiet ring at rest, a clear (but never blinding) glow on merge —
+             the chips are already saturated color, so brightness boosts read
+             as "shining" fast on OLED phones. Small values, small halos. */
+          const f = Math.min(1, g * (0.3 + merge * 0.5))
           if (f > 0.04) {
-            el.style.setProperty("scale", (1 + 0.22 * f).toFixed(3))
-            el.style.filter = `brightness(${(1 + 0.45 * f).toFixed(3)}) saturate(${(1 + 0.45 * f).toFixed(3)})`
-            el.style.boxShadow = `0 0 ${Math.round(24 * f)}px ${Math.round(6 * f)}px rgba(253, 224, 71, ${(0.34 * f).toFixed(3)}), 0 0 ${Math.round(40 * f)}px ${Math.round(12 * f)}px rgba(217, 70, 239, ${(0.22 * f).toFixed(3)})`
+            el.style.setProperty("scale", (1 + 0.16 * f).toFixed(3))
+            el.style.filter = `brightness(${(1 + 0.18 * f).toFixed(3)}) saturate(${(1 + 0.22 * f).toFixed(3)})`
+            el.style.boxShadow = `0 0 ${Math.round(18 * f)}px ${Math.round(4 * f)}px rgba(253, 224, 71, ${(0.22 * f).toFixed(3)}), 0 0 ${Math.round(30 * f)}px ${Math.round(8 * f)}px rgba(217, 70, 239, ${(0.15 * f).toFixed(3)})`
           } else {
             el.style.removeProperty("scale")
             el.style.filter = ""
@@ -409,7 +409,7 @@ function Deck({ items, onOpen }: { items: DeckItem[]; onOpen: (item: DeckItem) =
                 onOpen(it)
               }
             }}
-            className="relative flex h-[58svh] w-[80vw] max-w-[350px] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border border-gray-200/70 bg-white/85 p-5 shadow-lg backdrop-blur-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6344F5] dark:border-gray-800 dark:bg-gray-900/85"
+            className="relative flex h-[58svh] w-[80vw] max-w-[350px] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border border-gray-200/70 bg-white/95 p-5 shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6344F5] dark:border-gray-800 dark:bg-gray-900/95"
             transition={{ type: "spring", stiffness: 300, damping: 32 }}
           >
             <div className="flex items-center justify-between">

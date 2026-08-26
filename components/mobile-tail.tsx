@@ -14,7 +14,7 @@ import { Download, FileText, Github, Linkedin, Mail } from "lucide-react"
 import Link from "next/link"
 
 const tile =
-  "rounded-3xl border border-gray-200/70 bg-white/85 shadow-lg backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/85"
+  "rounded-3xl border border-gray-200/70 bg-white/95 shadow-lg dark:border-gray-800 dark:bg-gray-900/95"
 
 /* white on #6344F5 ≈ 5.5:1 — the beam's violet carries the primary actions */
 const primaryBtn =

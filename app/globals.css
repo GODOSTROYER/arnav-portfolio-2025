@@ -391,3 +391,23 @@ section {
     opacity: 0;
   }
 }
+
+/* /dev tech marquee: animation declared here (not inline) so play-state rules
+   can actually pause it — reduced-motion users and offscreen sections both
+   stop the rows entirely */
+.dev-marquee-row {
+  animation: dev-marquee 27s linear infinite;
+  will-change: transform;
+}
+.dev-marquee-row[data-reverse] {
+  animation-direction: reverse;
+  animation-duration: 34s;
+}
+[data-marquee-paused] .dev-marquee-row {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dev-marquee-row {
+    animation-play-state: paused;
+  }
+}
