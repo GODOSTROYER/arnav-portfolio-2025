@@ -427,6 +427,7 @@ export default function MainContentSection() {
                     >
                       {/* Timeline node with Briefcase icon */}
                       <motion.div
+                        data-timeline-node
                         className={`absolute left-[11px] w-9 h-9 ${timelineColors[index % timelineColors.length]} rounded-full flex items-center justify-center shadow-lg z-10`}
                         whileHover={{
                           scale: 1.2,
@@ -502,6 +503,7 @@ export default function MainContentSection() {
                     >
                       {/* Timeline node with Code icon */}
                       <motion.div
+                        data-timeline-node
                         className={`absolute left-[11px] w-9 h-9 ${timelineColors[index % timelineColors.length]} rounded-full flex items-center justify-center shadow-lg z-10`}
                         whileHover={{
                           scale: 1.2,

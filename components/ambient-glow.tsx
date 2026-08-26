@@ -42,7 +42,6 @@ export default function AmbientGlow() {
 
     const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 }
     let amp = 0
-    let magnet = 0
     const mouse = { x: -9999, y: -9999, seen: false }
     let raf = 0
     let running = false
@@ -54,10 +53,9 @@ export default function AmbientGlow() {
         lastNow = now
 
         /* decide the light's allegiance this frame */
-        let tx = mouse.x
-        let ty = mouse.y
+        const tx = mouse.x
+        const ty = mouse.y
         let tAmp = mouse.seen ? 1 : 0
-        let tMag = 0
         const hero = document.getElementById("home")
         if (hero && tAmp > 0) {
           const hr = hero.getBoundingClientRect()
@@ -67,21 +65,8 @@ export default function AmbientGlow() {
             tAmp *= Math.min(1, Math.max(0, emerge))
           }
         }
-        if (tAmp > 0.01) {
-          const axes = document.querySelectorAll<HTMLElement>("[data-timeline-axis]")
-          for (const axis of axes) {
-            const r = axis.getBoundingClientRect()
-            if (r.height < 1) continue
-            if (mouse.y >= r.top - 60 && mouse.y <= r.bottom + 60 && Math.abs(mouse.x - r.left) < 720) {
-              tx = r.left + r.width / 2
-              ty = Math.min(Math.max(mouse.y, r.top), r.bottom)
-              tMag = 1
-              break
-            }
-          }
-        }
 
-        /* springs: position with momentum; amp/magnet as smooth exponential eases */
+        /* springs: position with momentum; amp as a smooth exponential ease */
         pos.vx += (tx - pos.x) * POS_STIFFNESS * dt
         pos.vy += (ty - pos.y) * POS_STIFFNESS * dt
         pos.vx *= Math.max(0, 1 - POS_DAMPING * dt)
@@ -89,19 +74,15 @@ export default function AmbientGlow() {
         pos.x += pos.vx * dt
         pos.y += pos.vy * dt
         amp += (tAmp - amp) * Math.min(1, BLEND_SPEED * dt)
-        magnet += (tMag - magnet) * Math.min(1, BLEND_SPEED * dt)
 
         const dark = document.documentElement.classList.contains("dark")
         const hue = Math.round((now / 55) % 360)
-        /* along the timeline: taller, narrower, slightly stronger; free: round */
-        const sx = 1 - 0.3 * magnet
-        const sy = 1 + 0.55 * magnet
 
-        core.style.transform = `translate3d(${pos.x - CORE_SIZE / 2}px, ${pos.y - CORE_SIZE / 2}px, 0) scale(${sx}, ${sy})`
-        core.style.opacity = (amp * (dark ? 0.85 : 0.55) * (1 + 0.2 * magnet)).toFixed(3)
+        core.style.transform = `translate3d(${pos.x - CORE_SIZE / 2}px, ${pos.y - CORE_SIZE / 2}px, 0)`
+        core.style.opacity = (amp * (dark ? 0.85 : 0.55)).toFixed(3)
         core.style.filter = `blur(38px) hue-rotate(${hue}deg)`
 
-        reflect.style.transform = `translate3d(${pos.x - REFLECT_SIZE / 2}px, ${pos.y - REFLECT_SIZE / 2}px, 0) scale(${sx}, ${sy})`
+        reflect.style.transform = `translate3d(${pos.x - REFLECT_SIZE / 2}px, ${pos.y - REFLECT_SIZE / 2}px, 0)`
         reflect.style.opacity = (amp * (dark ? 0.45 : 0.4)).toFixed(3)
         reflect.style.filter = `blur(60px) hue-rotate(${hue}deg)`
       } catch {
