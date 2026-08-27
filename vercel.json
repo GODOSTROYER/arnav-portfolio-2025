@@ -17,5 +17,15 @@
       "destination": "https://task-tracker-godostroyers-projects.vercel.app",
       "permanent": false
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/tree-qr-studio",
+      "destination": "/tree-qr-studio/index.html"
+    },
+    {
+      "source": "/tree-qr-studio/",
+      "destination": "/tree-qr-studio/index.html"
+    }
   ]
 }
