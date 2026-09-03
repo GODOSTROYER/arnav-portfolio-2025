@@ -11,6 +11,7 @@ import {
   ListChecks,
   MailPlus,
   Microscope,
+  QrCode,
   Satellite,
   Brain,
   Palette,
@@ -94,6 +95,20 @@ export const experiences: Experience[] = [
   ]
 
 export const projects: Project[] = [
+    {
+      name: "Yōsei — Living QR Studio",
+      icon: QrCode,
+      period: "2026",
+      team: "Canvas 2D · WebGPU · React 19 · Vite · jsQR",
+      github: "https://github.com/GODOSTROYER/qr-tree-studio",
+      live: "/tree-qr-studio",
+      highlight: [
+        "Built a QR studio that turns any link into a tiny world: a seasonal tree drawn around a working QR code, generated entirely in the browser — pick a season, leaf color, tree density and module shape, then export the artwork as a PNG.",
+        "Solved the core tension of artistic QR codes — heavy styling versus machine readability — by keeping a clean quiet zone and repainting high-contrast finder patterns over the themed modules, so a decorated code still decodes on ordinary phone cameras.",
+        "Built a companion WebGPU engine that renders the same idea as an interactive 3D voxel tree, flattening to a top-down scannable view on click, with four seasonal themes, manually selected light/dark modes with synchronized transitions, and ambient audio.",
+        "Hardened the pipeline around it: QR decoding by upload, paste, or drag-and-drop with jsQR, a pinned upstream engine patched by an ordered build-script chain, and clean dependency reinstalls on Vercel so cached patched modules can't leak between deployments.",
+      ],
+    },
     {
       name: "Mini Task Tracker",
       icon: ListChecks,
