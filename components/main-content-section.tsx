@@ -101,7 +101,7 @@ export const projects: Project[] = [
       period: "2026",
       team: "Canvas 2D · WebGPU · React 19 · Vite · jsQR",
       github: "https://github.com/GODOSTROYER/qr-tree-studio",
-      live: "/tree-qr-studio",
+      live: "https://qr-studio.arnavbule.in",
       highlight: [
         "Built a QR studio that turns any link into a tiny world: a seasonal tree drawn around a working QR code, generated entirely in the browser — pick a season, leaf color, tree density and module shape, then export the artwork as a PNG.",
         "Solved the core tension of artistic QR codes — heavy styling versus machine readability — by keeping a clean quiet zone and repainting high-contrast finder patterns over the themed modules, so a decorated code still decodes on ordinary phone cameras.",
