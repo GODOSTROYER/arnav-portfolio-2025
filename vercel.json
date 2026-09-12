@@ -2,19 +2,39 @@
   "redirects": [
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "arnav-portfolio-2025.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "arnav-portfolio-2025.vercel.app"
+        }
+      ],
       "destination": "https://www.arnavbule.in/",
       "permanent": true
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "arnav-portfolio-2025.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "arnav-portfolio-2025.vercel.app"
+        }
+      ],
       "destination": "https://www.arnavbule.in/:path*",
       "permanent": true
     },
     {
       "source": "/task-tracker",
       "destination": "https://task-tracker-godostroyers-projects.vercel.app",
+      "permanent": false
+    },
+    {
+      "source": "/hiver-assignment",
+      "destination": "https://cadence-hiver.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/hiver-assignment/:path*",
+      "destination": "https://cadence-hiver.vercel.app/:path*",
       "permanent": false
     }
   ]
