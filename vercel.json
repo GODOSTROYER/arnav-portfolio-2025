@@ -26,16 +26,16 @@
       "source": "/task-tracker",
       "destination": "https://task-tracker-godostroyers-projects.vercel.app",
       "permanent": false
-    },
+    }
+  ],
+  "rewrites": [
     {
       "source": "/hiver-assignment",
-      "destination": "https://cadence-hiver.vercel.app/",
-      "permanent": false
+      "destination": "https://cadence-hiver.vercel.app/hiver-assignment/"
     },
     {
       "source": "/hiver-assignment/:path*",
-      "destination": "https://cadence-hiver.vercel.app/:path*",
-      "permanent": false
+      "destination": "https://cadence-hiver.vercel.app/hiver-assignment/:path*"
     }
   ]
 }
