@@ -10,7 +10,7 @@ Everything Arnav Bule has built, in one place. Generated on 2026-09-16 from the 
 | **Parakh** | Aug – Sep 2026 | [www.arnavbule.in/parakh](https://www.arnavbule.in/parakh) | [GitHub](https://github.com/GODOSTROYER/parakh) | Next.js 15 · React 19 · TypeScript · Tailwind v4 · pdf.js · Google Gemini · Vercel |
 | **Sentinel** | Sep 2026 | [huggingface.co/spaces/GODOSTROYER/sentinel](https://huggingface.co/spaces/GODOSTROYER/sentinel) | [GitHub](https://github.com/GODOSTROYER/sentinel-vad) | Python · PyTorch · CLIP ViT-B/32 · Qwen3-VL-2B + LoRA · YOLO11n · OpenCV · React 19 · Vite |
 | **QR Studio** | 2026 | [qr-studio.arnavbule.in](https://qr-studio.arnavbule.in) | [GitHub](https://github.com/GODOSTROYER/qr-tree-studio) | WebGPU · WGSL · React 19 · Vite · jsQR · Vercel |
-| **Mini Task Tracker** | 2025 | [www.arnavbule.in/task-tracker](https://www.arnavbule.in/task-tracker) | [GitHub](https://github.com/GODOSTROYER/task-tracker) | Next.js 15 · React 19 · TypeScript · Express · MongoDB · Redis |
+| **Mini Task Tracker** | 2025 | [www.arnavbule.in/task-tracker](https://www.arnavbule.in/task-tracker) | [GitHub](https://github.com/GODOSTROYER/task-tracker) | Next.js 16 · React 19 · TypeScript · Express · Neon Postgres · Sequelize · Vercel |
 | **Email Digital Twin** | 2025 | — | — | Chrome Extension · Node.js · Express · Google Gemini · LanceDB · Gmail API · OAuth 2.0 |
 | **Sicklesense** | 2025 | [huggingface.co/spaces/GODOSTROYER/Sicklesense](https://huggingface.co/spaces/GODOSTROYER/Sicklesense) | [GitHub](https://github.com/GODOSTROYER/sicklesense) | Python · TensorFlow · Keras · OpenCV · Streamlit · Docker · Hugging Face |
 | **Road Extraction On Satellite Images** | Aug 2024 – Present | — | — | SIH Project (No. of Group Members – 6) |
@@ -47,7 +47,7 @@ Built a WebGPU studio that grows any link or message into a 3D voxel tree whose 
 
 ### Mini Task Tracker
 
-Built a full-stack task tracker with Next.js 15 (React 19) frontend and Express + TypeScript REST API, including workspace-based task organization and multiple task views (Board/List/Table/Timeline).
+Built a multi-user task tracker with a Next.js 16 (React 19) frontend and an Express + TypeScript REST API on Neon PostgreSQL via Sequelize: owner-scoped workspaces and tasks (title, description, status, priority, due date, position) shown in Board, List, Table and Timeline views.
 
 - Live: https://www.arnavbule.in/task-tracker  
 - Code: https://github.com/GODOSTROYER/task-tracker
@@ -77,7 +77,20 @@ Developed an extremely efficient machine-learning application for upscaling and 
 
 | Repository | Status | Language | Last push | Live | Description |
 |---|---|---|---|---|---|
-| [zenith](https://github.com/GODOSTROYER/zenith) | active | TypeScript | 2026-09-16 | [orrery-three-kappa.vercel.app](https://orrery-three-kappa.vercel.app) | — |
+| [task-tracker](https://github.com/GODOSTROYER/task-tracker) | featured | TypeScript | 2026-09-16 | — | Multi-user task tracker with email-OTP auth and a drag-and-drop Kanban board - Next.js, Express + TypeScript, Neon Postgres via Sequelize, deployed on Vercel |
+| [GODOSTROYER](https://github.com/GODOSTROYER/GODOSTROYER) | active | Python | 2026-09-16 | — | Arnav Bule \| Projects, experiments, and public work |
+| [cto.newtest](https://github.com/GODOSTROYER/cto.newtest) | active | Python | 2026-09-16 | — | Volatility breakout strategy engine with per-VA risk management, a Bybit v5 testnet client and SQLite persistence |
+| [azure-databricks-ecommerce-analytics](https://github.com/GODOSTROYER/azure-databricks-ecommerce-analytics) | active | Python | 2026-09-16 | — | Medallion (Bronze/Silver/Gold) e-commerce analytics platform on Azure Databricks: Unity Catalog governance, Delta Live Tables with quality expectations and a quarantine table, Auto Loader streaming, and multi-environment delivery via Databricks Asset Bundles + GitHub Actions. |
+| [email-persona-draft](https://github.com/GODOSTROYER/email-persona-draft) | earlier iteration of email-digital-twin | JavaScript | 2026-09-16 | — | Chrome extension + Node/Express server that learns your writing style from sent Gmail and drafts replies with Google Gemini and LanceDB vector search. Original December 2025 publication; same code as GODOSTROYER/email-digital-twin. |
+| [Trishool](https://github.com/GODOSTROYER/Trishool) | active | TypeScript | 2026-09-16 | — | Trishool Health AI - an Expo / React Native app for non-invasive anemia, diabetes and hypertension risk screening, backed by Convex. |
+| [rackvisionv1](https://github.com/GODOSTROYER/rackvisionv1) | active | TypeScript | 2026-09-16 | [rackvision.vercel.app](https://rackvision.vercel.app) | RackVision - a frontend-only infrastructure visualization module in a Pulseway-style admin dashboard: globe, site and rack drill-downs over mock data. |
+| [Zenith-plugins](https://github.com/GODOSTROYER/Zenith-plugins) | plugins for zenith | JavaScript | 2026-09-16 | — | MCP connector and generated Claude Code / Codex plugins for Zenith: scoped reads plus opt-in, browser-reviewed operations. |
+| [arnav-portfolio-2025](https://github.com/GODOSTROYER/arnav-portfolio-2025) | active | JavaScript | 2026-09-16 | [www.arnavbule.in](https://www.arnavbule.in) | Personal portfolio of Arnav Bule (Next.js 15 static export, Vercel) - live at www.arnavbule.in |
+| [zenith](https://github.com/GODOSTROYER/zenith) | active | TypeScript | 2026-09-16 | [orrery-three-kappa.vercel.app](https://orrery-three-kappa.vercel.app) | Local-first deployment and operations platform: one typed manifest behind a system map, source view, REST API and agent, with priced plans, streaming deploys and Terraform export. |
+| [calquity-intern-task](https://github.com/GODOSTROYER/calquity-intern-task) | active | HTML | 2026-09-16 | — | Hybrid Search in PGVector: Dense vs Dense+Sparse Comparison |
+| [Voice-Cloner-Qwen-Arnav](https://github.com/GODOSTROYER/Voice-Cloner-Qwen-Arnav) | active | Python | 2026-09-16 | — | Parrot AI — voice cloning and speech synthesis on Qwen3-TTS-12Hz-1.7B. FastAPI backend with Whisper auto-transcription, a saved voice library, voice design, preset speakers and multi-speaker dialogue. |
+| [suryaegg](https://github.com/GODOSTROYER/suryaegg) | private | TypeScript | 2026-09-16 | — | Egg stock, sales and transfer tracking for a master godown and its retail outlets. React, TypeScript and Supabase, with atomic Postgres stock operations and row-level security. |
+| [small-software-cloud](https://github.com/GODOSTROYER/small-software-cloud) | private | TypeScript | 2026-09-16 | — | A governed release path for small internal tools: deterministic signed plans, deny-by-default policy, four-eyes approval, a capability broker so the deployed app never holds a credential, and a verifiable receipt for every step. Pre-alpha. |
 | [task-tracker-deployment](https://github.com/GODOSTROYER/task-tracker-deployment) | deployment variant of task-tracker | TypeScript | 2026-09-16 | — | Deployment snapshot of the Mini Task Tracker (Next.js 15 + Express + MongoDB + Redis), prepared for a Vercel frontend / Railway backend split. Current code lives in GODOSTROYER/task-tracker. |
 | [zillow-medallion-databricks](https://github.com/GODOSTROYER/zillow-medallion-databricks) | active | Jupyter Notebook | 2026-09-16 | — | Bronze-layer medallion pipeline on Databricks: the Zillow Economics dataset ingested into Unity Catalog four ways (COPY INTO, Auto Loader, PySpark XML, Delta Live Tables), orchestrated by one job and deployed as an Asset Bundle. |
 | [vedaai-assessment](https://github.com/GODOSTROYER/vedaai-assessment) | predecessor of parakh | TypeScript | 2026-09-16 | — | VedaAI, first snapshot (Aug 2026) - AI exam assessment: question extraction, handwritten answer mapping with ink highlights, grading. Local DeepSeek-OCR-2 + GPT-5.6 Luna. Continued in vedaai-answer-mapping, now Parakh. |
@@ -86,29 +99,16 @@ Developed an extremely efficient machine-learning application for upscaling and 
 | [mapyourlove](https://github.com/GODOSTROYER/mapyourlove) | private | JavaScript | 2026-09-16 | — | A college dating site , lol |
 | [MIT-Result-Scraper](https://github.com/GODOSTROYER/MIT-Result-Scraper) | active | Python | 2026-09-16 | — | A Simple Python based program using Selenium , Pandas that Scrapes the Results off the MIT Student's Portal. |
 | [My-Portfolio-Website](https://github.com/GODOSTROYER/My-Portfolio-Website) | first portfolio (2023), superseded | JavaScript | 2026-09-16 | — | My First Portfolio Website , Arnav.Fun :) |
-| [arnav-portfolio-2025](https://github.com/GODOSTROYER/arnav-portfolio-2025) | active | JavaScript | 2026-09-16 | [www.arnavbule.in](https://www.arnavbule.in) | Personal portfolio of Arnav Bule (Next.js 15 static export, Vercel) - live at www.arnavbule.in |
 | [email-digital-twin](https://github.com/GODOSTROYER/email-digital-twin) | private | JavaScript | 2026-09-16 | — | AI-powered email assistant that learns your writing style and generates personalized draft replies using Google Gemini and RAG |
 | [sicklesense](https://github.com/GODOSTROYER/sicklesense) | featured | Jupyter Notebook | 2026-09-16 | — | AI sickle-cell screening from blood-smear images: ResNet50 (TensorFlow) model behind a Streamlit app, deployed as a Hugging Face Space |
 | [parakh](https://github.com/GODOSTROYER/parakh) | featured | JavaScript | 2026-09-16 | [www.arnavbule.in/parakh](https://www.arnavbule.in/parakh) | Parakh - serverless exam checker: upload a question paper and a handwritten answer sheet; every answer found, highlighted and graded (Next.js + Gemini). |
 | [qr-tree-studio](https://github.com/GODOSTROYER/qr-tree-studio) | featured | JavaScript | 2026-09-16 | [qr-studio.arnavbule.in](https://qr-studio.arnavbule.in) | Vite + React/WebGPU experience for turning URLs and text into scannable 3D voxel QR trees |
 | [sentinel-vad](https://github.com/GODOSTROYER/sentinel-vad) | featured | Python | 2026-09-16 | [huggingface.co/spaces/GODOSTROYER/sentinel](https://huggingface.co/spaces/GODOSTROYER/sentinel) | Sentinel: local video anomaly detection with a trained CLIP head, Qwen3-VL 2B LoRA, temporal evidence and measured GPU runtime |
 | [cadence](https://github.com/GODOSTROYER/cadence) | featured | Python | 2026-09-16 | [www.arnavbule.in/hiver-assignment](https://www.arnavbule.in/hiver-assignment) | Cadence — an evaluated AI support agent for @SpotifyCares (intent classification, grounded reply drafting, escalation) with a golden set, LLM-as-judge harness and dashboard. Hiver SDE Intern take-home. |
-| [GODOSTROYER](https://github.com/GODOSTROYER/GODOSTROYER) | active | Python | 2026-09-16 | — | Arnav Bule \| Projects, experiments, and public work |
-| [Zenith-plugins](https://github.com/GODOSTROYER/Zenith-plugins) | plugins for zenith | JavaScript | 2026-09-15 | — | — |
 | [Portfolio-1](https://github.com/GODOSTROYER/Portfolio-1) | fork | TypeScript | 2026-09-12 | [portfolio-two-murex-p8r6yjoqtw.vercel.app](https://portfolio-two-murex-p8r6yjoqtw.vercel.app) | My Portfolio Website |
 | [Portfolio](https://github.com/GODOSTROYER/Portfolio) | third-party (Ayush Chougula's portfolio; relationship to be confirmed) | TypeScript | 2026-09-06 | [portfolio-two-murex-p8r6yjoqtw.vercel.app](https://portfolio-two-murex-p8r6yjoqtw.vercel.app) | My Portfolio Website |
-| [small-software-cloud](https://github.com/GODOSTROYER/small-software-cloud) | private | TypeScript | 2026-08-26 | — | — |
 | [TechQuest](https://github.com/GODOSTROYER/TechQuest) | fork | — | 2026-08-06 | — | — |
-| [Voice-Cloner-Qwen-Arnav](https://github.com/GODOSTROYER/Voice-Cloner-Qwen-Arnav) | active | Python | 2026-05-04 | — | — |
-| [task-tracker](https://github.com/GODOSTROYER/task-tracker) | featured | TypeScript | 2026-04-29 | [wldd-task-tracker.vercel.app](https://wldd-task-tracker.vercel.app) | A full-stack task management app built with Next.js 15, Express, MongoDB, and Redis. |
-| [Trishool](https://github.com/GODOSTROYER/Trishool) | active | TypeScript | 2026-04-17 | — | — |
-| [rackvisionv1](https://github.com/GODOSTROYER/rackvisionv1) | active | TypeScript | 2026-03-24 | [rackvision.vercel.app](https://rackvision.vercel.app) | — |
-| [suryaegg](https://github.com/GODOSTROYER/suryaegg) | private | TypeScript | 2026-03-07 | — | — |
 | [parrot-ai-frontend-qwen](https://github.com/GODOSTROYER/parrot-ai-frontend-qwen) | fork | TypeScript | 2026-01-29 | — | — |
-| [azure-databricks-ecommerce-analytics](https://github.com/GODOSTROYER/azure-databricks-ecommerce-analytics) | active | Python | 2026-01-19 | — | — |
-| [email-persona-draft](https://github.com/GODOSTROYER/email-persona-draft) | earlier iteration of email-digital-twin | JavaScript | 2025-12-23 | — | — |
-| [cto.newtest](https://github.com/GODOSTROYER/cto.newtest) | active | Python | 2025-12-12 | — | — |
-| [calquity-intern-task](https://github.com/GODOSTROYER/calquity-intern-task) | active | HTML | 2025-07-12 | — | Hybrid Search in PGVector: Dense vs Dense+Sparse Comparison |
 
 Status key: **featured** = on the portfolio · **active** = own project · **private** = private repo · **fork** = not original work · notes mark superseded/derivative repos.
 
