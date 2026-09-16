@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Briefcase, ChevronRight, ExternalLink, Github, X, type LucideIcon } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
+import Image from "next/image"
 import { experiences, projects, timelineColors } from "./main-content-section"
 
 /* beam physics — 1D siblings of the desktop constants */
@@ -47,6 +48,8 @@ type DeckItem = {
   chips: string[]
   github?: string
   live?: string
+  image?: string
+  imageAlt?: string
 }
 
 const expItems: DeckItem[] = experiences.map((e, i) => ({
@@ -70,6 +73,8 @@ const projItems: DeckItem[] = projects.map((p, i) => ({
   chips: p.team.split("·").map((s) => s.trim()),
   github: p.github,
   live: p.live,
+  image: p.image,
+  imageAlt: p.imageAlt,
 }))
 
 const TABS = [
@@ -229,6 +234,17 @@ export default function MobileDecks() {
                         {chip}
                       </span>
                     ))}
+                  </div>
+                )}
+                {expanded.image && (
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200/70 bg-gray-100 dark:border-gray-800 dark:bg-gray-950">
+                    <Image
+                      src={expanded.image}
+                      alt={expanded.imageAlt ?? `${expanded.title} — screenshot`}
+                      width={1440}
+                      height={900}
+                      className="h-auto w-full"
+                    />
                   </div>
                 )}
                 <ul className="mt-5 space-y-3">

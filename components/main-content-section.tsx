@@ -15,6 +15,8 @@ import {
   Satellite,
   Brain,
   Palette,
+  Headset,
+  Cctv,
   type LucideIcon,
 } from "lucide-react"
 import Image from "next/image"
@@ -38,6 +40,40 @@ export type Project = {
   live?: string
   icon: LucideIcon
   highlight: string[]
+  /** Optional screenshot under public/ — a banner on the desktop card, a
+      hero inside the mobile detail sheet. 1440×900 (16:10) assets expected. */
+  image?: string
+  imageAlt?: string
+}
+
+/* Screenshot banner for a project card. Links to the live demo (or the repo)
+   and zooms gently while the card is hovered. */
+function ProjectShot({ project, src }: { project: Project; src: string }) {
+  const href = project.live ?? project.github
+  const frame =
+    "relative mb-5 block aspect-[16/10] overflow-hidden rounded-lg border border-gray-200/70 bg-gray-100 dark:border-gray-800 dark:bg-gray-950"
+  const img = (
+    <Image
+      src={src}
+      alt={project.imageAlt ?? `${project.name} — screenshot`}
+      width={1440}
+      height={900}
+      className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+    />
+  )
+  return href ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={frame}
+      aria-label={`${project.name} — open ${project.live ? "live demo" : "repository"}`}
+    >
+      {img}
+    </a>
+  ) : (
+    <div className={frame}>{img}</div>
+  )
 }
 
 export const experiences: Experience[] = [
@@ -95,6 +131,41 @@ export const experiences: Experience[] = [
   ]
 
 export const projects: Project[] = [
+    {
+      name: "Cadence",
+      icon: Headset,
+      period: "Sep 2026",
+      team: "Python · FastAPI · Google Gemini · BM25 · Pydantic · SQLite · React 18 · TypeScript · Vite · Tailwind · Vercel",
+      github: "https://github.com/GODOSTROYER/cadence",
+      live: "https://www.arnavbule.in/hiver-assignment",
+      image: "/projects/cadence.webp",
+      imageAlt:
+        "Cadence agent playground — a billing tweet classified as billing_or_charge at 0.95 confidence and escalated by rules, beside the drafted reply, the Rules → Retrieve → Gemini → Decide timeline and the cited evidence",
+      highlight: [
+        "Built an evaluated AI support agent for @SpotifyCares as the Hiver SDE Intern take-home: one structured Gemini call classifies a tweet into 12 intents, drafts a ≤280-character reply grounded in six BM25-retrieved threads from 27,627 real conversations, and decides whether to auto-handle or escalate — with deterministic money/security/legal/churn rules that can force an escalation the model cannot undo, and a release veto that replaces any draft carrying an uncited claim or unsupported link with a holding reply.",
+        "Treated the proof as the product: a 250-tweet golden set labelled twice against a written guide and adjudicated (κ 0.96 intent / 0.95 escalation), four baselines, paired-bootstrap 95% CIs, and a blind two-order LLM judge on a different model — the agent's replies beat the nearest historical reply by +1.42/5 (CI 1.15–1.67) across 200 messages, with the judge's 73.5% order consistency and its blind spots published alongside.",
+        "Froze a fresh 200-tweet holdout behind SHA-256 locks — sample, labels, threshold and every source file hashed before inference, and a runner that refuses to execute at any other code or label revision — then measured 0.938 escalation recall, 0.789 macro-F1 and 35% auto-handling; replaying the same 800 cached receipts through repaired guards lifted recall to 97.5% with zero new model calls, reported as a retrospective regression rather than fresh evidence.",
+        "Made every number reproducible without an API key: all 1,771 Gemini calls live in a committed SQLite replay cache keyed by model, prompts, schema and temperature, so one command recomputes the headline metrics in about 1.4 seconds on Linux and Windows CI — while the client survived the free tier with pooled-key rotation, per-key sliding-window rate limits, 429 cooldowns parsed from server retry hints and deadline-bounded retries.",
+        "Deployed on Vercel as a slim Python serverless function (FastAPI, BM25 index rebuilt from the committed corpus at cold start, two-slot concurrency, sanitized errors, no visitor prompts persisted) behind a React dashboard with a live playground, bring-your-own-Gemini-key support held only in sessionStorage, and HMAC-signed HttpOnly admin sessions gating the internal evaluation, golden-set and failure-mode pages.",
+      ],
+    },
+    {
+      name: "Sentinel",
+      icon: Cctv,
+      period: "Sep 2026",
+      team: "Python · PyTorch · CLIP ViT-B/32 · Qwen3-VL-2B + LoRA · YOLO11n · OpenCV · React 19 · Vite",
+      github: "https://github.com/GODOSTROYER/sentinel-vad",
+      image: "/projects/sentinel.webp",
+      imageAlt:
+        "Sentinel review dashboard — a fire event on an aerial night clip with its evidence panel, event timeline and runtime metrics (6.65× real time, 2 VLM calls, 4722 MiB peak GPU)",
+      highlight: [
+        "Built a fully local video anomaly detector in a one-day hackathon that runs on a single 8 GB RTX 4060 laptop GPU: a trained head on frozen CLIP ViT-B/32 features scores footage at 2 FPS, a LoRA-adapted Qwen3-VL-2B verifies scene context on a bounded cadence, and per-class temporal state machines turn repeated evidence into timestamped events — zero hosted model calls at runtime.",
+        "Placed #1 on the AHC Visual Intelligence Hackathon live leaderboard with 67.8 points, 2.3 clear of second place, processing 47.3 minutes of footage in 9.55 minutes — 4.96× real time including model loading, inference, refinement and explanation.",
+        "Trained a 1.61M-parameter rank-8 LoRA on Qwen3-VL-2B in 240 updates, supervising only the 12 answer-letter logits so inference is a single constrained-choice forward pass — no JSON generation and zero parse errors across 932 VLM calls — lifting balanced-holdout macro F1 from 29.5% to 40.3%.",
+        "Recovered the hardest long-video class without touching the weights: YOLO11n vehicle proposals, ORB/RANSAC camera-motion compensation and occlusion-tolerant background-relative tracking flagged a truck stationary across 22 samples, which the frozen VLM confirmed as a highway stop — lifting the long-context score from 11.3 to 20.5 with no new false alarms.",
+        "Shipped a React 19 + Vite review dashboard over a range-request Python server with click-to-seek event timelines and per-class score histories, plus a leak-proof pipeline — content-hash-grouped holdout, offline Hugging Face cache, and an exporter that rejects inconsistent runtime metadata — covered by 36 passing tests.",
+      ],
+    },
     {
       name: "QR Studio",
       icon: QrCode,
@@ -555,6 +626,7 @@ export default function MainContentSection() {
                           transition: { duration: 0.3, ease: "easeOut" },
                         }}
                       >
+                        {project.image && <ProjectShot project={project} src={project.image} />}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
                           <div className="flex items-center gap-3">
                             <h4 className="card-title text-xl text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
