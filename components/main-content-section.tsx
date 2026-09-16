@@ -16,6 +16,7 @@ import {
   Brain,
   Palette,
   Headset,
+  ClipboardCheck,
   Cctv,
   type LucideIcon,
 } from "lucide-react"
@@ -147,6 +148,24 @@ export const projects: Project[] = [
         "Froze a fresh 200-tweet holdout behind SHA-256 locks — sample, labels, threshold and every source file hashed before inference, and a runner that refuses to execute at any other code or label revision — then measured 0.938 escalation recall, 0.789 macro-F1 and 35% auto-handling; replaying the same 800 cached receipts through repaired guards lifted recall to 97.5% with zero new model calls, reported as a retrospective regression rather than fresh evidence.",
         "Made every number reproducible without an API key: all 1,771 Gemini calls live in a committed SQLite replay cache keyed by model, prompts, schema and temperature, so one command recomputes the headline metrics in about 1.4 seconds on Linux and Windows CI — while the client survived the free tier with pooled-key rotation, per-key sliding-window rate limits, 429 cooldowns parsed from server retry hints and deadline-bounded retries.",
         "Deployed on Vercel as a slim Python serverless function (FastAPI, BM25 index rebuilt from the committed corpus at cold start, two-slot concurrency, sanitized errors, no visitor prompts persisted) behind a React dashboard with a live playground, bring-your-own-Gemini-key support held only in sessionStorage, and HMAC-signed HttpOnly admin sessions gating the internal evaluation, golden-set and failure-mode pages.",
+      ],
+    },
+    {
+      name: "Parakh",
+      icon: ClipboardCheck,
+      period: "Aug – Sep 2026",
+      team: "Next.js 15 · React 19 · TypeScript · Tailwind v4 · pdf.js · Google Gemini · Vercel",
+      github: "https://github.com/GODOSTROYER/parakh",
+      live: "https://www.arnavbule.in/parakh",
+      image: "/projects/parakh.webp",
+      imageAlt:
+        "Parakh results view — extracted questions with score pills and AI feedback beside the handwritten answer sheet, with the selected answer's ink region highlighted on the page",
+      highlight: [
+        "Built Parakh (परख), a serverless AI exam checker: upload a question paper and a student's handwritten answer sheet (plus an optional marking scheme) and it extracts every question, finds and highlights each answer's exact ink region on the sheet, grades it, and writes per-question feedback with a teacher summary — no auth, no database, nothing stored beyond the browser session, and a one-click sample exam to try the whole flow.",
+        "Kept the backend stateless by rendering documents in the browser with pdf.js — up to 15 pages as 1200px JPEGs with the text layer extracted alongside — so Vercel functions only ever receive compact images; digital papers take a text-only fast path while scanned ones fall back to page-image vision.",
+        "Replaced the original local pipeline (DeepSeek-OCR-2 grounding on an RTX 4060 plus GPT-5.6 via the Codex CLI, behind a FastAPI worker, polling job store and Cloudflare tunnel) with two Gemini structured-output calls: one extracts questions with sub-parts split, unprinted marks estimated and OR-choice groups tagged; one multimodal call reads every answer page at once and returns per-answer bounding boxes on a 0–1000 grid, scores and feedback.",
+        "Wrote a raw-fetch Gemini client with free-tier key rotation: any number of keys round-robin, advancing on 429/500/503 and stepping down a model ladder before failing loudly, so several free quotas pool into one.",
+        "Handled messy scripts in post-processing — boxes clamped and merged when vertically adjacent, scores capped at max marks, skipped OR alternatives shown as \"OR — skipped\" with each choice-set counted once, stray writing surfaced as \"Unmatched answers\" — and drew percentage-positioned overlays that track the ink at 50–200% zoom, with invisible hitboxes so clicking an answer on the sheet selects its question.",
       ],
     },
     {
