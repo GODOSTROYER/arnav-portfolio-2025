@@ -182,11 +182,12 @@ export const projects: Project[] = [
       period: "Sep 2026",
       team: "Python · PyTorch · CLIP ViT-B/32 · Qwen3-VL-2B + LoRA · YOLO11n · OpenCV · React 19 · Vite",
       github: "https://github.com/GODOSTROYER/sentinel-vad",
+      live: "https://huggingface.co/spaces/GODOSTROYER/sentinel",
       image: "/projects/sentinel.webp",
-      imageWidth: 1521,
-      imageHeight: 1014,
+      imageWidth: 1800,
+      imageHeight: 1125,
       imageAlt:
-        "Sentinel review dashboard — a fire event on an aerial night clip with its evidence panel, event timeline and runtime metrics (6.65× real time, 2 VLM calls, 4722 MiB peak GPU)",
+        "Sentinel demo on Hugging Face — hero with the #1 hackathon, 67.8-point and 4.96× real-time badges above a gallery of sample clips (fire, smoke, flood, crash) marked Detected · matches ground truth",
       highlight: [
         "Built a fully local video anomaly detector in a one-day hackathon that runs on a single 8 GB RTX 4060 laptop GPU: a trained head on frozen CLIP ViT-B/32 features scores footage at 2 FPS, a LoRA-adapted Qwen3-VL-2B verifies scene context on a bounded cadence, and per-class temporal state machines turn repeated evidence into timestamped events — zero hosted model calls at runtime.",
         "Placed #1 on the AHC Visual Intelligence Hackathon live leaderboard with 67.8 points, 2.3 clear of second place, processing 47.3 minutes of footage in 9.55 minutes — 4.96× real time including model loading, inference, refinement and explanation.",
