@@ -203,6 +203,11 @@ export const projects: Project[] = [
       team: "WebGPU · WGSL · React 19 · Vite · jsQR · Vercel",
       github: "https://github.com/GODOSTROYER/qr-tree-studio",
       live: "https://qr-studio.arnavbule.in",
+      image: "/projects/qr-studio.webp",
+      imageWidth: 1800,
+      imageHeight: 1125,
+      imageAlt:
+        "QR Studio — a WebGPU voxel tree in the Autumn theme (dark mode) whose golden canopy encodes a scannable QR code for www.arnavbule.in, above the message input and season picker",
       highlight: [
         "Built a WebGPU studio that grows any link or message into a 3D voxel tree whose canopy encodes a working QR code — click the tree and it flattens into a top-down view, captured straight off the GPU canvas as a PNG that ordinary phone cameras can scan.",
         "Fixed dark-mode scannability without redesigning the code: the dark theme now decodes reliably on real phone cameras while keeping the tree-derived artwork intact — no black-and-white fallback, no painted frame, and the QR payload, matrix, and finder geometry left untouched.",
@@ -242,7 +247,7 @@ export const projects: Project[] = [
       icon: Microscope,
       period: "2025",
       team: "Python · TensorFlow · Keras · OpenCV · Streamlit · Docker · Hugging Face",
-      github: "https://github.com/ArnavBule/Sickle-cell",
+      github: "https://github.com/GODOSTROYER/sicklesense",
       live: "https://huggingface.co/spaces/GODOSTROYER/Sicklesense",
       highlight: [
         "Built a low-cost, AI-powered digital telepathology solution that detects sickle cells from blood smear images using a fine-tuned ResNet50 deep learning model, achieving >92% accuracy.",
