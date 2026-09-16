@@ -1,6 +1,6 @@
 # Architecture — arnav-portfolio-2025
 
-Personal portfolio of Arnav Bule. Live at **https://arnav-portfolio-2025.vercel.app** — every push to `main` auto-deploys via Vercel (no PRs used).
+Personal portfolio of Arnav Bule. Live at **https://www.arnavbule.in** (the `arnav-portfolio-2025.vercel.app` host redirects there) — every push to `main` auto-deploys via Vercel (no PRs used).
 
 ## Overview
 
@@ -70,7 +70,10 @@ components/
                       ambient-glow reads every frame
   main-content-section.tsx  THE CONTENT FILE: about text, skills; EXPORTS experiences[],
                       projects[], certifications[], timelineColors[] (also consumed by the
-                      /dev mobile components — edit once, both layouts update)
+                      /dev mobile components — edit once, both layouts update). A project may
+                      carry image/imageAlt/imageWidth/imageHeight: a screenshot under
+                      public/projects/ shown as a banner on the desktop card and as the hero
+                      of the mobile detail sheet, at its natural aspect ratio
   mobile-decks.tsx    /dev mobile centerpiece: Experience|Projects Apple-glass tabs
                       (.dev-glass-pill: frosted fill + beam-gradient rim), Apple-cards swipe
                       decks (native snap, NOT scroll-jacked) with desktop-density card faces
@@ -115,7 +118,7 @@ To edit portfolio content (jobs, projects, skills text), edit the data arrays at
 - **A global `* { transition: background-color/color/border-color 0.3s }`** in `globals.css` provides theme-change fades everywhere. Many components also carry `transition-colors duration-300` classes — harmless duplication, but the global rule is the one that matters.
 - **Smooth scrolling** is Lenis (`components/smooth-scroll.tsx`, mounted in layout): inertial wheel scrolling with post-release glide; touch stays native; anchors route through Lenis with a -80px header offset; reduced-motion users get untouched native scrolling. CSS `scroll-behavior` must stay `auto` everywhere — a `smooth` rule anywhere fights Lenis' inertia.
 - **Hero animation**: per-letter random values are memoized (`useMemo(..., [])`); `useTransform` hooks run in `.map()` over fixed-length arrays — array lengths must stay deterministic per render or React's hook order breaks.
-- **Type checking is enforced at build** (`tsc` is clean; `ignoreBuildErrors` was removed). ESLint is still skipped during builds (`ignoreDuringBuilds: true`).
+- **Type checking is enforced at build** (`tsc` is clean; `ignoreBuildErrors` was removed). No build-time checks are suppressed in `next.config.mjs`; run `npm run lint` for ESLint.
 - **Static export**: `next build` writes `out/`. `images.unoptimized: true` is required for export mode.
 - Commits are authored by Arnav Bule only — no co-author trailers.
 
