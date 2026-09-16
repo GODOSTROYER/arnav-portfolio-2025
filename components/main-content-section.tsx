@@ -42,9 +42,13 @@ export type Project = {
   icon: LucideIcon
   highlight: string[]
   /** Optional screenshot under public/ — a banner on the desktop card, a
-      hero inside the mobile detail sheet. 1440×900 (16:10) assets expected. */
+      hero inside the mobile detail sheet. Rendered at its natural aspect
+      ratio (no cropping); pass the pixel size so the slot is reserved
+      before the lazy image loads. */
   image?: string
   imageAlt?: string
+  imageWidth?: number
+  imageHeight?: number
 }
 
 /* Screenshot banner for a project card. Links to the live demo (or the repo)
@@ -52,14 +56,14 @@ export type Project = {
 function ProjectShot({ project, src }: { project: Project; src: string }) {
   const href = project.live ?? project.github
   const frame =
-    "relative mb-5 block aspect-[16/10] overflow-hidden rounded-lg border border-gray-200/70 bg-gray-100 dark:border-gray-800 dark:bg-gray-950"
+    "relative mb-5 block overflow-hidden rounded-lg border border-gray-200/70 bg-gray-100 dark:border-gray-800 dark:bg-gray-950"
   const img = (
     <Image
       src={src}
       alt={project.imageAlt ?? `${project.name} — screenshot`}
-      width={1440}
-      height={900}
-      className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+      width={project.imageWidth ?? 1440}
+      height={project.imageHeight ?? 900}
+      className="h-auto w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
     />
   )
   return href ? (
@@ -140,6 +144,8 @@ export const projects: Project[] = [
       github: "https://github.com/GODOSTROYER/cadence",
       live: "https://www.arnavbule.in/hiver-assignment",
       image: "/projects/cadence.webp",
+      imageWidth: 1800,
+      imageHeight: 1125,
       imageAlt:
         "Cadence agent playground — a billing tweet classified as billing_or_charge at 0.95 confidence and escalated by rules, beside the drafted reply, the Rules → Retrieve → Gemini → Decide timeline and the cited evidence",
       highlight: [
@@ -158,6 +164,8 @@ export const projects: Project[] = [
       github: "https://github.com/GODOSTROYER/parakh",
       live: "https://www.arnavbule.in/parakh",
       image: "/projects/parakh.webp",
+      imageWidth: 1800,
+      imageHeight: 1013,
       imageAlt:
         "Parakh results view — extracted questions with score pills and AI feedback beside the handwritten answer sheet, with the selected answer's ink region highlighted on the page",
       highlight: [
@@ -175,6 +183,8 @@ export const projects: Project[] = [
       team: "Python · PyTorch · CLIP ViT-B/32 · Qwen3-VL-2B + LoRA · YOLO11n · OpenCV · React 19 · Vite",
       github: "https://github.com/GODOSTROYER/sentinel-vad",
       image: "/projects/sentinel.webp",
+      imageWidth: 1521,
+      imageHeight: 1014,
       imageAlt:
         "Sentinel review dashboard — a fire event on an aerial night clip with its evidence panel, event timeline and runtime metrics (6.65× real time, 2 VLM calls, 4722 MiB peak GPU)",
       highlight: [

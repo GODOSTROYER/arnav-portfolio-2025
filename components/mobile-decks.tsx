@@ -50,6 +50,8 @@ type DeckItem = {
   live?: string
   image?: string
   imageAlt?: string
+  imageWidth?: number
+  imageHeight?: number
 }
 
 const expItems: DeckItem[] = experiences.map((e, i) => ({
@@ -75,6 +77,8 @@ const projItems: DeckItem[] = projects.map((p, i) => ({
   live: p.live,
   image: p.image,
   imageAlt: p.imageAlt,
+  imageWidth: p.imageWidth,
+  imageHeight: p.imageHeight,
 }))
 
 const TABS = [
@@ -241,8 +245,8 @@ export default function MobileDecks() {
                     <Image
                       src={expanded.image}
                       alt={expanded.imageAlt ?? `${expanded.title} — screenshot`}
-                      width={1440}
-                      height={900}
+                      width={expanded.imageWidth ?? 1440}
+                      height={expanded.imageHeight ?? 900}
                       className="h-auto w-full"
                     />
                   </div>
