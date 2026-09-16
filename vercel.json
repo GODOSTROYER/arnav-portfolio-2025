@@ -26,6 +26,16 @@
       "source": "/task-tracker",
       "destination": "https://task-tracker-godostroyers-projects.vercel.app",
       "permanent": false
+    },
+    {
+      "source": "/parakh",
+      "destination": "https://parakh-eta.vercel.app",
+      "permanent": false
+    },
+    {
+      "source": "/ai-exam-checker",
+      "destination": "https://parakh-eta.vercel.app",
+      "permanent": false
     }
   ],
   "rewrites": [
