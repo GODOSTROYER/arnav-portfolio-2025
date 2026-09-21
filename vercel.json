@@ -31,6 +31,16 @@
       "source": "/ai-exam-checker",
       "destination": "https://www.arnavbule.in/parakh",
       "permanent": false
+    },
+    {
+      "source": "/portfolio-2023",
+      "destination": "https://arnav-portfolio-2023.vercel.app/",
+      "permanent": false
+    },
+    {
+      "source": "/portfolio-2023/:path*",
+      "destination": "https://arnav-portfolio-2023.vercel.app/:path*",
+      "permanent": false
     }
   ],
   "rewrites": [

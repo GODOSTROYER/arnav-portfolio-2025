@@ -148,6 +148,7 @@ build and do not run under `npm run dev`:
 | `/` and `/:path*` when the host is `arnav-portfolio-2025.vercel.app` | `https://www.arnavbule.in/:path*` | permanent redirect (308) to the canonical host |
 | `/task-tracker` | `https://task-tracker-godostroyers-projects.vercel.app` | temporary redirect (307) |
 | `/ai-exam-checker` | `https://www.arnavbule.in/parakh` | temporary redirect (307) - legacy name for Parakh |
+| `/portfolio-2023` and `/portfolio-2023/:path*` | `https://arnav-portfolio-2023.vercel.app/...` | temporary redirect (307) - the first portfolio (2023), [GODOSTROYER/My-Portfolio-Website](https://github.com/GODOSTROYER/My-Portfolio-Website) |
 | `/hiver-assignment` and `/hiver-assignment/:path*` | `https://cadence-hiver.vercel.app/hiver-assignment/...` | rewrite - Cadence is proxied; the URL stays on arnavbule.in |
 | `/parakh` and `/parakh/:path*` | `https://parakh-eta.vercel.app/parakh/...` | rewrite - Parakh is proxied; the URL stays on arnavbule.in |
 
