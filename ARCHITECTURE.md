@@ -39,7 +39,9 @@ app/
   globals.css         Tailwind directives, theme-reveal keyframes, typography, dark-mode overrides,
                       /dev mobile utilities (dev-snap chapters, scrollbar-none, dev-marquee)
   resume/page.tsx     /resume — PDF viewer + download link
-  dev/page.tsx        /dev — noindex preview; re-exports app/page.tsx so the two can't drift
+  (no app/dev)        /dev is not a route here: vercel.json proxies it to the noindex preview
+                      project arnav-portfolio-dev (the `dev` branch built with
+                      NEXT_PUBLIC_BASE_PATH=/dev; plain asset URLs go through lib/base-path.ts)
 components/
   header.tsx          Fixed header; nav + toggle. On md+ it slides away past the hero
                       (the floating dock takes over); "Connect" links to #contact

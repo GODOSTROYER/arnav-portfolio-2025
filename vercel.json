@@ -59,6 +59,14 @@
     {
       "source": "/parakh/:path*",
       "destination": "https://parakh-eta.vercel.app/parakh/:path*"
+    },
+    {
+      "source": "/dev",
+      "destination": "https://arnav-portfolio-dev.vercel.app/dev"
+    },
+    {
+      "source": "/dev/:path*",
+      "destination": "https://arnav-portfolio-dev.vercel.app/dev/:path*"
     }
   ]
 }

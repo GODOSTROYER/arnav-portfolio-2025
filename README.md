@@ -24,7 +24,8 @@ it showcases.
 - **Dark theme by default** with a circular View Transition reveal on toggle, Lenis
   inertial smooth scrolling, and a floating dock for navigation.
 - **Static export** with `robots.txt`, `sitemap.xml`, an Open Graph image and Vercel
-  Analytics / Speed Insights; `/dev` is a noindex preview of the same home page.
+  Analytics / Speed Insights; `/dev` proxies a noindex preview build of the next
+  version (a separate Vercel project, see Deployment and routing).
 
 ## Projects showcased
 
@@ -68,7 +69,6 @@ app/
   globals.css             Tailwind directives, theme-reveal keyframes, typography, dark-mode overrides,
                           mobile utilities (dev-snap, dev-glass-pill, dev-marquee)
   resume/page.tsx         /resume - PDF viewer + download link
-  dev/                    /dev - noindex preview that re-exports app/page.tsx
   robots.ts, sitemap.ts   Static robots.txt and sitemap.xml
   icon.svg                Favicon
 components/
@@ -151,6 +151,7 @@ build and do not run under `npm run dev`:
 | `/portfolio-2023` and `/portfolio-2023/:path*` | `https://arnav-portfolio-2023.vercel.app/...` | temporary redirect (307) - the first portfolio (2023), [GODOSTROYER/My-Portfolio-Website](https://github.com/GODOSTROYER/My-Portfolio-Website) |
 | `/hiver-assignment` and `/hiver-assignment/:path*` | `https://cadence-hiver.vercel.app/hiver-assignment/...` | rewrite - Cadence is proxied; the URL stays on arnavbule.in |
 | `/parakh` and `/parakh/:path*` | `https://parakh-eta.vercel.app/parakh/...` | rewrite - Parakh is proxied; the URL stays on arnavbule.in |
+| `/dev` and `/dev/:path*` | `https://arnav-portfolio-dev.vercel.app/dev/...` | rewrite - noindex preview of the next version: the `dev` branch built with `NEXT_PUBLIC_BASE_PATH=/dev` and deployed as the static Vercel project `arnav-portfolio-dev` |
 
 Redirects change the address bar; rewrites proxy the upstream deployment so Cadence and
 Parakh appear as pages of this site.
