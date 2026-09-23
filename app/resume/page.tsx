@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from "next/link";
 import Footer from "@/components/footer";
+import { withBase } from "@/lib/base-path"
 
 const PdfResumeViewer = dynamic(
   () => import('@/components/PdfResumeViewer'),
@@ -17,7 +18,7 @@ export default function ResumePage() {
         <h1 className="text-2xl font-bold mb-4 text-black dark:text-white">My Resume</h1>
         <div className="flex gap-4">
           <a
-            href="/Arnav - Resume.pdf"
+            href={withBase("/Arnav - Resume.pdf")}
             download
             className="px-6 py-2 rounded-full bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition-colors"
           >

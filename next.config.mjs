@@ -15,6 +15,8 @@ const nextConfig = {
 
   /** ▼ this is the only new line ▼ **/
   output: "export",          // tells Next.js to write the /out folder
+  // /dev preview build only (NEXT_PUBLIC_BASE_PATH=/dev); empty in production
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
 };
 
 export default nextConfig;

@@ -12,6 +12,7 @@
 import { motion } from "framer-motion"
 import { Download, FileText, Github, Linkedin, Mail } from "lucide-react"
 import Link from "next/link"
+import { withBase } from "@/lib/base-path"
 
 const tile =
   "rounded-3xl border border-gray-200/70 bg-white/95 shadow-lg dark:border-gray-800 dark:bg-gray-900/95"
@@ -80,7 +81,7 @@ export function MobileResume() {
           <Link href="/resume" className={primaryBtn}>
             View resume
           </Link>
-          <a href="/Arnav - Resume.pdf" download className={secondaryBtn}>
+          <a href={withBase("/Arnav - Resume.pdf")} download className={secondaryBtn}>
             <Download className="h-4 w-4" /> Download PDF
           </a>
         </div>

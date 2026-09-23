@@ -2,9 +2,10 @@
 
 import { Document, Page, pdfjs } from "react-pdf";
 import { useEffect, useState } from "react";
+import { withBase } from "@/lib/base-path"
 
 // tell react‑pdf where the worker lives – put the file in /public once
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+pdfjs.GlobalWorkerOptions.workerSrc = withBase("/pdf.worker.min.mjs");
 
 export default function PdfResumeViewer() {
   // Track only the breakpoint, not raw width — re-rendering <Page> re-rasterizes the
@@ -22,7 +23,7 @@ export default function PdfResumeViewer() {
   const scale = isWide ? 1.7 : 0.6;
 
   return (
-    <Document file="/Arnav - Resume.pdf" loading={<div className="text-center text-gray-500">Loading PDF...</div>}>
+    <Document file={withBase("/Arnav - Resume.pdf")} loading={<div className="text-center text-gray-500">Loading PDF...</div>}>
       <Page pageNumber={1} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} />
     </Document>
   );

@@ -24,6 +24,8 @@ export const metadata: Metadata = {
   title: "Arnav Prashant Bule - Portfolio",
   description: DESCRIPTION,
   alternates: { canonical: "/" },
+  // the /dev preview build is never indexed; production keeps default robots
+  ...(process.env.NEXT_PUBLIC_BASE_PATH ? { robots: { index: false, follow: false } } : {}),
   openGraph: {
     type: "website",
     url: SITE_URL,

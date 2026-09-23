@@ -22,6 +22,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import Image from "next/image"
 import { experiences, projects, timelineColors } from "./main-content-section"
+import { withBase } from "@/lib/base-path"
 
 /* beam physics — 1D siblings of the desktop constants */
 const K = 180
@@ -243,7 +244,7 @@ export default function MobileDecks() {
                 {expanded.image && (
                   <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200/70 bg-gray-100 dark:border-gray-800 dark:bg-gray-950">
                     <Image
-                      src={expanded.image}
+                      src={withBase(expanded.image)}
                       alt={expanded.imageAlt ?? `${expanded.title} — screenshot`}
                       width={expanded.imageWidth ?? 1440}
                       height={expanded.imageHeight ?? 900}

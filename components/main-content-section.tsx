@@ -22,6 +22,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import TimelineEnergy from "./timeline-energy"
+import { withBase } from "@/lib/base-path"
 
 /* Content data lives at module scope and is exported so the /dev mobile
    experience (decks, bento, cert stack) renders from the same source. */
@@ -59,7 +60,7 @@ function ProjectShot({ project, src }: { project: Project; src: string }) {
     "relative mb-5 block overflow-hidden rounded-lg border border-gray-200/70 bg-gray-100 dark:border-gray-800 dark:bg-gray-950"
   const img = (
     <Image
-      src={src}
+      src={withBase(src)}
       alt={project.imageAlt ?? `${project.name} — screenshot`}
       width={project.imageWidth ?? 1440}
       height={project.imageHeight ?? 900}
@@ -389,7 +390,7 @@ export default function MainContentSection() {
                 }}
               >
                 <Image
-                  src="/mypic.jpeg"
+                  src={withBase("/mypic.jpeg")}
                   alt="Arnav Prashant Bule"
                   width={192}
                   height={192}

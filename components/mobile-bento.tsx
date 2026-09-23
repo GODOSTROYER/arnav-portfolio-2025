@@ -10,6 +10,7 @@ import { Github, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react"
 import Image from "next/image"
 
 import { experiences } from "./main-content-section"
+import { withBase } from "@/lib/base-path"
 
 /* no backdrop-blur: nothing moves behind these tiles on mobile (the cursor
    aura is desktop-only), so the blur was pure GPU cost during scroll */
@@ -49,7 +50,7 @@ export default function MobileBento() {
           variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } }}
           className={`${tile} relative row-span-2 overflow-hidden p-0`}
         >
-          <Image src="/mypic.jpeg" alt="Arnav Prashant Bule" fill sizes="50vw" className="object-cover" priority />
+          <Image src={withBase("/mypic.jpeg")} alt="Arnav Prashant Bule" fill sizes="50vw" className="object-cover" priority />
           <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
             <p className="text-sm font-bold text-white">Arnav Bule</p>
             <p className="text-[11px] font-medium text-gray-200">AI/ML Developer</p>
